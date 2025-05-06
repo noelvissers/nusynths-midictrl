@@ -56,9 +56,9 @@ struct OutputConfig {
 enum class Output {
   SYNC,
   CV1,
-  CV1,
-  CV1,
-  CV1,
+  CV2,
+  CV3,
+  CV4,
   GATE1,
   GATE2,
   GATE3,
