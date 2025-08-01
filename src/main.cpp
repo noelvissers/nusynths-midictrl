@@ -45,6 +45,8 @@ void isrRotaryEncButton()
 // Main
 // --------------------------------------------------
 
+// TODO: Check if USB name can be coded so device shows up as "NuSynths MIDICTRL" in the host OS
+
 void setup()
 {
   Serial.begin(115200);
