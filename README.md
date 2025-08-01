@@ -1,6 +1,6 @@
 # NU Synths | MIDICTRL 
 
-Firmware for the NU Synths 'MIDICTRL' eurorack module. Converts MIDI signales (via the MIDI connector or via the USB input) to eurorack compatible control voltage (CV) and gate signals.
+Firmware for the NU Synths 'MIDICTRL' eurorack module. Converts MIDI signals (5 pin MIDI or MIDI-USB) to eurorack compatible control voltage (CV) and gate signals.
 
 ## Contents
 
