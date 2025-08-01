@@ -16,6 +16,14 @@ The following files and folders are in this repository:
 |README.md           |
 |platformio.ini      |
 
+## Documentation
+
+TBD. 
+
+* Functions
+* Menu structure 
+* Mono/poly mapping to output
+
 ## Usage
 
 TBD.
