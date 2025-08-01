@@ -1,27 +1,44 @@
 #include <Arduino.h>
 
-#include "menu.h"
 #include "midiSerial.h"
 #include "midiUsb.h"
 #include "config.h"
+#include "menu.h"
 
-CMenu menu;
 CMidiSerial midiSerial;
 CMidiUsb midiUsb;
+CMenu menu("Root menu");
 
 // --------------------------------------------------
 // Interrupts
 // --------------------------------------------------
 
-void interruptHandlerRotaryEncorder()
+bool rotaryEncClkLast = 0;
+void isrRotaryEncorder()
 {
+  bool rotaryEncClk = (*_portRotaryEncClk & _maskRotaryEncClk) != 0;
+  if (rotaryEncClk != rotaryEncClkLast && rotaryEncClk == 1)
+  {
+    bool rotaryEncData = (*_portRotaryEncData & _maskRotaryEncData) != 0;
+    if (rotaryEncClk == rotaryEncData)
+      _flagRotaryEncCcw = true;
+    else
+      _flagRotaryEncCw = true;
+  }
+  rotaryEncClkLast = rotaryEncClk;
 }
 
-unsigned long rotaryButtonLast = 0;
-void interruptHandlerRotaryButton()
+unsigned long rotaryEncButtonLast = 0;
+void isrRotaryEncButton()
 {
-  _flagRotaryButton = true;
-  rotaryButtonLast = millis();
+  bool rotaryEncButton = (*_portRotaryEncButton & _maskRotaryEncButton) != 0;
+  if (!rotaryEncButton)
+  {
+    _flagRotaryEncButton = true;
+    rotaryEncButtonLast = millis();
+  }
+  else
+    _flagRotaryEncButton = false;
 }
 
 // --------------------------------------------------
@@ -32,19 +49,38 @@ void setup()
 {
   Serial.begin(115200);
 
-  // TODO: Set pinModes()
-  // TODO: Attach interrupts
-  // TODO: Init things that need initialization
-  // TODO: Load configuration
+  // Pin modes
+  pinMode(_pinRotaryEncButton, INPUT);
+  pinMode(_pinRotaryEncClk, INPUT);
+  pinMode(_pinRotaryEncData, INPUT);
+
+  // Interrupts
+  attachInterrupt(digitalPinToInterrupt(_pinRotaryEncButton), isrRotaryEncButton, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(_pinRotaryEncClk), isrRotaryEncorder, CHANGE);
+
+  // Initialize
+  menu.init();
+
+  // TODO: Load saved configuration
+  // ...
+
   // TODO: Show startup animation
+  // ...
 }
 
 void loop()
 {
-  if (_flagRotaryButton)
+  if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
   {
-    // Reset:     > 100ms  & button released
-    // Show menu: > 1000ms & button still pressed
+    Serial.write("Launching menu...");
+    menu.bActive = true;    
+    while (menu.bActive)
+    {
+      menu.update();
+      menu.waitForInput(_flagRotaryEncCw, _flagRotaryEncCcw, _flagRotaryEncButton);
+      menu.handleInput();
+    }
+    Serial.write("Exiting menu...");
   }
   midiSerial.Update();
   midiUsb.Update();

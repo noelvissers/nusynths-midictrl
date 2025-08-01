@@ -6,13 +6,22 @@
 extern const uint8_t _pinLed;
 
 // Rotary encoder
-extern const uint8_t _pinRotaryButton;
-extern const uint8_t _pinRotaryClk;
-extern const uint8_t _pinRotaryData;
+extern const uint8_t _pinRotaryEncButton;
+extern const uint8_t _pinRotaryEncClk;
+extern const uint8_t _pinRotaryEncData;
 
-extern volatile bool _flagRotaryButton;
-extern volatile bool _flagRotaryCw;
-extern volatile bool _flagRotaryCcw;
+// Rotary encoder port and bit masks for faster IO read/writes
+extern const uint8_t _maskRotaryEncButton;
+extern volatile uint32_t *_portRotaryEncButton;
+extern const uint8_t _maskRotaryEncClk;
+extern volatile uint32_t *_portRotaryEncClk;
+extern const uint8_t _maskRotaryEncData;
+extern volatile uint32_t *_portRotaryEncData;
+
+// Rotary encoder flags
+extern volatile bool _flagRotaryEncButton;
+extern volatile bool _flagRotaryEncCw;
+extern volatile bool _flagRotaryEncCcw;
 
 // Gates
 extern const uint8_t _pinGate1;
@@ -38,8 +47,6 @@ public:
 private:
 };
 
-
-
 // Example 
 enum class OutputType {
   ANALOG,
@@ -48,9 +55,9 @@ enum class OutputType {
 };
 
 struct OutputConfig {
-  const char* name;        // Descriptive name for the output
-  uint8_t pinNumber;      // The hardware pin number
-  OutputType type;         // The type of output
+  const char* name;  // Descriptive name for the output
+  uint8_t pinNumber; // The hardware pin number
+  OutputType type;   // The type of output
 };
 
 enum class Output {
@@ -65,6 +72,7 @@ enum class Output {
   GATE4,
 };
 
+// TODO: Probably add output function (Pitch/Velocity/CC/AfterTouch/Gate/Trigger/StartStop) and other configurable items
 const OutputConfig outputConfig[] = {
   { "SYNC", 0, OutputType::DIGITAL },
   { "CV1", 0, OutputType::ANALOG },

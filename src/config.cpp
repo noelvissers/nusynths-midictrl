@@ -1,21 +1,26 @@
 #include <Arduino.h>
 #include "config.h"
 
-// --------------------------------------------------
-// Public
-// --------------------------------------------------
-
 // LED
 const uint8_t _pinLed = LED_BUILTIN;
 
 // Rotary encoder
-const uint8_t _pinRotaryButton = 0;
-const uint8_t _pinRotaryClk = 0;
-const uint8_t _pinRotaryData = 0;
+const uint8_t _pinRotaryEncButton = 0;
+const uint8_t _pinRotaryEncClk = 0;
+const uint8_t _pinRotaryEncData = 0;
 
-volatile bool _flagRotaryButton = false;
-volatile bool _flagRotaryCw = false;
-volatile bool _flagRotaryCcw = false;
+// Rotary encoder port and bit masks for faster IO read/writes
+const uint8_t _maskRotaryEncButton = digitalPinToBitMask(_pinRotaryEncButton);
+volatile uint32_t *_portRotaryEncButton = portInputRegister(digitalPinToPort(_pinRotaryEncButton));
+const uint8_t _maskRotaryEncClk = digitalPinToBitMask(_pinRotaryEncClk);
+volatile uint32_t *_portRotaryEncClk = portInputRegister(digitalPinToPort(_pinRotaryEncClk));
+const uint8_t _maskRotaryEncData = digitalPinToBitMask(_pinRotaryEncData);
+volatile uint32_t *_portRotaryEncData = portInputRegister(digitalPinToPort(_pinRotaryEncData));
+
+// Rotary encoder flags
+volatile bool _flagRotaryEncButton = false;
+volatile bool _flagRotaryEncCw = false;
+volatile bool _flagRotaryEncCcw = false;
 
 // Gates [5V DIO]
 const uint8_t _pinGate1 = 0;
@@ -34,11 +39,7 @@ const uint8_t _pinSpiCLK = PIN_SPI_SCK;
 const uint8_t _pinCsDisplay = 0;
 const uint8_t _pinCsDac = 0;
 
+// TODO: Add functions to load/save configuration
 void CConfig::Example()
 {
-    
 }
-
-// --------------------------------------------------
-// Private
-// --------------------------------------------------
