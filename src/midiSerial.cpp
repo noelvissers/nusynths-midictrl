@@ -41,23 +41,13 @@ void CMidiSerial::update()
         midiHandlerSerial.midiAfterTouchChannel(MIDI.getChannel(), MIDI.getData2());
         break;
       case midi::PitchBend:
-        midiHandlerSerial.midiPitchBend(MIDI.getChannel(), MIDI.getData2() | (MIDI.getData1() << 7) - 8192);
+        midiHandlerSerial.midiPitchBend(MIDI.getChannel(), ((MIDI.getData2() << 7) + MIDI.getData1()) - 8192);
         break;
       case midi::SystemExclusive:
-        // Ignore
-        break;
       case midi::TimeCodeQuarterFrame:
-        // Ignore
-        break;
       case midi::SongPosition:
-        // Ignore
-        break;
       case midi::SongSelect:
-        // Ignore
-        break;
       case midi::TuneRequest:
-        // Ignore
-        break;
       case midi::SystemExclusiveEnd:
         // Ignore
         break;
@@ -75,6 +65,7 @@ void CMidiSerial::update()
         // Ignore
         break;
       case midi::SystemReset:
+        midiHandlerSerial.systemReset();
         break;
       default:
         // Ignore
