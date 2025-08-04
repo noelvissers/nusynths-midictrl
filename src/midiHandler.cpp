@@ -10,10 +10,36 @@ void CMidiHandler::init()
 // MIDI data messages
 void CMidiHandler::midiNoteOff(byte note, byte velocity)
 {
-	// Handle pitch
-	// Handle velocity
-	// Handle gate
-	// Handle trigger
+	COutputs outputs;
+
+	size_t index = 0;
+	for (auto &output : outputs.aOutputs)
+	{
+		if (output.isActive)
+		{
+			switch (output.function)
+			{
+			case OutputFunction::Pitch:
+				if (output.value == note)
+					outputs.setOutputValue(index, note, false);
+				break;
+			case OutputFunction::Velocity:
+				if (output.mappedNote == note)
+					outputs.setOutputValue(index, velocity, false);
+				break;
+			case OutputFunction::Gate:
+				if (output.mappedNote == note)
+				{
+					outputs.setOutputValue(index, 0, false);
+					output.isDirty = true;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		index++;
+	}
 }
 
 void CMidiHandler::midiNoteOn(byte note, byte velocity)
@@ -33,10 +59,12 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 				break;
 			case OutputFunction::Velocity:
 				outputs.setOutputValue(index, velocity);
+				output.mappedNote = note; // Use mappedNote for checking what note triggered this output
 				output.isDirty = true;
 				break;
 			case OutputFunction::Gate:
 				outputs.setOutputValue(index, 1);
+				output.mappedNote = note; // Use mappedNote for checking what note triggered this output
 				output.isDirty = true;
 				break;
 			case OutputFunction::Trigger:

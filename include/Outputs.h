@@ -29,7 +29,7 @@ struct Output
   OutputFunction function = OutputFunction::Unassigned;
   bool isActive = false;       // Indicates if the output is currently active (and/or can be overwritten)
   bool isDirty = false;        // Indicates if the output value has changed and needs to be updated
-  uint16_t value = 0;          // Value to be written to the output (0-65536 for DAC, 0-1 for GPIO)
+  uint16_t value = 0;          // Value to be written to the output
   uint8_t outputPin = 0;       // GPIO pin for Gate outputs (default = 0)
   uint8_t dacChannel = 0;      // DAC channel for CV outputs (default = 0)
   bool isMapped = false;       // Indicates if the output is mapped to a specific MIDI note or CC
@@ -46,6 +46,5 @@ public:
   void update();
   void setOutputConfig(uint8_t output, OutputFunction function = OutputFunction::Unassigned);
   void setOutputValue(uint8_t output, uint16_t value, bool isActive = true);
-
 private:
 };
