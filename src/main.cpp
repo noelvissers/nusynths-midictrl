@@ -4,15 +4,14 @@
 #include "MidiUsbIn.h"
 #include "Config.h"
 #include "Menu.h"
+#include "Outputs.h"
 
 CMidiSerial midiSerial;
 CMidiUsb midiUsb;
 CMenu menu("Root menu");
+COutputs outputs;
 
-// --------------------------------------------------
 // Interrupts
-// --------------------------------------------------
-
 bool rotaryEncClkLast = 0;
 void isrRotaryEncorder()
 {
@@ -41,12 +40,7 @@ void isrRotaryEncButton()
     _flagRotaryEncButton = false;
 }
 
-// --------------------------------------------------
-// Main
-// --------------------------------------------------
-
-// TODO: Check if USB name can be coded so device shows up as "NuSynths MIDICTRL" in the host OS
-
+// Setup
 void setup()
 {
   Serial.begin(115200);
@@ -62,6 +56,7 @@ void setup()
 
   // Initialize
   menu.init();
+  outputs.init();
 
   // TODO: Load saved configuration
   // ...
@@ -70,6 +65,7 @@ void setup()
   // ...
 }
 
+// Main
 void loop()
 {
   if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
@@ -86,6 +82,5 @@ void loop()
   }
   midiSerial.update();
   midiUsb.update();
-  // TODO: Handle trigger events
-  // This could be done when updating the outputs, since this will most likely be done in a seperate function/class
+  outputs.update();
 }

@@ -1,42 +1,48 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 
 enum class OutputType
 {
-  Cv,
-  Gate,
-  Undefined,
+  Analog = 1,
+  Digital = 2,
+  Undefined = 0,
 };
 
 enum class OutputFunction
 {
-  Sync = 1,
-  Pitch = 2,
-  Velocity = 3,
-  ContinuesController = 4,
-  AfterTouch = 5,
-  Gate = 6,
-  Trigger = 7,
+  Pitch = 1,
+  Velocity = 2,
+  ContinuesController = 3,
+  AfterTouch = 4,
+  Gate = 5,
+  Trigger = 6,
+  Sync = 7,
   StartStop = 8,
   Unassigned = 0
 };
 
 struct Output
 {
-  const char *name;
-  OutputType type;
-  OutputFunction funciton;
-  bool isActive;
-  uint16_t value;
-  unsigned long resetTime;
+  OutputType type = OutputType::Undefined;
+  OutputFunction function = OutputFunction::Unassigned;
+  bool isActive = false; // Indicates if the output is currently active (and/or can be overwritten)
+  bool isDirty = false;  // Indicates if the output value has changed and needs to be updated
+  uint16_t value = 0; 
+  uint8_t outputPin = 0; // GPIO pin for Gate outputs (default = 0)
+  uint8_t dacChannel = 0; // DAC channel for CV outputs (default = 0)
+  unsigned long resetTime = 0;  // Time when the output should be reset (used for triggers)
 };
 
 class COutputs
 {
 public:
+  void init();
   void update();
-  void setOutputs();
+  void setOutputConfig(uint8_t output, OutputFunction function = OutputFunction::Unassigned);
+  void setOutputValue(uint8_t output, uint16_t value, bool isActive = true);
 
 private:
+  std::array<Output, 9> _outputs; // 0 is Sync, 1-4 are CV outputs, 5-9 are GATE outputs
 };

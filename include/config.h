@@ -23,6 +23,12 @@ extern volatile bool _flagRotaryEncButton;
 extern volatile bool _flagRotaryEncCw;
 extern volatile bool _flagRotaryEncCcw;
 
+// CV
+extern const uint8_t _dacChannelCv1;
+extern const uint8_t _dacChannelCv2;
+extern const uint8_t _dacChannelCv3;
+extern const uint8_t _dacChannelCv4;
+
 // Gates
 extern const uint8_t _pinGate1;
 extern const uint8_t _pinGate2;
@@ -39,6 +45,9 @@ extern const uint8_t _pinSpiCLK;
 
 extern const uint8_t _pinCsDisplay;
 extern const uint8_t _pinCsDac;
+
+// Trigger
+extern const uint8_t _triggerLengthMs; // Length of the trigger pulse in milliseconds
 
 class CConfig
 {
