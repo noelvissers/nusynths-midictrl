@@ -50,6 +50,9 @@ const uint8_t _pinCsDac = 0;
 // Trigger
 const uint8_t _triggerLengthMs = 1;
 
+// Mode
+const SynthMode _synthMode = SynthMode::Monophonic;
+
 void CConfig::saveSettings()
 {
 }

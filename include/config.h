@@ -2,6 +2,12 @@
 
 #include <cstdint>
 
+enum class SynthMode
+{
+  Monophonic = 0,
+  Polyphonic = 1
+};
+
 // LED
 extern const uint8_t _pinLed;
 
@@ -48,6 +54,9 @@ extern const uint8_t _pinCsDac;
 
 // Trigger
 extern const uint8_t _triggerLengthMs; // Length of the trigger pulse in milliseconds
+
+// Mode
+extern const SynthMode _synthMode;
 
 class CConfig
 {

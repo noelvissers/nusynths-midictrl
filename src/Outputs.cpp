@@ -6,32 +6,32 @@
 void COutputs::init()
 {
   // Output specific initialization
-  _outputs[0].type = OutputType::Digital; // Sync output
-  _outputs[0].outputPin = _pinSync;
+  aOutputs[0].type = OutputType::Digital; // Sync output
+  aOutputs[0].outputPin = _pinSync;
 
-  _outputs[1].type = OutputType::Analog;
-  _outputs[1].dacChannel = _dacChannelCv1;
-  _outputs[2].type = OutputType::Analog;
-  _outputs[2].dacChannel = _dacChannelCv2;
-  _outputs[3].type = OutputType::Analog;
-  _outputs[3].dacChannel = _dacChannelCv3;
-  _outputs[4].type = OutputType::Analog;
-  _outputs[4].dacChannel = _dacChannelCv4;
+  aOutputs[1].type = OutputType::Analog;
+  aOutputs[1].dacChannel = _dacChannelCv1;
+  aOutputs[2].type = OutputType::Analog;
+  aOutputs[2].dacChannel = _dacChannelCv2;
+  aOutputs[3].type = OutputType::Analog;
+  aOutputs[3].dacChannel = _dacChannelCv3;
+  aOutputs[4].type = OutputType::Analog;
+  aOutputs[4].dacChannel = _dacChannelCv4;
 
-  _outputs[5].type = OutputType::Digital;
-  _outputs[5].outputPin = _pinGate1;
-  _outputs[6].type = OutputType::Digital;
-  _outputs[6].outputPin = _pinGate2;
-  _outputs[7].type = OutputType::Digital;
-  _outputs[7].outputPin = _pinGate3;
-  _outputs[8].type = OutputType::Digital;
-  _outputs[8].outputPin = _pinGate4;
+  aOutputs[5].type = OutputType::Digital;
+  aOutputs[5].outputPin = _pinGate1;
+  aOutputs[6].type = OutputType::Digital;
+  aOutputs[6].outputPin = _pinGate2;
+  aOutputs[7].type = OutputType::Digital;
+  aOutputs[7].outputPin = _pinGate3;
+  aOutputs[8].type = OutputType::Digital;
+  aOutputs[8].outputPin = _pinGate4;
 }
 
 // Write the actual values to either the DAC or IO pins
 void COutputs::update()
 {
-  for (auto &output : _outputs)
+  for (auto &output : aOutputs)
   {
     // Handle reset for triggers
     if (output.function == OutputFunction::Trigger && output.isActive == true)
@@ -66,22 +66,22 @@ void COutputs::update()
 // Change the config of a specific output
 void COutputs::setOutputConfig(uint8_t output, OutputFunction function)
 {
-  if (output < _outputs.size())
-    _outputs[output].function = function;
+  if (output < aOutputs.size())
+    aOutputs[output].function = function;
 }
 
 // Change the value of a specific output
 void COutputs::setOutputValue(uint8_t output, uint16_t value, bool isActive)
 {
-  if (output < _outputs.size())
+  if (output < aOutputs.size())
   {
-    _outputs[output].value = value;
-    _outputs[output].isActive = isActive;
+    aOutputs[output].value = value;
+    aOutputs[output].isActive = isActive;
 
     // Set the reset time for triggers
-    if (_outputs[output].function == OutputFunction::Trigger)
-      _outputs[output].resetTime = micros() + (_triggerLengthMs * 1000); 
+    if (aOutputs[output].function == OutputFunction::Trigger)
+      aOutputs[output].resetTime = micros() + (_triggerLengthMs * 1000); 
     
-    _outputs[output].isDirty = true; // Mark the output as dirty to update it
+    aOutputs[output].isDirty = true; // Mark the output as dirty to update it
   }
 }
