@@ -11,15 +11,15 @@ enum class OutputType
 
 enum class OutputFunction
 {
-  Sync,
-  Pitch,
-  Velocity,
-  ContinuesController,
-  AfterTouch,
-  Gate,
-  Trigger,
-  StartStop,
-  Unassigned
+  Sync = 1,
+  Pitch = 2,
+  Velocity = 3,
+  ContinuesController = 4,
+  AfterTouch = 5,
+  Gate = 6,
+  Trigger = 7,
+  StartStop = 8,
+  Unassigned = 0
 };
 
 struct Output
@@ -35,7 +35,8 @@ struct Output
 class COutputs
 {
 public:
-  void Example();
+  void update();
+  void setOutputs();
 
 private:
 };

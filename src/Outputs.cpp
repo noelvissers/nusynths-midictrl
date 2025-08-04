@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include "Outputs.h"
 
-void COutputs::Example()
+void COutputs::update()
+{
+}
+
+void COutputs::setOutputs()
 {
 }

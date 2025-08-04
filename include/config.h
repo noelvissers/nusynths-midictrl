@@ -43,6 +43,8 @@ extern const uint8_t _pinCsDac;
 class CConfig
 {
 public:
-  void Example();
+  void loadSettings();
+  void saveSettings();
+
 private:
 };
