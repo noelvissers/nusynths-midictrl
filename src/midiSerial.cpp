@@ -9,7 +9,6 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 
 void CMidiSerial::init()
 {
-  // TODO: Check if this should be loaded from settings or if filtered manually
   MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
@@ -17,31 +16,35 @@ void CMidiSerial::update()
 {
   if (MIDI.read())
   {
-    switch (MIDI.getType())
+      // TODO: actually filter midi channel here
+    if (MIDI.getChannel() == 1)
     {
+
+      switch (MIDI.getType())
+      {
       case midi::InvalidType:
         // Ignore
         break;
       case midi::NoteOff:
-        midiHandlerSerial.midiNoteOff(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
+        midiHandlerSerial.midiNoteOff(MIDI.getData1(), MIDI.getData2());
         break;
       case midi::NoteOn:
-        midiHandlerSerial.midiNoteOn(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
+        midiHandlerSerial.midiNoteOn(MIDI.getData1(), MIDI.getData2());
         break;
       case midi::AfterTouchPoly:
         // Not supported
         break;
       case midi::ControlChange:
-        midiHandlerSerial.midiControlChange(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
+        midiHandlerSerial.midiControlChange(MIDI.getData1(), MIDI.getData2());
         break;
       case midi::ProgramChange:
         // Not supported
         break;
       case midi::AfterTouchChannel:
-        midiHandlerSerial.midiAfterTouchChannel(MIDI.getChannel(), MIDI.getData2());
+        midiHandlerSerial.midiAfterTouchChannel(MIDI.getData2());
         break;
       case midi::PitchBend:
-        midiHandlerSerial.midiPitchBend(MIDI.getChannel(), ((MIDI.getData2() << 7) + MIDI.getData1()) - 8192);
+        midiHandlerSerial.midiPitchBend(((MIDI.getData2() << 7) + MIDI.getData1()) - 8192);
         break;
       case midi::SystemExclusive:
       case midi::TimeCodeQuarterFrame:
@@ -70,6 +73,7 @@ void CMidiSerial::update()
       default:
         // Ignore
         break;
+      }
     }
   }
 }

@@ -21,7 +21,7 @@ void CMidiUsb::update()
     {
       uint8_t midiChannel = rx.byte1 & 0x0F;
       // TODO: actually filter midi channel here
-      if (midiChannel == 0)
+      if (midiChannel == 1)
       {
         switch (rx.byte1)
         {
