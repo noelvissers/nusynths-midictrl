@@ -53,8 +53,10 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 				break;
 			}
 
+			// Exit after first active output in polyphonic mode
+			// Note: If multiple triggers is mapped to the same note, only 1 will be triggered in polyphonic mode
 			if (output.isDirty && _synthMode == SynthMode::Polyphonic)
-				return; // Exit after first active output in polyphonic mode
+				return;
 		}
 		index++;
 	}
