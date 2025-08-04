@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "gui.h"
+#include "Gui.h"
 
 // --------------------------------------------------
 // Public

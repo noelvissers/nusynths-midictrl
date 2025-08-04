@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "menu.h"
+#include "Menu.h"
 
 // MenuItem
 CMenuItem::CMenuItem(const std::string &name) : _name(name) {}
@@ -92,7 +92,7 @@ void CMenu::init()
     {
       // MIDI channel
       configMenu.addSubMenu("Chn")
-          .addOption("All", nullptr) // Channel 1
+          .addOption("All", nullptr) // OMNI
           .addOption("1", nullptr)   // Channel 1
           .addOption("2", nullptr)   // Channel 2
           .addOption("3", nullptr)   // Channel 3
@@ -115,6 +115,7 @@ void CMenu::init()
           .addOption("Pol", nullptr); // Polyphonic
       // Pitch bend
       configMenu.addSubMenu("Pb.")
+          .addOption("0", nullptr)   // 0 semitones
           .addOption("1", nullptr)   // 1 semitone
           .addOption("2", nullptr)   // 2 semitones
           .addOption("3", nullptr)   // 3 semitones

@@ -3,6 +3,7 @@
 class CMidiSerial
 {
 public:
-  void Update();
+  void init();
+  void update();
 private:
 };

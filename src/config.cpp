@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "config.h"
+#include "Config.h"
 
 // LED
 const uint8_t _pinLed = LED_BUILTIN;

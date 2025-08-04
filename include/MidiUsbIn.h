@@ -3,6 +3,7 @@
 class CMidiUsb
 {
 public:
-  void Update();
+  void init();
+  void update();
 private:
 };

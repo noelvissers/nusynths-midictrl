@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
-#include "midiSerial.h"
-#include "midiUsb.h"
-#include "config.h"
-#include "menu.h"
+#include "MidiSerial.h"
+#include "MidiUsbIn.h"
+#include "Config.h"
+#include "Menu.h"
 
 CMidiSerial midiSerial;
 CMidiUsb midiUsb;
@@ -84,6 +84,7 @@ void loop()
     }
     Serial.write("Exiting menu...");
   }
-  midiSerial.Update();
-  midiUsb.Update();
+  midiSerial.update();
+  midiUsb.update();
+  // TODO: Handle trigger events
 }

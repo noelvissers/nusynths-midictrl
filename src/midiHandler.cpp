@@ -1,54 +1,46 @@
 #include <Arduino.h>
-#include "midiHandler.h"
+#include "MidiHandler.h"
 
 void CMidiHandler::init()
 {
-    
 }
 
 // MIDI data messages
-void CMidiHandler::midiNoteOff()
+void CMidiHandler::midiNoteOff(byte channel, byte note, byte velocity)
 {
-    
 }
 
-void CMidiHandler::midiNoteOn()
+void CMidiHandler::midiNoteOn(byte channel, byte note, byte velocity)
 {
-    
 }
 
-void CMidiHandler::midiControlChange()
+void CMidiHandler::midiControlChange(byte channel, byte byte1, byte byte2)
 {
-    
 }
 
-void CMidiHandler::midiChannelAfterTouch()
+void CMidiHandler::midiAfterTouchChannel(byte channel, byte velocity)
 {
-    
 }
 
-void CMidiHandler::midiPitchWheel()
+void CMidiHandler::midiPitchBend(byte channel, int value)
 {
-    
 }
 
 // MDII system messages
-void CMidiHandler::systemTimingClock()
+void CMidiHandler::systemClock()
 {
-    
 }
 
 void CMidiHandler::systemStart()
 {
-    
 }
 
 void CMidiHandler::systemStop()
 {
-    
 }
 
 void CMidiHandler::systemReset()
 {
-    
 }
+
+// TODO: Implement learn functionality
