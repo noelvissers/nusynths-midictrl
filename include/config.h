@@ -88,3 +88,9 @@ const OutputConfig outputConfig[] = {
 inline const OutputConfig& getOutput(Output output) {
   return outputConfig[static_cast<int>(output)];
 }
+
+// TODO: things to save/configure
+/**
+ * Value (used for analog values)
+ * Set time (used for triggers) [micros()]
+ */

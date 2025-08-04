@@ -75,7 +75,7 @@ void loop()
   if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
   {
     Serial.write("Launching menu...");
-    menu.bActive = true;    
+    menu.bActive = true;
     while (menu.bActive)
     {
       menu.update();
@@ -87,4 +87,5 @@ void loop()
   midiSerial.update();
   midiUsb.update();
   // TODO: Handle trigger events
+  // This could be done when updating the outputs, since this will most likely be done in a seperate function/class
 }

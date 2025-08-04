@@ -29,25 +29,25 @@ void CMidiUsb::update()
           // Ignore
           break;
         case midi::NoteOff:
-          midiHandlerUsb.midiNoteOff(midiChannel, rx.byte2, rx.byte3);
+          midiHandlerUsb.midiNoteOff(rx.byte2, rx.byte3);
           break;
         case midi::NoteOn:
-          midiHandlerUsb.midiNoteOn(midiChannel, rx.byte2, rx.byte3);
+          midiHandlerUsb.midiNoteOn(rx.byte2, rx.byte3);
           break;
         case midi::AfterTouchPoly:
           // Not supported
           break;
         case midi::ControlChange:
-          midiHandlerUsb.midiControlChange(midiChannel, rx.byte2, rx.byte3);
+          midiHandlerUsb.midiControlChange(rx.byte2, rx.byte3);
           break;
         case midi::ProgramChange:
           // Not supported
           break;
         case midi::AfterTouchChannel:
-          midiHandlerUsb.midiAfterTouchChannel(midiChannel, rx.byte2);
+          midiHandlerUsb.midiAfterTouchChannel(rx.byte2);
           break;
         case midi::PitchBend:
-          midiHandlerUsb.midiPitchBend(midiChannel, ((rx.byte3 << 7) + rx.byte2) - 8192);
+          midiHandlerUsb.midiPitchBend(((rx.byte3 << 7) + rx.byte2) - 8192);
           break;
         case midi::SystemExclusive:
         case midi::TimeCodeQuarterFrame:
