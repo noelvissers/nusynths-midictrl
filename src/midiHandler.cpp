@@ -12,8 +12,7 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
 {
 	COutputs outputs;
 
-	size_t index = 0;
-	for (auto &output : outputs.aOutputs)
+	for (auto &output : outputs._outputs)
 	{
 		if (output.isActive)
 		{
@@ -21,16 +20,17 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
 			{
 			case OutputFunction::Pitch:
 				if (output.value == note)
-					outputs.setOutputValue(index, note, false);
+					output.isActive = false;
 				break;
 			case OutputFunction::Velocity:
 				if (output.mappedNote == note)
-					outputs.setOutputValue(index, velocity, false);
+					output.isActive = false;
 				break;
 			case OutputFunction::Gate:
 				if (output.mappedNote == note)
 				{
-					outputs.setOutputValue(index, 0, false);
+					output.value = 0;
+					output.isActive = false;
 					output.isDirty = true;
 				}
 				break;
@@ -38,7 +38,6 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
 				break;
 			}
 		}
-		index++;
 	}
 }
 
@@ -46,32 +45,42 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 {
 	COutputs outputs;
 
-	size_t index = 0;
-	for (auto &output : outputs.aOutputs)
+	for (auto &output : outputs._outputs)
 	{
 		if (!output.isActive)
 		{
 			switch (output.function)
 			{
 			case OutputFunction::Pitch:
-				outputs.setOutputValue(index, note);
-				output.isDirty = true;
+				output.value = outputs.midiTo1VOct(note);
+				output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+				output.isActive = output.isDirty = true;
 				break;
 			case OutputFunction::Velocity:
-				outputs.setOutputValue(index, velocity);
+				output.value = outputs.midiToCv(velocity);
 				output.mappedNote = note; // Use mappedNote for checking what note triggered this output
-				output.isDirty = true;
+				output.isActive = output.isDirty = true;
 				break;
 			case OutputFunction::Gate:
-				outputs.setOutputValue(index, 1);
+				output.value = 32768;			// 5V for DAC, HIGH for IO
 				output.mappedNote = note; // Use mappedNote for checking what note triggered this output
-				output.isDirty = true;
+				output.isActive = output.isDirty = true;
 				break;
 			case OutputFunction::Trigger:
 				if (!output.isMapped)
-					outputs.setOutputValue(index, 1);
+				{
+					output.value = 32768;			// 5V for DAC, HIGH for IO
+					output.resetTime = micros() + (_triggerLengthMs * 1000);
+					output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+					output.isActive = true;
+				}
 				else if (output.mappedNote == note)
-					outputs.setOutputValue(index, 1);
+				{
+					output.value = 32768;			// 5V for DAC, HIGH for IO
+					output.resetTime = micros() + (_triggerLengthMs * 1000);
+					output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+					output.isActive = true;
+				}
 				else
 					break;
 				output.isDirty = true;
@@ -86,7 +95,6 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 			if (output.isDirty && _synthMode == SynthMode::Polyphonic)
 				return;
 		}
-		index++;
 	}
 }
 

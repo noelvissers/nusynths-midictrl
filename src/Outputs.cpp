@@ -6,32 +6,32 @@
 void COutputs::init()
 {
   // Output specific initialization
-  aOutputs[0].type = OutputType::Digital; // Sync output
-  aOutputs[0].outputPin = _pinSync;
+  _outputs[0].type = OutputType::Digital; // Sync output
+  _outputs[0].outputPin = _pinSync;
 
-  aOutputs[1].type = OutputType::Analog;
-  aOutputs[1].dacChannel = _dacChannelCv1;
-  aOutputs[2].type = OutputType::Analog;
-  aOutputs[2].dacChannel = _dacChannelCv2;
-  aOutputs[3].type = OutputType::Analog;
-  aOutputs[3].dacChannel = _dacChannelCv3;
-  aOutputs[4].type = OutputType::Analog;
-  aOutputs[4].dacChannel = _dacChannelCv4;
+  _outputs[1].type = OutputType::Analog;
+  _outputs[1].dacChannel = _dacChannelCv1;
+  _outputs[2].type = OutputType::Analog;
+  _outputs[2].dacChannel = _dacChannelCv2;
+  _outputs[3].type = OutputType::Analog;
+  _outputs[3].dacChannel = _dacChannelCv3;
+  _outputs[4].type = OutputType::Analog;
+  _outputs[4].dacChannel = _dacChannelCv4;
 
-  aOutputs[5].type = OutputType::Digital;
-  aOutputs[5].outputPin = _pinGate1;
-  aOutputs[6].type = OutputType::Digital;
-  aOutputs[6].outputPin = _pinGate2;
-  aOutputs[7].type = OutputType::Digital;
-  aOutputs[7].outputPin = _pinGate3;
-  aOutputs[8].type = OutputType::Digital;
-  aOutputs[8].outputPin = _pinGate4;
+  _outputs[5].type = OutputType::Digital;
+  _outputs[5].outputPin = _pinGate1;
+  _outputs[6].type = OutputType::Digital;
+  _outputs[6].outputPin = _pinGate2;
+  _outputs[7].type = OutputType::Digital;
+  _outputs[7].outputPin = _pinGate3;
+  _outputs[8].type = OutputType::Digital;
+  _outputs[8].outputPin = _pinGate4;
 }
 
 // Write the actual values to either the DAC or IO pins
 void COutputs::update()
 {
-  for (auto &output : aOutputs)
+  for (auto &output : _outputs)
   {
     // Handle reset for triggers
     if (output.function == OutputFunction::Trigger && output.isActive == true)
@@ -64,24 +64,26 @@ void COutputs::update()
 }
 
 // Change the config of a specific output
+// TODO: seperate function for this is a bit overkill, might delete later
 void COutputs::setOutputConfig(uint8_t output, OutputFunction function)
 {
-  if (output < aOutputs.size())
-    aOutputs[output].function = function;
+  if (output < _outputs.size())
+    _outputs[output].function = function;
 }
 
-// Change the value of a specific output
-void COutputs::setOutputValue(uint8_t output, uint16_t value, bool isActive)
+// Map MIDI note to 1V/Oct value
+uint16_t COutputs::midiTo1VOct(uint8_t byte)
 {
-  if (output < aOutputs.size())
-  {
-    aOutputs[output].value = value;
-    aOutputs[output].isActive = isActive;
+  if (byte < 12 || byte > 127)
+    return 0; // Out of range, return 0V
 
-    // Set the reset time for triggers
-    if (aOutputs[output].function == OutputFunction::Trigger)
-      aOutputs[output].resetTime = micros() + (_triggerLengthMs * 1000); 
-    
-    aOutputs[output].isDirty = true; // Mark the output as dirty to update it
-  }
+  // C0  = MIDI: 12  = 0V  = DAC: 0
+  // C10 = MIDI: 132 = 10V = DAC: 65535
+  return round(map(byte, 12, 132, 0, 65535));
+}
+
+// Map MIDI data to CV value
+uint16_t COutputs::midiToCv(uint8_t byte)
+{
+  return round(map(byte, 0, 127, 0, 65535));
 }

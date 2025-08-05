@@ -40,11 +40,13 @@ struct Output
 class COutputs
 {
 public:
-  std::array<Output, 9> aOutputs; // 0 is Sync, 1-4 are CV outputs, 5-9 are GATE outputs
+  std::array<Output, 9> _outputs; // 0 is Sync, 1-4 are CV outputs, 5-9 are GATE outputs
 
   void init();
   void update();
   void setOutputConfig(uint8_t output, OutputFunction function = OutputFunction::Unassigned);
-  void setOutputValue(uint8_t output, uint16_t value, bool isActive = true);
-private:
+  uint16_t midiTo1VOct(uint8_t byte);
+  uint16_t midiToCv(uint8_t byte);
+
+  private:
 };
