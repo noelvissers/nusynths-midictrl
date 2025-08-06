@@ -160,9 +160,6 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
       switch (output.function)
       {
       case EOutputFunction::Pitch:
-        if (output.value == note)
-          output.isActive = false;
-        break;
       case EOutputFunction::Velocity:
         if (output.mappedNote == note)
           output.isActive = false;
