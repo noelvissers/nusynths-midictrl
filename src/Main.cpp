@@ -6,10 +6,18 @@
 #include "Settings.h"
 #include "Outputs.h"
 
+
 /**
- * TODO: Phase out use of MIDISerial and USB here. Only use the handler here. Serial and USB should have get functions
- * to get the data inside the handler. This means that the handler can also contain the learn functionality.
+ * TODO:
+ * - Finish implementing EEPROM/Flash load save functionality
+ * - Finish implementing MIDI handling
+ * - Finish menu handling with actual functions instead of nullptr
+ * - Add GUI
+ * - Add midi learn functionality
+ * - add briefs to all header files
+ * - Get rid of init functions and just use constructors
  */
+
 CSettings settings;
 COutputs outputs;
 CMidiHandler midiHandler(outputs, settings);

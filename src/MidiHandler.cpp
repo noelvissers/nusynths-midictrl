@@ -5,23 +5,17 @@
 CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings)
     : mOutputs(outputs), mSettings(settings) {}
 
-void CMidiHandler::init()
-{
-}
-
 void CMidiHandler::read()
 {
   // Read MIDI over serial
-  CMidiSerial midiSerial; // TODO: Make this a member function
   SMidiSerialPacket midiSerialPacket;
 
-  if (midiSerial.getPacket(midiSerialPacket))
+  if (mMidiSerial.getPacket(midiSerialPacket))
     update(midiSerialPacket.channel, midiSerialPacket.type, midiSerialPacket.dataByte1, midiSerialPacket.dataByte2);
 
   // Read MIDI over USB
-  CMidiUsb midiUsb; // TODO: Make this a member function
   SMidiUsbPacket midiUsbPacket;
-  if (midiUsb.getPacket(midiUsbPacket))
+  if (mMidiUsb.getPacket(midiUsbPacket))
     update(midiUsbPacket.channel, midiUsbPacket.type, midiUsbPacket.dataByte1, midiUsbPacket.dataByte2);
 }
 

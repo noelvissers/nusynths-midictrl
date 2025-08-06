@@ -11,15 +11,17 @@ public:
   CMidiHandler(COutputs &outputs, CSettings &settings);
   ~CMidiHandler() = default;
 
-  void init();
   void read();
+  bool learn(uint8_t &note, byte &ccValue, volatile bool &cancel);
 
 private:
   COutputs &mOutputs;
   CSettings &mSettings;
+
+  CMidiSerial mMidiSerial;
+  CMidiUsb mMidiUsb;
   
   void update(uint8_t channel, uint8_t type, byte data1, byte data2);
-  bool learn(uint8_t &note, byte &ccValue, volatile bool &cancel);
 
   // MIDI data messages
   void midiNoteOff(byte note, byte velocity);

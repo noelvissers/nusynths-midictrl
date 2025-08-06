@@ -26,13 +26,3 @@ SSettings CSettings::getSettings() const
 {
   return mSettings;
 }
-
-/**
- * TODO:
- * - Finish implementing EEPROM/Flash load save functionality
- * - Finish implementing MIDI handling
- * - Finish menu handling with actual functions instead of nullptr
- * - Add GUI
- * - Add midi learn functionality
- * - add briefs to all header files
- */
