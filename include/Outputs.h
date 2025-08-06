@@ -43,6 +43,7 @@ class COutputs
 {
 public:
   COutputs();
+  ~COutputs() = default;
 
   void init();
   void update();

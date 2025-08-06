@@ -3,27 +3,20 @@
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-CMidiSerial::CMidiSerial(CMidiHandler &midiHandler)
-    : mMidiHandler(midiHandler) {}
-
-void CMidiSerial::init()
+CMidiSerial::CMidiSerial()
 {
   MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
-void CMidiSerial::read()
+bool CMidiSerial::getPacket(SMidiSerialPacket &midiEventPacket)
 {
   if (MIDI.read())
   {
-    uint8_t channel = MIDI.getChannel();
-    uint8_t type = MIDI.getType();
-    byte data1 = MIDI.getData1();
-    byte data2 = MIDI.getData2();
-
-    mMidiHandler.update(channel, type, data1, data2);
+    midiEventPacket.channel = MIDI.getChannel();
+    midiEventPacket.type = MIDI.getType();
+    midiEventPacket.dataByte1 = MIDI.getData1();
+    midiEventPacket.dataByte2 = MIDI.getData2();
+    return true;
   }
+  return false;
 }
-
-// TODO: Implement learn functionality
-// Something like:
-// bool CMidiSerial::getMidiInput(byte &note, byte &ccValue, volatile bool &cancel);

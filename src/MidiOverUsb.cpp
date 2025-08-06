@@ -1,29 +1,17 @@
 #include "MidiOverUsb.h"
-#include <MIDI.h> // Included for enums
-#include <MIDIUSB.h>
 
-CMidiUsb::CMidiUsb(CMidiHandler &midiHandler)
-    : mMidiHandler(midiHandler) {}
+CMidiUsb::CMidiUsb() {}
 
-void CMidiUsb::read()
+bool CMidiUsb::getPacket(SMidiUsbPacket &midiEventPacket)
 {
-  midiEventPacket_t rx;
-  do
+  midiEventPacket_t rx = MidiUSB.read();
+  if (rx.header != 0)
   {
-    rx = MidiUSB.read();
-    if (rx.header != 0)
-    {
-      // TODO: verify that this is correct
-      uint8_t channel = rx.byte1 & 0x0F;
-      uint8_t type = rx.byte1;
-      byte data1 = rx.byte2;
-      byte data2 = rx.byte3;
-
-      mMidiHandler.update(channel, type, data1, data2);
-    }
-  } while (rx.header != 0);
+    midiEventPacket.channel = rx.byte1 & 0x0F;
+    midiEventPacket.type = rx.byte1 & 0xF0;
+    midiEventPacket.dataByte1 = rx.byte2;
+    midiEventPacket.dataByte2 = rx.byte3;
+    return true;
+  }
+  return false;
 }
-
-// TODO: Implement learn functionality
-// Something like:
-// bool CMidiUsb::getMidiInput(byte &note, byte &ccValue, volatile bool &cancel);

@@ -1,10 +1,35 @@
 #include "MidiHandler.h"
+#include "MidiOverSerial.h"
+#include "MidiOverUsb.h"
 
 CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings)
     : mOutputs(outputs), mSettings(settings) {}
 
 void CMidiHandler::init()
 {
+}
+
+void CMidiHandler::read()
+{
+  // Read MIDI over serial
+  CMidiSerial midiSerial; // TODO: Make this a member function
+  SMidiSerialPacket midiSerialPacket;
+
+  if (midiSerial.getPacket(midiSerialPacket))
+    update(midiSerialPacket.channel, midiSerialPacket.type, midiSerialPacket.dataByte1, midiSerialPacket.dataByte2);
+
+  // Read MIDI over USB
+  CMidiUsb midiUsb; // TODO: Make this a member function
+  SMidiUsbPacket midiUsbPacket;
+  if (midiUsb.getPacket(midiUsbPacket))
+    update(midiUsbPacket.channel, midiUsbPacket.type, midiUsbPacket.dataByte1, midiUsbPacket.dataByte2);
+}
+
+bool CMidiHandler::learn(uint8_t &note, byte &ccValue, volatile bool &cancel)
+{
+  // TODO: implement learn
+  // returns true if learned, returns false if cancelled
+  return false;
 }
 
 void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
@@ -164,7 +189,7 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
   }
 }
 
-void CMidiHandler::midiControlChange(byte byte1, byte byte2)
+void CMidiHandler::midiControlChange(byte subchannel, byte value)
 {
   // Handle continuous controller
 }
@@ -199,5 +224,3 @@ void CMidiHandler::systemReset()
 {
   // Implement?
 }
-
-// TODO: Implement learn functionality

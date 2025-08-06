@@ -1,8 +1,7 @@
 #include <Arduino.h>
 
 #include "HalConfiguration.h"
-#include "MidiOverSerial.h"
-#include "MidiOverUsb.h"
+#include "MidiHandler.h"
 #include "Menu.h"
 #include "Settings.h"
 #include "Outputs.h"
@@ -14,8 +13,6 @@
 CSettings settings;
 COutputs outputs;
 CMidiHandler midiHandler(outputs, settings);
-CMidiSerial midiSerial(midiHandler);
-CMidiUsb midiUsb(midiHandler);
 CMenu menu("Root menu");
 
 // Interrupts
@@ -87,7 +84,6 @@ void loop()
     }
     Serial.write("Exiting menu...");
   }
-  midiSerial.read();
-  midiUsb.read();
+  midiHandler.read();
   outputs.update();
 }

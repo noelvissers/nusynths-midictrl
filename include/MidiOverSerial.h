@@ -2,15 +2,21 @@
 
 #include "MidiHandler.h"
 
+struct SMidiSerialPacket
+{
+  uint8_t channel;
+  uint8_t type;
+  uint8_t dataByte1;
+  uint8_t dataByte2;
+};
+
 class CMidiSerial
 {
 public:
-  CMidiSerial(CMidiHandler &midiHandler);
+  CMidiSerial();
   ~CMidiSerial() = default;
 
-  void init();
-  void read();
+  bool getPacket(SMidiSerialPacket& midiEventPacket);
 
 private:
-  CMidiHandler &mMidiHandler;
 };

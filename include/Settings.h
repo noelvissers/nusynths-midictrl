@@ -24,6 +24,7 @@ class CSettings
 {
 public:
   CSettings();
+  ~CSettings() = default;
 
   void loadSettings(SSettings& settings);
   void saveSettings(const SSettings& settings);
