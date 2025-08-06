@@ -1,32 +1,94 @@
-#include <Arduino.h>
 #include "MidiHandler.h"
-#include "Outputs.h"
-#include "Config.h"
+
+CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings)
+    : mOutputs(outputs), mSettings(settings) {}
 
 void CMidiHandler::init()
 {
 }
 
+void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
+{
+  // TODO: actually filter midi channel here
+  if (channel == 0)
+  {
+    switch (type)
+    {
+    case midi::InvalidType:
+      // Ignore
+      break;
+    case midi::NoteOff:
+      midiNoteOff(data1, data2);
+      break;
+    case midi::NoteOn:
+      midiNoteOn(data1, data2);
+      break;
+    case midi::AfterTouchPoly:
+      // Not supported
+      break;
+    case midi::ControlChange:
+      midiControlChange(data1, data2);
+      break;
+    case midi::ProgramChange:
+      // Not supported
+      break;
+    case midi::AfterTouchChannel:
+      midiAfterTouchChannel(data2);
+      break;
+    case midi::PitchBend:
+      midiPitchBend(((data2 << 7) + data1) - 8192);
+      break;
+    case midi::SystemExclusive:
+    case midi::TimeCodeQuarterFrame:
+    case midi::SongPosition:
+    case midi::SongSelect:
+    case midi::TuneRequest:
+    case midi::SystemExclusiveEnd:
+      // Ignore
+      break;
+    case midi::Clock:
+      systemClock();
+      break;
+    case midi::Start:
+    case midi::Continue:
+      systemStart();
+      break;
+    case midi::Stop:
+      systemStop();
+      break;
+    case midi::ActiveSensing:
+      // Ignore
+      break;
+    case midi::SystemReset:
+      systemReset();
+      break;
+    default:
+      // Ignore
+      break;
+    }
+  }
+}
+
 // MIDI data messages
 void CMidiHandler::midiNoteOff(byte note, byte velocity)
 {
-  COutputs outputs;
-
-  for (auto &output : outputs._outputs)
+  for (auto i = 0; i < N_OUTPUTS; i++)
   {
+    SOutput output = mOutputs.getOutput(i);
+
     if (output.isActive)
     {
       switch (output.function)
       {
-      case OutputFunction::Pitch:
+      case EOutputFunction::Pitch:
         if (output.value == note)
           output.isActive = false;
         break;
-      case OutputFunction::Velocity:
+      case EOutputFunction::Velocity:
         if (output.mappedNote == note)
           output.isActive = false;
         break;
-      case OutputFunction::Gate:
+      case EOutputFunction::Gate:
         if (output.mappedNote == note)
         {
           output.value = 0;
@@ -37,47 +99,50 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
       default:
         break;
       }
+      mOutputs.setOutput(i, output);
     }
   }
 }
 
 void CMidiHandler::midiNoteOn(byte note, byte velocity)
 {
-  COutputs outputs;
+  SSettings settings = mSettings.getSettings();
 
-  for (auto &output : outputs._outputs)
+  for (auto i = 0; i < N_OUTPUTS; i++)
   {
+    SOutput output = mOutputs.getOutput(i);
+
     if (!output.isActive)
     {
       switch (output.function)
       {
-      case OutputFunction::Pitch:
-        output.value = outputs.midiTo1VOct(note);
+      case EOutputFunction::Pitch:
+        output.value = mOutputs.midiTo1VOct(note);
         output.mappedNote = note; // Use mappedNote for checking what note triggered this output
         output.isActive = output.isDirty = true;
         break;
-      case OutputFunction::Velocity:
-        output.value = outputs.midiToCv(velocity);
+      case EOutputFunction::Velocity:
+        output.value = mOutputs.midiToCv(velocity);
         output.mappedNote = note; // Use mappedNote for checking what note triggered this output
         output.isActive = output.isDirty = true;
         break;
-      case OutputFunction::Gate:
+      case EOutputFunction::Gate:
         output.value = 32768;     // 5V for DAC, HIGH for IO
         output.mappedNote = note; // Use mappedNote for checking what note triggered this output
         output.isActive = output.isDirty = true;
         break;
-      case OutputFunction::Trigger:
+      case EOutputFunction::Trigger:
         if (!output.isMapped)
         {
           output.value = 32768; // 5V for DAC, HIGH for IO
-          output.resetTime = micros() + (_triggerLengthMs * 1000);
+          output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
           output.mappedNote = note; // Use mappedNote for checking what note triggered this output
           output.isActive = true;
         }
         else if (output.mappedNote == note)
         {
           output.value = 32768; // 5V for DAC, HIGH for IO
-          output.resetTime = micros() + (_triggerLengthMs * 1000);
+          output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
           output.mappedNote = note; // Use mappedNote for checking what note triggered this output
           output.isActive = true;
         }
@@ -89,10 +154,11 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
       default:
         break;
       }
+      mOutputs.setOutput(i, output);
 
       // Exit after first active output in polyphonic mode
       // Note: If multiple triggers is mapped to the same note, only 1 will be triggered in polyphonic mode
-      if (output.isDirty && _synthMode == SynthMode::Polyphonic)
+      if (output.isDirty && settings.synthMode == ESynthMode::Polyphonic)
         return;
     }
   }

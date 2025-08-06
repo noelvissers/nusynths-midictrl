@@ -1,43 +1,54 @@
-#include <Arduino.h>
 #include "Outputs.h"
-#include "Config.h"
+#include "HalConfiguration.h"
+#include "Settings.h"
+#include <Arduino.h>
 
-// Initialize outputs with default values
+COutputs::COutputs()
+{
+  // Default initialization
+  SOutput defaultOutput;
+
+  for (auto i = 0; i < N_OUTPUTS; ++i)
+    mOutputs[i] = defaultOutput;
+
+  // Output specific initialization
+  mOutputs[0].type = EOutputType::Digital; // Sync output
+  mOutputs[0].outputPin = _pinSync;
+
+  mOutputs[1].type = EOutputType::Analog;
+  mOutputs[1].dacChannel = _dacChannelCv1;
+  mOutputs[2].type = EOutputType::Analog;
+  mOutputs[2].dacChannel = _dacChannelCv2;
+  mOutputs[3].type = EOutputType::Analog;
+  mOutputs[3].dacChannel = _dacChannelCv3;
+  mOutputs[4].type = EOutputType::Analog;
+  mOutputs[4].dacChannel = _dacChannelCv4;
+
+  mOutputs[5].type = EOutputType::Digital;
+  mOutputs[5].outputPin = _pinGate1;
+  mOutputs[6].type = EOutputType::Digital;
+  mOutputs[6].outputPin = _pinGate2;
+  mOutputs[7].type = EOutputType::Digital;
+  mOutputs[7].outputPin = _pinGate3;
+  mOutputs[8].type = EOutputType::Digital;
+  mOutputs[8].outputPin = _pinGate4;
+}
+
 void COutputs::init()
 {
-  // Output specific initialization
-  _outputs[0].type = OutputType::Digital; // Sync output
-  _outputs[0].outputPin = _pinSync;
-
-  _outputs[1].type = OutputType::Analog;
-  _outputs[1].dacChannel = _dacChannelCv1;
-  _outputs[2].type = OutputType::Analog;
-  _outputs[2].dacChannel = _dacChannelCv2;
-  _outputs[3].type = OutputType::Analog;
-  _outputs[3].dacChannel = _dacChannelCv3;
-  _outputs[4].type = OutputType::Analog;
-  _outputs[4].dacChannel = _dacChannelCv4;
-
-  _outputs[5].type = OutputType::Digital;
-  _outputs[5].outputPin = _pinGate1;
-  _outputs[6].type = OutputType::Digital;
-  _outputs[6].outputPin = _pinGate2;
-  _outputs[7].type = OutputType::Digital;
-  _outputs[7].outputPin = _pinGate3;
-  _outputs[8].type = OutputType::Digital;
-  _outputs[8].outputPin = _pinGate4;
+  // TODO: use this function for the actual initialization of the outputs based on saved configurations
 }
 
 // Write the actual values to either the DAC or IO pins
 void COutputs::update()
 {
-  for (auto &output : _outputs)
+  for (auto &output : mOutputs)
   {
     // Handle reset for triggers
-    if (output.function == OutputFunction::Trigger && output.isActive == true)
+    if (output.function == EOutputFunction::Trigger && output.isActive == true)
     {
       // Handle roll-overs
-      if (micros() >= output.resetTime || micros() < (output.resetTime + (_triggerLengthMs * 1000)))
+      if (micros() >= output.resetTime || micros() < (output.resetTime + (TRIGGER_LENGHT_MS * 1000)))
       {
         output.value = 0;
         output.isActive = false;
@@ -49,10 +60,10 @@ void COutputs::update()
     {
       switch (output.type)
       {
-      case OutputType::Analog:
+      case EOutputType::Analog:
         // TODO: dacWrite(output.outputAdc, output.value);
         break;
-      case OutputType::Digital:
+      case EOutputType::Digital:
         digitalWrite(output.outputPin, output.value > 0 ? HIGH : LOW);
         break;
       default:
@@ -63,12 +74,19 @@ void COutputs::update()
   }
 }
 
-// Change the config of a specific output
-// TODO: seperate function for this is a bit overkill, might delete later
-void COutputs::setOutputConfig(uint8_t output, OutputFunction function)
+void COutputs::setOutput(uint16_t index, const SOutput &outputConfig)
 {
-  if (output < _outputs.size())
-    _outputs[output].function = function;
+  if (index < mOutputs.size())
+    mOutputs[index] = outputConfig;
+}
+
+SOutput COutputs::getOutput(uint16_t index) const
+{
+  SOutput output;
+
+  if (index < mOutputs.size())
+    output = mOutputs[index];
+  return output;
 }
 
 // Map MIDI note to 1V/Oct value

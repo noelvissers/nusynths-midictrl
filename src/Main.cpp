@@ -1,15 +1,22 @@
 #include <Arduino.h>
 
-#include "MidiSerial.h"
-#include "MidiUsbIn.h"
-#include "Config.h"
+#include "HalConfiguration.h"
+#include "MidiOverSerial.h"
+#include "MidiOverUsb.h"
 #include "Menu.h"
+#include "Settings.h"
 #include "Outputs.h"
 
-CMidiSerial midiSerial;
-CMidiUsb midiUsb;
-CMenu menu("Root menu");
+/**
+ * TODO: Phase out use of MIDISerial and USB here. Only use the handler here. Serial and USB should have get functions
+ * to get the data inside the handler. This means that the handler can also contain the learn functionality.
+ */
+CSettings settings;
 COutputs outputs;
+CMidiHandler midiHandler(outputs, settings);
+CMidiSerial midiSerial(midiHandler);
+CMidiUsb midiUsb(midiHandler);
+CMenu menu("Root menu");
 
 // Interrupts
 bool rotaryEncClkLast = 0;
@@ -54,12 +61,12 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncButton), isrRotaryEncButton, CHANGE);
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncClk), isrRotaryEncorder, CHANGE);
 
+  // Load saved configuration from flash
+  //settings.loadSettings();
+
   // Initialize
   menu.init();
-  outputs.init();
-
-  // TODO: Load saved configuration
-  // ...
+  outputs.init(); // TODO: init using saved settings?
 
   // TODO: Show startup animation
   // ...
@@ -80,7 +87,7 @@ void loop()
     }
     Serial.write("Exiting menu...");
   }
-  midiSerial.update();
-  midiUsb.update();
+  midiSerial.read();
+  midiUsb.read();
   outputs.update();
 }

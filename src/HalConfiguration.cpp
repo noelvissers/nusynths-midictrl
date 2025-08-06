@@ -1,6 +1,6 @@
+#include "HalConfiguration.h"
 #include <Arduino.h>
-#include "Config.h"
-#include "Outputs.h"
+#include <cstdint>
 
 // LED
 const uint8_t _pinLed = LED_BUILTIN;
@@ -23,7 +23,6 @@ volatile bool _flagRotaryEncButton = false;
 volatile bool _flagRotaryEncCw = false;
 volatile bool _flagRotaryEncCcw = false;
 
-// TODO: Set correct DAC channels
 // CV [DAC]
 const uint8_t _dacChannelCv1 = 0;
 const uint8_t _dacChannelCv2 = 0;
@@ -46,19 +45,3 @@ const uint8_t _pinSpiCLK = PIN_SPI_SCK;
 
 const uint8_t _pinCsDisplay = 0;
 const uint8_t _pinCsDac = 0;
-
-// Trigger
-const uint8_t _triggerLengthMs = 1;
-
-// Mode
-const SynthMode _synthMode = SynthMode::Monophonic;
-
-void CConfig::saveSettings()
-{
-}
-
-void CConfig::loadSettings()
-{
-  // COutputs outputs;
-  // outputs.setOutputConfig();
-}

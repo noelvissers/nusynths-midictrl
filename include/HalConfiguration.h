@@ -2,12 +2,6 @@
 
 #include <cstdint>
 
-enum class SynthMode
-{
-  Monophonic = 0,
-  Polyphonic = 1
-};
-
 // LED
 extern const uint8_t _pinLed;
 
@@ -29,40 +23,25 @@ extern volatile bool _flagRotaryEncButton;
 extern volatile bool _flagRotaryEncCw;
 extern volatile bool _flagRotaryEncCcw;
 
-// CV
+// CV [DAC]
 extern const uint8_t _dacChannelCv1;
 extern const uint8_t _dacChannelCv2;
 extern const uint8_t _dacChannelCv3;
 extern const uint8_t _dacChannelCv4;
 
-// Gates
+// Gates [5V DIO]
 extern const uint8_t _pinGate1;
 extern const uint8_t _pinGate2;
 extern const uint8_t _pinGate3;
 extern const uint8_t _pinGate4;
-
-// Sync
+ 
+// Sync [5V DIO]
 extern const uint8_t _pinSync;
-
+ 
 // SPI
 extern const uint8_t _pinSpiMOSI;
 extern const uint8_t _pinSpiMISO;
 extern const uint8_t _pinSpiCLK;
-
+ 
 extern const uint8_t _pinCsDisplay;
 extern const uint8_t _pinCsDac;
-
-// Trigger
-extern const uint8_t _triggerLengthMs; // Length of the trigger pulse in milliseconds
-
-// Mode
-extern const SynthMode _synthMode;
-
-class CConfig
-{
-public:
-  void loadSettings();
-  void saveSettings();
-
-private:
-};

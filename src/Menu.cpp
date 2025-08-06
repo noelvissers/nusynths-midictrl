@@ -1,5 +1,5 @@
-#include <Arduino.h>
 #include "Menu.h"
+#include <Arduino.h>
 
 // MenuItem
 CMenuItem::CMenuItem(const std::string &name) : _name(name) {}
@@ -61,6 +61,7 @@ void CMenu::init()
    * │  │  ├─ Mono() [Mon]
    * │  │  └─ Poly() [Pol]
    * │  ├─ Pitch bend [Pb.]
+   * │  │  ├─ 0 semitones() [0]
    * │  │  ├─ 1 semitones() [1]
    * │  │  ├─ 2 semitones() [2]
    * │  │  ├─ ...
@@ -71,16 +72,16 @@ void CMenu::init()
    * │     └─ x div() [x]
    * ├─ Output GATE [1..4 + LED]
    * │  ├─ Gate() [Gt]
-   * │  ├─ Trigger() [Tr]
+   * │  ├─ Trigger() [Tr] → Learn MIDI note
    * │  ├─ Start/Stop() [S-S]
    * │  └─ Unassigned() [-]
    * └─ Output CV [5..8 + LED]
    *   ├─ Pitch() [Ptc]
    *   ├─ Velocity() [VEL]
-   *   ├─ CC() [CC]
+   *   ├─ CC() [CC] → Learn MIDI CC
    *   ├─ AfterTouch() [At.]
    *   ├─ Gate() [Gt]
-   *   ├─ Trigger() [Tr]
+   *   ├─ Trigger() [Tr] → Learn MIDI note
    *   ├─ Start/Stop() [S-S]
    *   └─ Unassigned() [-]
    */
