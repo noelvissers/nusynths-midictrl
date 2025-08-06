@@ -18,8 +18,6 @@ void CMidiHandler::read()
 
 bool CMidiHandler::learn(uint8_t &value, volatile bool &cancel)
 {
-  bool receivedInput = false;
-  uint8_t receivedNote, receivedCcValue;
   SMidiSerialPacket midiSerialPacket;
   SMidiUsbPacket midiUsbPacket;
 
