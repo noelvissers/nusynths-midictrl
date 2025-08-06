@@ -14,7 +14,7 @@ public:
   ~CMidiHandler() = default;
 
   void read();
-  bool learn(uint8_t &note, byte &ccValue, volatile bool &cancel);
+  bool learn(uint8_t &value, volatile bool &cancel);
 
 private:
   COutputs &mOutputs;
@@ -24,6 +24,7 @@ private:
   CMidiUsb mMidiUsb;
   
   void update(uint8_t channel, uint8_t type, byte data1, byte data2);
+  bool validateLearn(uint8_t channel, uint8_t type, byte data1, byte data2, uint8_t& learnValue);
 
   // MIDI data messages
   void midiNoteOff(byte note, byte velocity);
