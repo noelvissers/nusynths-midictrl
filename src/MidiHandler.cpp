@@ -26,8 +26,7 @@ bool CMidiHandler::learn(uint8_t &note, byte &ccValue, volatile bool &cancel)
 
 void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
 {
-  // TODO: actually filter midi channel here
-  if (channel == 0)
+  if (channel == 0 || channel == mSettings.getSettings().midiChannel)
   {
     switch (type)
     {
@@ -123,8 +122,6 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
 
 void CMidiHandler::midiNoteOn(byte note, byte velocity)
 {
-  SSettings settings = mSettings.getSettings();
-
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
     SOutput output = mOutputs.getOutput(i);
@@ -175,7 +172,7 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 
       // Exit after first active output in polyphonic mode
       // Note: If multiple triggers is mapped to the same note, only 1 will be triggered in polyphonic mode
-      if (output.isDirty && settings.synthMode == ESynthMode::Polyphonic)
+      if (output.isDirty && mSettings.getSettings().synthMode == ESynthMode::Polyphonic)
         return;
     }
   }
