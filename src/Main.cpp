@@ -70,8 +70,7 @@ void setup()
   //settings.loadSettings();
 
   // Initialize
-  menu.init();
-  outputs.init(); // TODO: init using saved settings?
+  menu.build();
 
   // TODO: Show startup animation
   // ...

@@ -1,6 +1,4 @@
 #include "MidiHandler.h"
-#include "MidiOverSerial.h"
-#include "MidiOverUsb.h"
 
 CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings)
     : mOutputs(outputs), mSettings(settings) {}

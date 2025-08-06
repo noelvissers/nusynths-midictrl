@@ -1,4 +1,5 @@
 #include "MidiOverUsb.h"
+#include <MIDIUSB.h>
 
 CMidiUsb::CMidiUsb() {}
 

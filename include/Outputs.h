@@ -45,7 +45,6 @@ public:
   COutputs();
   ~COutputs() = default;
 
-  void init();
   void update();
 
   void setOutput(uint16_t index, const SOutput &outputConfig);

@@ -46,7 +46,7 @@ bool CMenuOption::isSubMenu() const
 // Menu
 CMenu::CMenu(const std::string &name) : CSubMenu(name), _currentMenu(this), _selectedIndex(0) {}
 
-void CMenu::init()
+void CMenu::build()
 {
   // Menu structure:
   /*

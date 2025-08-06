@@ -51,7 +51,9 @@ class CMenu : public CSubMenu
 {
 public:
   CMenu(const std::string &name);
-  void init();
+  ~CMenu() = default; 
+
+  void build();
 
   void update() const;
   void waitForInput(volatile bool &next, volatile bool &prev, volatile bool &press);

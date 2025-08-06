@@ -2,6 +2,8 @@
 
 #include "Outputs.h"
 #include "Settings.h"
+#include "MidiOverSerial.h"
+#include "MidiOverUsb.h"
 #include <MIDI.h>
 #include <Arduino.h>
 

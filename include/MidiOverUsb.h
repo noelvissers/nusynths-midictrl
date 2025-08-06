@@ -1,7 +1,6 @@
 #pragma once
 
-#include "MidiHandler.h"
-#include <MIDIUSB.h>
+#include <cstdint>
 
 struct SMidiUsbPacket
 {

@@ -34,11 +34,6 @@ COutputs::COutputs()
   mOutputs[8].outputPin = _pinGate4;
 }
 
-void COutputs::init()
-{
-  // TODO: use this function for the actual initialization of the outputs based on saved configurations
-}
-
 // Write the actual values to either the DAC or IO pins
 void COutputs::update()
 {

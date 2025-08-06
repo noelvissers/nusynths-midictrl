@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MidiHandler.h"
+#include <cstdint>
 
 struct SMidiSerialPacket
 {
