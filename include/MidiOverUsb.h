@@ -16,7 +16,8 @@ public:
   CMidiUsb();
   ~CMidiUsb() = default;
 
-  bool getPacket(SMidiUsbPacket& midiEventPacket);
+  bool getPacket(SMidiUsbPacket &midiEventPacket);
+  void flush();
 
 private:
 };

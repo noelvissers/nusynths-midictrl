@@ -20,3 +20,9 @@ bool CMidiSerial::getPacket(SMidiSerialPacket &midiEventPacket)
   }
   return false;
 }
+
+void CMidiSerial::flush()
+{
+  while (MIDI.read())
+    ;
+}

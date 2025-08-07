@@ -17,6 +17,7 @@ public:
   ~CMidiSerial() = default;
 
   bool getPacket(SMidiSerialPacket& midiEventPacket);
+  void flush();
 
 private:
 };

@@ -16,3 +16,12 @@ bool CMidiUsb::getPacket(SMidiUsbPacket &midiEventPacket)
   }
   return false;
 }
+
+void CMidiUsb::flush()
+{
+  midiEventPacket_t rx;
+  do
+  {
+    rx = MidiUSB.read();
+  } while (rx.header != 0);
+}

@@ -20,6 +20,9 @@ bool CMidiHandler::learn(uint8_t &value, volatile bool &cancel)
 {
   SMidiSerialPacket midiSerialPacket;
   SMidiUsbPacket midiUsbPacket;
+  
+  // Clear midi buffers
+  midiFlush();
 
   do
   {
@@ -90,9 +93,14 @@ void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
   }
 }
 
+void CMidiHandler::midiFlush()
+{
+  mMidiSerial.flush();
+  mMidiUsb.flush();
+}
+
 bool CMidiHandler::validateLearn(uint8_t channel, uint8_t type, byte data1, byte data2, uint8_t &learnValue)
 {
-  // TODO: Clear midi buffers?
   if (channel == 0 || channel == mSettings.getSettings().midiChannel)
   {
     switch (type)

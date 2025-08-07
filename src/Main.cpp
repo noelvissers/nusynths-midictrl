@@ -9,10 +9,11 @@
 
 /**
  * TODO:
+ * - Add DAC library and implemention
  * - Finish implementing EEPROM/Flash load save functionality
  * - Finish menu handling with actual functions instead of nullptr
- * - Add GUI
- * - add briefs to all header files
+ * - Add GUI implementation
+ * - Add briefs to all header files + finish documentation in readme
  */
 
 CSettings settings;

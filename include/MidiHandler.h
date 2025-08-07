@@ -26,6 +26,8 @@ private:
   uint32_t _clkCount = 0;
   
   void update(uint8_t channel, uint8_t type, byte data1, byte data2);
+  void midiFlush();
+  
   bool validateLearn(uint8_t channel, uint8_t type, byte data1, byte data2, uint8_t& learnValue);
 
   // MIDI data messages
