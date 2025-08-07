@@ -72,16 +72,16 @@ void CMenu::build()
    * │     └─ x div() [x]
    * ├─ Output GATE [1..4 + LED]
    * │  ├─ Gate() [Gt]
-   * │  ├─ Trigger() [Tr] → Learn MIDI note
+   * │  ├─ Trigger() [Tr] → Learn MIDI note [Optional]
    * │  ├─ Start/Stop() [S-S]
    * │  └─ Unassigned() [-]
    * └─ Output CV [5..8 + LED]
    *   ├─ Pitch() [Ptc]
    *   ├─ Velocity() [VEL]
-   *   ├─ CC() [CC] → Learn MIDI CC
+   *   ├─ CC() [CC] → Learn MIDI CC [Required]
    *   ├─ AfterTouch() [At.]
    *   ├─ Gate() [Gt]
-   *   ├─ Trigger() [Tr] → Learn MIDI note
+   *   ├─ Trigger() [Tr] → Learn MIDI note [Optional]
    *   ├─ Start/Stop() [S-S]
    *   └─ Unassigned() [-]
    */

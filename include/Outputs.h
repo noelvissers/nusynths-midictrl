@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <array>
 
-constexpr uint8_t N_OUTPUTS = 9; // Total number of outputs (1 SYNC, 4 CV, 4 GATE)
+constexpr uint8_t N_OUTPUTS = 9;        // Total number of outputs (1 SYNC, 4 CV, 4 GATE)
+constexpr uint16_t OUTPUT_HIGH = 32768; // 5V for DAC, HIGH for IO
+constexpr uint16_t OUTPUT_LOW = 0;
 
 enum class EOutputType : uint8_t
 {
@@ -32,10 +34,11 @@ struct SOutput
   bool isActive = false;       // Indicates if the output is currently active (and/or can be overwritten)
   bool isDirty = true;         // Indicates if the output value has changed and needs to be updated
   uint16_t value = 0;          // Value to be written to the output
+  long pitchBend = 0;          // Pitch bend value (midpoint = 0)
   uint8_t outputPin = 0;       // GPIO pin for Gate outputs (default = 0)
   uint8_t dacChannel = 0;      // DAC channel for CV outputs (default = 0)
   bool isMapped = false;       // Indicates if the output is mapped to a specific MIDI note or CC
-  uint8_t mappedNote = 0;      // MIDI note number for triggers and CC (default = 0)
+  uint8_t mappedTo = 0;        // MIDI note number for triggers and CC (default = 0)
   unsigned long resetTime = 0; // Time when the output should be reset (used for triggers)
 };
 
@@ -52,7 +55,9 @@ public:
 
   uint16_t midiTo1VOct(uint8_t byte);
   uint16_t midiToCv(uint8_t byte);
+  long pitchBendToCv(int pitchBend, uint8_t semitones);
 
 private:
   std::array<SOutput, N_OUTPUTS> mOutputs;
+  uint16_t getPitch(uint16_t pitch, long pitchBend);
 };

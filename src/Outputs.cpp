@@ -56,7 +56,12 @@ void COutputs::update()
       switch (output.type)
       {
       case EOutputType::Analog:
-        // TODO: dacWrite(output.outputAdc, output.value);
+        uint16_t value;
+        if (output.function == EOutputFunction::Pitch)
+          value = getPitch(output.value, output.pitchBend);
+        else
+          value = output.value;
+        // TODO: dacWrite(output.dacChannel, value);
         break;
       case EOutputType::Digital:
         digitalWrite(output.outputPin, output.value > 0 ? HIGH : LOW);
@@ -99,4 +104,26 @@ uint16_t COutputs::midiTo1VOct(uint8_t byte)
 uint16_t COutputs::midiToCv(uint8_t byte)
 {
   return round(map(byte, 0, 127, 0, 65535));
+}
+
+// Map semitones to CV value
+long COutputs::pitchBendToCv(int pitchBend, uint8_t semitones)
+{
+  // 'pitchBend' is a 14 bit value, ranging from -8192 to 8191 with the center point being 0.
+  // 'semitones' is the range of pitch bend (12 semitones = 1 oct = 1V)
+
+  long maxValueDac = map(semitones, 0, 120, 0, 65535);
+  return round(map(pitchBend, -8192, 8191, -maxValueDac, maxValueDac));
+}
+
+uint16_t COutputs::getPitch(uint16_t pitch, long pitchBend)
+{
+  long totalPitch = static_cast<long>(pitch) + pitchBend;
+
+  if (pitch < 0)
+    return 0;
+  if (pitch > 65535)
+    return 65535;
+  return static_cast<uint16_t>(totalPitch);
+  ;
 }

@@ -43,37 +43,20 @@ void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
   {
     switch (type)
     {
-    case midi::InvalidType:
-      // Ignore
-      break;
     case midi::NoteOff:
       midiNoteOff(data1, data2);
       break;
     case midi::NoteOn:
       midiNoteOn(data1, data2);
       break;
-    case midi::AfterTouchPoly:
-      // Not supported
-      break;
     case midi::ControlChange:
       midiControlChange(data1, data2);
-      break;
-    case midi::ProgramChange:
-      // Not supported
       break;
     case midi::AfterTouchChannel:
       midiAfterTouchChannel(data2);
       break;
     case midi::PitchBend:
       midiPitchBend(((data2 << 7) + data1) - 8192);
-      break;
-    case midi::SystemExclusive:
-    case midi::TimeCodeQuarterFrame:
-    case midi::SongPosition:
-    case midi::SongSelect:
-    case midi::TuneRequest:
-    case midi::SystemExclusiveEnd:
-      // Ignore
       break;
     case midi::Clock:
       systemClock();
@@ -85,11 +68,20 @@ void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
     case midi::Stop:
       systemStop();
       break;
-    case midi::ActiveSensing:
-      // Ignore
-      break;
     case midi::SystemReset:
       systemReset();
+      break;
+    case midi::InvalidType:
+    case midi::AfterTouchPoly:
+    case midi::ProgramChange:
+    case midi::SystemExclusive:
+    case midi::TimeCodeQuarterFrame:
+    case midi::SongPosition:
+    case midi::SongSelect:
+    case midi::TuneRequest:
+    case midi::SystemExclusiveEnd:
+    case midi::ActiveSensing:
+      // Ignore / Not supported
       break;
     default:
       // Ignore
@@ -105,22 +97,20 @@ bool CMidiHandler::validateLearn(uint8_t channel, uint8_t type, byte data1, byte
   {
     switch (type)
     {
-    case midi::InvalidType:
-    case midi::NoteOff:
-      // Ignore
-      break;
     case midi::NoteOn:
       // Learn the note value
       learnValue = data1;
       return true;
-    case midi::AfterTouchPoly:
-      // Ignore
-      break;
     case midi::ControlChange:
       // Learn the subchannel value
       learnValue = data1;
       return true;
+    case midi::SystemReset:
+      systemReset();
       break;
+    case midi::InvalidType:
+    case midi::NoteOff:
+    case midi::AfterTouchPoly:
     case midi::ProgramChange:
     case midi::AfterTouchChannel:
     case midi::PitchBend:
@@ -136,9 +126,6 @@ bool CMidiHandler::validateLearn(uint8_t channel, uint8_t type, byte data1, byte
     case midi::Stop:
     case midi::ActiveSensing:
       // Ignore
-      break;
-    case midi::SystemReset:
-      systemReset();
       break;
     default:
       // Ignore
@@ -161,13 +148,14 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
       {
       case EOutputFunction::Pitch:
       case EOutputFunction::Velocity:
-        if (output.mappedNote == note)
+        if (output.mappedTo == note)
           output.isActive = false;
         break;
       case EOutputFunction::Gate:
-        if (output.mappedNote == note)
+        if (output.mappedTo == note)
         {
-          output.value = 0;
+          output.value = OUTPUT_LOW;
+          ;
           output.isActive = false;
           output.isDirty = true;
         }
@@ -192,32 +180,32 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
       {
       case EOutputFunction::Pitch:
         output.value = mOutputs.midiTo1VOct(note);
-        output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+        output.mappedTo = note; // Use mappedTo for checking what note triggered this output
         output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Velocity:
         output.value = mOutputs.midiToCv(velocity);
-        output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+        output.mappedTo = note; // Use mappedTo for checking what note triggered this output
         output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Gate:
-        output.value = 32768;     // 5V for DAC, HIGH for IO
-        output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+        output.value = OUTPUT_HIGH;
+        output.mappedTo = note; // Use mappedTo for checking what note triggered this output
         output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Trigger:
         if (!output.isMapped)
         {
-          output.value = 32768; // 5V for DAC, HIGH for IO
+          output.value = OUTPUT_HIGH;
           output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
-          output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+          output.mappedTo = note; // Use mappedTo for checking what note triggered this output
           output.isActive = true;
         }
-        else if (output.mappedNote == note)
+        else if (output.mappedTo == note)
         {
-          output.value = 32768; // 5V for DAC, HIGH for IO
+          output.value = OUTPUT_HIGH;
           output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
-          output.mappedNote = note; // Use mappedNote for checking what note triggered this output
+          output.mappedTo = note; // Use mappedTo for checking what note triggered this output
           output.isActive = true;
         }
         else
@@ -240,36 +228,89 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 
 void CMidiHandler::midiControlChange(byte subchannel, byte value)
 {
-  // Handle continuous controller
+  for (auto i = 0; i < N_OUTPUTS; i++)
+  {
+    SOutput output = mOutputs.getOutput(i);
+
+    if (output.function == EOutputFunction::ContinuesController && output.mappedTo == subchannel)
+    {
+      output.value = mOutputs.midiToCv(value);
+      output.isDirty = true;
+      mOutputs.setOutput(i, output);
+    }
+  }
 }
 
 void CMidiHandler::midiAfterTouchChannel(byte velocity)
 {
-  // Handle aftertouch
+  for (auto i = 0; i < N_OUTPUTS; i++)
+  {
+    SOutput output = mOutputs.getOutput(i);
+
+    if (output.function == EOutputFunction::AfterTouch)
+    {
+      output.value = mOutputs.midiToCv(velocity);
+      output.isDirty = true;
+      mOutputs.setOutput(i, output);
+    }
+  }
 }
 
 void CMidiHandler::midiPitchBend(int value)
 {
-  // Handle pitch
+  // 'value' is a 14 bit value, ranging from -8192 to 8191 with the center point being 0
+  for (auto i = 0; i < N_OUTPUTS; i++)
+  {
+    SOutput output = mOutputs.getOutput(i);
+
+    if (output.function == EOutputFunction::Pitch)
+    {
+      output.pitchBend = mOutputs.pitchBendToCv(value, mSettings.getSettings().pitchBendSemitones);
+      output.isDirty = true;
+      mOutputs.setOutput(i, output);
+    }
+  }
 }
 
 // MIDI system messages
 void CMidiHandler::systemClock()
 {
   // Handle clock/sync
+  SOutput output = mOutputs.getOutput(0);
 }
 
 void CMidiHandler::systemStart()
 {
-  // Handle start
+  for (auto i = 0; i < N_OUTPUTS; i++)
+  {
+    SOutput output = mOutputs.getOutput(i);
+
+    if (output.function == EOutputFunction::StartStop && !output.isActive)
+    {
+      output.value = OUTPUT_HIGH;
+      output.isActive = output.isDirty = true;
+      mOutputs.setOutput(i, output);
+    }
+  }
 }
 
 void CMidiHandler::systemStop()
 {
-  // Handle stop
+  for (auto i = 0; i < N_OUTPUTS; i++)
+  {
+    SOutput output = mOutputs.getOutput(i);
+
+    if (output.function == EOutputFunction::StartStop && output.isActive)
+    {
+      output.value = OUTPUT_LOW;
+      output.isActive = false;
+      output.isDirty = true;
+      mOutputs.setOutput(i, output);
+    }
+  }
 }
 
 void CMidiHandler::systemReset()
 {
-  // Implement?
+  NVIC_SystemReset();
 }
