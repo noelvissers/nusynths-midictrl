@@ -23,7 +23,7 @@ enum class EOutputFunction : uint8_t
   Gate = 5,
   Trigger = 6,
   Sync = 7,
-  StartStop = 8,
+  Reset = 8,
   Unassigned = 0
 };
 

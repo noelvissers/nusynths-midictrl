@@ -198,14 +198,12 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
         {
           output.value = OUTPUT_HIGH;
           output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
-          output.mappedTo = note; // Use mappedTo for checking what note triggered this output
           output.isActive = true;
         }
         else if (output.mappedTo == note)
         {
           output.value = OUTPUT_HIGH;
           output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
-          output.mappedTo = note; // Use mappedTo for checking what note triggered this output
           output.isActive = true;
         }
         else
@@ -275,36 +273,37 @@ void CMidiHandler::midiPitchBend(int value)
 // MIDI system messages
 void CMidiHandler::systemClock()
 {
-  // Handle clock/sync
-  SOutput output = mOutputs.getOutput(0);
+  if ((_clkCount % mSettings.getSettings().clockDiv) == 0)
+  {
+    SOutput output = mOutputs.getOutput(0);
+    output.value = OUTPUT_HIGH;
+    output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
+    output.isActive = output.isDirty = true;
+    mOutputs.setOutput(0, output);
+  }
+  _clkCount++;
 }
 
 void CMidiHandler::systemStart()
 {
-  for (auto i = 0; i < N_OUTPUTS; i++)
-  {
-    SOutput output = mOutputs.getOutput(i);
-
-    if (output.function == EOutputFunction::StartStop && !output.isActive)
-    {
-      output.value = OUTPUT_HIGH;
-      output.isActive = output.isDirty = true;
-      mOutputs.setOutput(i, output);
-    }
-  }
+  // Reset clock count. Rest is handled in systemClock()
+  _clkCount = 0;
 }
 
 void CMidiHandler::systemStop()
 {
+  // Reset clock count
+  _clkCount = 0;
+
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
     SOutput output = mOutputs.getOutput(i);
 
-    if (output.function == EOutputFunction::StartStop && output.isActive)
+    if (output.function == EOutputFunction::Reset)
     {
-      output.value = OUTPUT_LOW;
-      output.isActive = false;
-      output.isDirty = true;
+      output.value = OUTPUT_HIGH;
+      output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
+      output.isActive = output.isDirty = true;
       mOutputs.setOutput(i, output);
     }
   }

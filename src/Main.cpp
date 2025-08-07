@@ -10,11 +10,9 @@
 /**
  * TODO:
  * - Finish implementing EEPROM/Flash load save functionality
- * - Finish implementing MIDI handling
  * - Finish menu handling with actual functions instead of nullptr
  * - Add GUI
  * - add briefs to all header files
- * - Get rid of init functions and just use constructors
  */
 
 CSettings settings;

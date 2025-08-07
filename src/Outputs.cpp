@@ -40,12 +40,12 @@ void COutputs::update()
   for (auto &output : mOutputs)
   {
     // Handle reset for triggers
-    if (output.function == EOutputFunction::Trigger && output.isActive == true)
+    if (output.isActive && (output.function == EOutputFunction::Trigger || output.function == EOutputFunction::Sync || output.function == EOutputFunction::Reset))
     {
       // Handle roll-overs
       if (micros() >= output.resetTime || micros() < (output.resetTime + (TRIGGER_LENGHT_MS * 1000)))
       {
-        output.value = 0;
+        output.value = OUTPUT_LOW;
         output.isActive = false;
         output.isDirty = true;
       }

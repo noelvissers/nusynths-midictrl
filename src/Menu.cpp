@@ -69,11 +69,11 @@ void CMenu::build()
    * │  └─ Clock div [Clk]
    * │     ├─ 1 div() [1]
    * │     ├─ ...
-   * │     └─ x div() [x]
+   * │     └─ 256 div() [256]
    * ├─ Output GATE [1..4 + LED]
    * │  ├─ Gate() [Gt]
    * │  ├─ Trigger() [Tr] → Learn MIDI note [Optional]
-   * │  ├─ Start/Stop() [S-S]
+   * │  ├─ Reset() [Rst]
    * │  └─ Unassigned() [-]
    * └─ Output CV [5..8 + LED]
    *   ├─ Pitch() [Ptc]
@@ -82,7 +82,7 @@ void CMenu::build()
    *   ├─ AfterTouch() [At.]
    *   ├─ Gate() [Gt]
    *   ├─ Trigger() [Tr] → Learn MIDI note [Optional]
-   *   ├─ Start/Stop() [S-S]
+   *   ├─ Reset() [Rst]
    *   └─ Unassigned() [-]
    */
 
@@ -131,32 +131,40 @@ void CMenu::build()
           .addOption("12", nullptr); // 12 semitones
       // Clock divider
       configMenu.addSubMenu("Clk")
-          .addOption("1", nullptr); // 1:1
+          .addOption("1", nullptr)    // 1:1
+          .addOption("2", nullptr)    // /2
+          .addOption("4", nullptr)    // /4
+          .addOption("8", nullptr)    // /8
+          .addOption("16", nullptr)   // /16
+          .addOption("32", nullptr)   // /32
+          .addOption("64", nullptr)   // /64
+          .addOption("128", nullptr)  // /128
+          .addOption("256", nullptr); // /256
     }
 
     // Gate output 1
     this->addSubMenu("1")
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
     // Gate output 2
     this->addSubMenu("2")
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
     // Gate output 3
     this->addSubMenu("3")
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
     // Gate output 4
     this->addSubMenu("4")
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
 
     // CV output 1 (5)
@@ -167,7 +175,7 @@ void CMenu::build()
         .addOption("At", nullptr)  // Aftertouch
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
     // CV output 2 (6)
     this->addSubMenu("6")
@@ -177,7 +185,7 @@ void CMenu::build()
         .addOption("At", nullptr)  // Aftertouch
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
     // CV output 3 (7)
     this->addSubMenu("7")
@@ -187,7 +195,7 @@ void CMenu::build()
         .addOption("At", nullptr)  // Aftertouch
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
     // CV output 4 (8)
     this->addSubMenu("8")
@@ -197,7 +205,7 @@ void CMenu::build()
         .addOption("At", nullptr)  // Aftertouch
         .addOption("Gt", nullptr)  // Gate
         .addOption("Tr", nullptr)  // Trigger
-        .addOption("S-S", nullptr) // Start/stop
+        .addOption("Rst", nullptr) // Reset
         .addOption("-", nullptr);  // Unassigned
   }
 }
