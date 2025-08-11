@@ -3,7 +3,7 @@
 #include "Settings.h"
 #include <Arduino.h>
 
-COutputs::COutputs() : mDac(SPI, _spiSpeed, _pinDacNss, _pinDacLdac, _pinDacEnable)
+COutputs::COutputs() : mDac(SPI, _spiSpeed, _pinDacSync, _pinDacLdac, _pinDacEnable)
 {
   // Default initialization
   SOutput defaultOutput;

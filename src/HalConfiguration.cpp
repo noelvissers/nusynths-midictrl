@@ -32,11 +32,8 @@ const uint8_t _pinSync = 20; // PA06
 // SPI
 const uint32_t _spiSpeed = 24000000; // 24 MHz (Maximum SPI speed for MKRZero)
 
-// MIDI
-const uint8_t _pinMidiIn = 0; // PA22
-
 // DAC8564
-const uint8_t _pinDacNss = 7;    // PA21
+const uint8_t _pinDacSync = 7;   // PA21
 const uint8_t _pinDacLdac = 11;  // PA08
 const uint8_t _pinDacEnable = 6; // PA20
 
