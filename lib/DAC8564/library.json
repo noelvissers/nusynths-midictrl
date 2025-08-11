@@ -1,0 +1,10 @@
+{
+    "name": "DAC8564",
+    "keywords": "TI, DAC, DAC7565, DAC7564, DAC8164, DAC8564",
+    "description": "Library for Texas Instruments DAC8564. Also compatible with DAC7565, DAC7564, and DAC8164.",
+     "authors":
+    {
+        "name": "Noël Vissers"
+    },
+    "frameworks": "arduino"
+}

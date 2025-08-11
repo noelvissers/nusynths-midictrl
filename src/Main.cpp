@@ -9,7 +9,7 @@
 
 /**
  * TODO:
- * - Add DAC library and implemention
+ * - Add DAC library and implemention > probably make custom implementation since the one on githib is a bit meh
  * - Finish implementing EEPROM/Flash load save functionality
  * - Finish menu handling with actual functions instead of nullptr
  * - Add GUI implementation
@@ -69,6 +69,7 @@ void setup()
 
   // Initialize
   menu.build();
+  outputs.init();
 
   // TODO: Show startup animation
   // ...

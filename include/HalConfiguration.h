@@ -23,25 +23,25 @@ extern volatile bool _flagRotaryEncButton;
 extern volatile bool _flagRotaryEncCw;
 extern volatile bool _flagRotaryEncCcw;
 
-// CV [DAC]
-extern const uint8_t _dacChannelCv1;
-extern const uint8_t _dacChannelCv2;
-extern const uint8_t _dacChannelCv3;
-extern const uint8_t _dacChannelCv4;
-
 // Gates [5V DIO]
 extern const uint8_t _pinGate1;
 extern const uint8_t _pinGate2;
 extern const uint8_t _pinGate3;
 extern const uint8_t _pinGate4;
- 
+
 // Sync [5V DIO]
 extern const uint8_t _pinSync;
- 
+
 // SPI
-extern const uint8_t _pinSpiMOSI;
-extern const uint8_t _pinSpiMISO;
-extern const uint8_t _pinSpiCLK;
- 
+extern const uint32_t _spiSpeed;
+
+// MIDI
+extern const uint8_t _pinMidiIn;
+
+// DAC8564
+extern const uint8_t _pinDacNss;
+extern const uint8_t _pinDacLdac;
+extern const uint8_t _pinDacEnable;
+
 extern const uint8_t _pinCsDisplay;
 extern const uint8_t _pinCsDac;

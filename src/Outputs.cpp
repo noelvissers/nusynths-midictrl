@@ -3,7 +3,7 @@
 #include "Settings.h"
 #include <Arduino.h>
 
-COutputs::COutputs()
+COutputs::COutputs() : mDac(SPI, _spiSpeed, _pinDacNss, _pinDacLdac, _pinDacEnable)
 {
   // Default initialization
   SOutput defaultOutput;
@@ -14,24 +14,43 @@ COutputs::COutputs()
   // Output specific initialization
   mOutputs[0].type = EOutputType::Digital; // Sync output
   mOutputs[0].outputPin = _pinSync;
+  pinMode(_pinSync, OUTPUT);
 
   mOutputs[1].type = EOutputType::Analog;
-  mOutputs[1].dacChannel = _dacChannelCv1;
+  mOutputs[1].dacChannel = DAC8564::Channel::A;
   mOutputs[2].type = EOutputType::Analog;
-  mOutputs[2].dacChannel = _dacChannelCv2;
+  mOutputs[2].dacChannel = DAC8564::Channel::B;
   mOutputs[3].type = EOutputType::Analog;
-  mOutputs[3].dacChannel = _dacChannelCv3;
+  mOutputs[3].dacChannel = DAC8564::Channel::C;
   mOutputs[4].type = EOutputType::Analog;
-  mOutputs[4].dacChannel = _dacChannelCv4;
+  mOutputs[4].dacChannel = DAC8564::Channel::D;
 
   mOutputs[5].type = EOutputType::Digital;
   mOutputs[5].outputPin = _pinGate1;
+  pinMode(_pinGate1, OUTPUT);
   mOutputs[6].type = EOutputType::Digital;
   mOutputs[6].outputPin = _pinGate2;
+  pinMode(_pinGate2, OUTPUT);
   mOutputs[7].type = EOutputType::Digital;
   mOutputs[7].outputPin = _pinGate3;
+  pinMode(_pinGate3, OUTPUT);
   mOutputs[8].type = EOutputType::Digital;
   mOutputs[8].outputPin = _pinGate4;
+  pinMode(_pinGate4, OUTPUT);
+}
+
+// Initialize outputs and DAC
+void COutputs::init()
+{
+  // Digital outputs
+  digitalWrite(_pinSync, LOW);
+  digitalWrite(_pinGate1, LOW);
+  digitalWrite(_pinGate2, LOW);
+  digitalWrite(_pinGate3, LOW);
+  digitalWrite(_pinGate4, LOW);
+
+  mDac.begin();
+  mDac.enable();
 }
 
 // Write the actual values to either the DAC or IO pins
@@ -61,7 +80,7 @@ void COutputs::update()
           value = getPitch(output.value, output.pitchBend);
         else
           value = output.value;
-        // TODO: dacWrite(output.dacChannel, value);
+        mDac.write(output.dacChannel, value);
         break;
       case EOutputType::Digital:
         digitalWrite(output.outputPin, output.value > 0 ? HIGH : LOW);

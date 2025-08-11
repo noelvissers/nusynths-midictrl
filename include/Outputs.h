@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SPI.h>
+#include <DAC8564.h>
 #include <cstdint>
 #include <array>
 
@@ -31,15 +33,15 @@ struct SOutput
 {
   EOutputType type = EOutputType::Undefined;
   EOutputFunction function = EOutputFunction::Unassigned;
-  bool isActive = false;       // Indicates if the output is currently active (and/or can be overwritten)
-  bool isDirty = true;         // Indicates if the output value has changed and needs to be updated
-  uint16_t value = 0;          // Value to be written to the output
-  long pitchBend = 0;          // Pitch bend value (midpoint = 0)
-  uint8_t outputPin = 0;       // GPIO pin for Gate outputs (default = 0)
-  uint8_t dacChannel = 0;      // DAC channel for CV outputs (default = 0)
-  bool isMapped = false;       // Indicates if the output is mapped to a specific MIDI note or CC
-  uint8_t mappedTo = 0;        // MIDI note number for triggers and CC (default = 0)
-  unsigned long resetTime = 0; // Time when the output should be reset (used for triggers)
+  bool isActive = false;                             // Indicates if the output is currently active (and/or can be overwritten)
+  bool isDirty = true;                               // Indicates if the output value has changed and needs to be updated
+  uint16_t value = 0;                                // Value to be written to the output
+  long pitchBend = 0;                                // Pitch bend value (midpoint = 0)
+  uint8_t outputPin = 0;                             // GPIO pin for Gate outputs (default = 0)
+  DAC8564::Channel dacChannel = DAC8564::Channel::A; // DAC channel for CV outputs (default = A)
+  bool isMapped = false;                             // Indicates if the output is mapped to a specific MIDI note or CC
+  uint8_t mappedTo = 0;                              // MIDI note number for triggers and CC (default = 0)
+  unsigned long resetTime = 0;                       // Time when the output should be reset (used for triggers)
 };
 
 class COutputs
@@ -48,6 +50,7 @@ public:
   COutputs();
   ~COutputs() = default;
 
+  void init();
   void update();
 
   void setOutput(uint16_t index, const SOutput &outputConfig);
@@ -58,6 +61,7 @@ public:
   long pitchBendToCv(int pitchBend, uint8_t semitones);
 
 private:
+  DAC8564 mDac;
   std::array<SOutput, N_OUTPUTS> mOutputs;
   uint16_t getPitch(uint16_t pitch, long pitchBend);
 };
