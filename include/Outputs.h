@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <array>
 
-constexpr uint8_t N_OUTPUTS = 9;        // Total number of outputs (1 SYNC, 4 CV, 4 GATE)
-constexpr uint16_t OUTPUT_HIGH = 32768; // 5V for DAC, HIGH for IO
-constexpr uint16_t OUTPUT_LOW = 0;
+#define N_OUTPUTS 9       // Total number of outputs (1 SYNC, 4 CV, 4 GATE)
+#define OUTPUT_HIGH 32768 // 5V for DAC, HIGH for IO
+#define OUTPUT_LOW 0
 
 enum class EOutputType : uint8_t
 {
