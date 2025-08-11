@@ -2,9 +2,6 @@
 
 #include <cstdint>
 
-// LED
-extern const uint8_t _pinLed;
-
 // Rotary encoder
 extern const uint8_t _pinRotaryEncButton;
 extern const uint8_t _pinRotaryEncClk;

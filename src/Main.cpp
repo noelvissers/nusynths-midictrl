@@ -6,10 +6,8 @@
 #include "Settings.h"
 #include "Outputs.h"
 
-
 /**
  * TODO:
- * - Add DAC library and implemention > probably make custom implementation since the one on githib is a bit meh
  * - Finish implementing EEPROM/Flash load save functionality
  * - Finish menu handling with actual functions instead of nullptr
  * - Add GUI implementation
@@ -56,6 +54,7 @@ void setup()
   Serial.begin(115200);
 
   // Pin modes
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(_pinRotaryEncButton, INPUT);
   pinMode(_pinRotaryEncClk, INPUT);
   pinMode(_pinRotaryEncData, INPUT);
@@ -68,6 +67,7 @@ void setup()
   //settings.loadSettings();
 
   // Initialize
+  digitalWrite(LED_BUILTIN, HIGH); // Turn on LED
   menu.build();
   outputs.init();
 

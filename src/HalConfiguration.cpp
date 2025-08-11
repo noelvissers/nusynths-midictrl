@@ -2,9 +2,6 @@
 #include <Arduino.h>
 #include <cstdint>
 
-// LED
-const uint8_t _pinLed = LED_BUILTIN;
-
 // Rotary encoder
 const uint8_t _pinRotaryEncButton = 5; // PB11
 const uint8_t _pinRotaryEncClk = 4;    // PB10
