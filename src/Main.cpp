@@ -12,6 +12,7 @@
  * - Finish menu handling with actual functions instead of nullptr
  * - Add GUI implementation
  * - Add briefs to all header files + finish documentation in readme
+ * - Add override for midi when note is pressed (only for monophonic mode, so latest doesnt have to be tracked)
  */
 
 CSettings settings;
@@ -63,7 +64,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncButton), isrRotaryEncButton, CHANGE);
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncClk), isrRotaryEncorder, CHANGE);
 
-  // Load saved configuration from flash
+  // TODO: Load saved configuration from flash
   //settings.loadSettings();
 
   // Initialize

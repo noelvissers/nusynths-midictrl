@@ -50,14 +50,50 @@ public:
   COutputs();
   ~COutputs() = default;
 
+  /**
+   * @brief This function sets up the DAC and initializes all digital output pins.
+   */
   void init();
+
+  /**
+   * @brief This function updates the outputs based on their current state.
+   */
   void update();
 
+  /**
+   * @brief Sets the configuration for a specific output.
+   * @param index The index of the output to set (0 to N_OUTPUTS-1).
+   * @param outputConfig The configuration for the output.
+   */
   void setOutput(uint16_t index, const SOutput &outputConfig);
+
+  /**
+   * @brief Gets the configuration for a specific output.
+   * @param index The index of the output to get (0 to N_OUTPUTS-1).
+   * @return The configuration for the output.
+   */
   SOutput getOutput(uint16_t index) const;
 
+  /**
+   * @brief Maps a MIDI note to a 16 bit 1V/Oct value for the DAC.
+   * @param byte The MIDI note number (0-127).
+   * @return The CV value (0-65535).
+   */
   uint16_t midiTo1VOct(uint8_t byte);
+
+  /**
+   * @brief Maps a MIDI value to a 16 bit value for the DAC.
+   * @param byte The MIDI value (0-127).
+   * @return The CV value (0-65535).
+   */
   uint16_t midiToCv(uint8_t byte);
+
+  /**
+   * @brief Maps the MIDI pitch bend value to a 16 bit value.
+   * @param pitchBend The MIDI pitch bend value (14 bit, -8192 to 8191).
+   * @param semitones The range of pitch bend in semitones.
+   * @return The pitch bend value (32 bit, -65535 to 65535).
+   */
   long pitchBendToCv(int pitchBend, uint8_t semitones);
 
 private:

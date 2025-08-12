@@ -53,7 +53,6 @@ void COutputs::init()
   mDac.enable();
 }
 
-// Write the actual values to either the DAC or IO pins
 void COutputs::update()
 {
   for (auto &output : mOutputs)
@@ -108,7 +107,6 @@ SOutput COutputs::getOutput(uint16_t index) const
   return output;
 }
 
-// Map MIDI note to 1V/Oct value
 uint16_t COutputs::midiTo1VOct(uint8_t byte)
 {
   if (byte < 12 || byte > 127)
@@ -119,13 +117,11 @@ uint16_t COutputs::midiTo1VOct(uint8_t byte)
   return round(map(byte, 12, 132, 0, 65535));
 }
 
-// Map MIDI data to CV value
 uint16_t COutputs::midiToCv(uint8_t byte)
 {
   return round(map(byte, 0, 127, 0, 65535));
 }
 
-// Map semitones to CV value
 long COutputs::pitchBendToCv(int pitchBend, uint8_t semitones)
 {
   // 'pitchBend' is a 14 bit value, ranging from -8192 to 8191 with the center point being 0.
