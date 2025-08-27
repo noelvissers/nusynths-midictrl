@@ -51,12 +51,12 @@ public:
   ~COutputs() = default;
 
   /**
-   * @brief This function sets up the DAC and initializes all digital output pins.
+   * @brief Sets up the DAC and initializes all digital output pins.
    */
   void init();
 
   /**
-   * @brief This function updates the outputs based on their current state.
+   * @brief Updates the outputs based on their current state.
    */
   void update();
 
