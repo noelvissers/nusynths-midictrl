@@ -16,7 +16,16 @@ public:
   CMidiSerial();
   ~CMidiSerial() = default;
 
-  bool getPacket(SMidiSerialPacket& midiEventPacket);
+  /**
+   * @brief Gets a MIDI packet.
+   * @param midiEventPacket pointer to event packet struct.
+   * @return Returns true if successful.
+   */
+  bool getPacket(SMidiSerialPacket &midiEventPacket);
+
+  /**
+   * @brief Flushes all MIDI packets.
+   */
   void flush();
 
 private:

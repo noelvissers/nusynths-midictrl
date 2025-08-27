@@ -16,7 +16,16 @@ public:
   CMidiUsb();
   ~CMidiUsb() = default;
 
+  /**
+   * @brief Gets a USB MIDI packet.
+   * @param midiEventPacket pointer to event packet struct.
+   * @return Returns true if successful.
+   */
   bool getPacket(SMidiUsbPacket &midiEventPacket);
+
+  /**
+   * @brief Flushes all MIDI packets.
+   */
   void flush();
 
 private:
