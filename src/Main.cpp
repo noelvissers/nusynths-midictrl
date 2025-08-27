@@ -72,9 +72,9 @@ void setup()
   menu.build();
   outputs.init();
 
-  // Load saved configuration from flash
-  if (settings.load())
-    outputs.setOutputs(settings.get());
+  // Load saved configuration from flash (or default when no settings found)
+  settings.load();
+  outputs.setOutputs(settings.get());
   
   // TODO: Show startup animation
   // ...
@@ -93,6 +93,7 @@ void loop()
       menu.waitForInput(_flagRotaryEncCw, _flagRotaryEncCcw, _flagRotaryEncButton);
       menu.handleInput();
     }
+    settings.save();
     Serial.write("Exiting menu...");
   }
   midiHandler.read();

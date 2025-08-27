@@ -21,6 +21,13 @@ struct SSettings
   std::array<EOutputFunction, 9> outputFunctions;
   std::array<bool, 9> outputIsMapped;
   std::array<uint8_t, 9> outputMappedTo;
+
+  SSettings()
+  {
+    outputFunctions.fill(EOutputFunction::Unassigned);
+    outputIsMapped.fill(false);
+    outputMappedTo.fill(0);
+  }
 };
 
 const uint32_t SETTINGS_SIGNATURE = 0x0B00B1E5;
@@ -35,7 +42,7 @@ public:
   /**
    * @brief Load settings from flash
    */
-  bool load();
+  void load();
 
   /**
    * @brief Save settings to flash
