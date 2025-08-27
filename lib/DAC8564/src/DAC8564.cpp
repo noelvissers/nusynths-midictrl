@@ -106,22 +106,6 @@ bool DAC8564::setReferenceMode(ReferenceMode mode)
   return write(data);
 }
 
-bool DAC8564::setLdacMask(uint8_t mask)
-{
-  if (!_active)
-    return false;
-
-  uint8_t cmdByte = CMD_LDAC_MASK;
-  uint8_t highData = 0x00;
-  uint8_t lowData = mask & 0x0F; // 4-bit mask
-
-  uint32_t data = ((uint32_t)cmdByte << 16) |
-                  ((uint32_t)highData << 8) |
-                  (uint32_t)lowData;
-
-  return write(data);
-}
-
 bool DAC8564::reset()
 {
   if (!_active)
@@ -134,19 +118,6 @@ bool DAC8564::reset()
   uint32_t data = ((uint32_t)cmdByte << 16) |
                   ((uint32_t)highData << 8) |
                   (uint32_t)lowData;
-
-  return write(data);
-}
-
-bool DAC8564::setClearCode(uint16_t value)
-{
-  if (!_active)
-    return false;
-
-  uint8_t cmdByte = CMD_SET_CLEAR_CODE;
-  uint32_t data = ((uint32_t)cmdByte << 16) |
-                  ((uint32_t)(value >> 8) << 8) |
-                  (uint32_t)(value & 0xFF);
 
   return write(data);
 }
