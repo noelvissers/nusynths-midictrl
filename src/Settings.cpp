@@ -3,26 +3,34 @@
 
 CSettings::CSettings()
 {
-  // Default initialization
-  SSettings defaultSettings;
-  mSettings = defaultSettings;
 }
 
 // Load settings from flash
-void CSettings::loadSettings(SSettings &settings)
+bool CSettings::load()
 {
-  // TODO: implementation of loadSettings
+  int signature;
+  EEPROM.get(SETTINGS_ADDRESS, signature);
+
+  if (signature == SETTINGS_SIGNATURE)
+  {
+    // Valid signature, load settings
+    EEPROM.get(SETTINGS_ADDRESS + sizeof(signature), mSettings);
+    return true;
+  }
+  return false;
 }
 
 // Save settings to flash
-// WARNING: Flash can perform a limited amount of write cycles to the same block.
-// Make sure to limit writing cycles as much as possible.
-void CSettings::saveSettings(const SSettings &settings)
+void CSettings::save()
 {
-  // TODO: implementation of saveSettings
+  EEPROM.put(SETTINGS_ADDRESS, SETTINGS_SIGNATURE);
+  EEPROM.put(SETTINGS_ADDRESS + sizeof(SETTINGS_SIGNATURE), mSettings);
+
+  if (!EEPROM.getCommitASAP())
+    EEPROM.commit();
 }
 
-SSettings CSettings::getSettings() const
+SSettings &CSettings::get()
 {
   return mSettings;
 }

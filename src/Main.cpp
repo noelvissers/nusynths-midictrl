@@ -8,7 +8,10 @@
 
 /**
  * TODO:
- * - Finish implementing EEPROM/Flash load save functionality
+ * - Finish implementing EEPROM/Flash save functionality
+ *     > Make checksum of settings when loading menu
+ *     > Make checksum of settings when exiting menu
+ *     > Save settings to flash when exiting menu if changed
  * - Finish menu handling with actual functions instead of nullptr
  * - Add GUI implementation
  * - Add briefs to all header files + finish documentation in readme
@@ -64,13 +67,24 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncButton), isrRotaryEncButton, CHANGE);
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncClk), isrRotaryEncorder, CHANGE);
 
-  // TODO: Load saved configuration from flash
-  //settings.loadSettings();
-
   // Initialize
   digitalWrite(LED_BUILTIN, HIGH); // Turn on LED
   menu.build();
   outputs.init();
+
+  // Load saved configuration from flash
+  if (settings.load())
+  {
+    for (auto i = 0; i < N_OUTPUTS; i++)
+    {
+      SOutput output = outputs.getOutput(i);
+
+      output.function = settings.get().outputFunctions[i];
+      output.isMapped = settings.get().outputIsMapped[i];
+      output.mappedTo = settings.get().outputMappedTo[i];
+      outputs.setOutput(i, output);
+    }
+  }
 
   // TODO: Show startup animation
   // ...

@@ -18,7 +18,7 @@ public:
 
   /**
    * @brief Gets a MIDI packet.
-   * @param midiEventPacket pointer to event packet struct.
+   * @param midiEventPacket Reference to event packet struct.
    * @return Returns true if successful.
    */
   bool getPacket(SMidiSerialPacket &midiEventPacket);

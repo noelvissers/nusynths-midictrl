@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include "Outputs.h"
 
-constexpr int TRIGGER_LENGHT_MS = 1; // Default trigger length in milliseconds
+constexpr int TRIGGER_LENGHT_MS = 1; // Trigger length in milliseconds
 
 enum class ESynthMode
 {
@@ -17,8 +18,13 @@ struct SSettings
   ESynthMode synthMode = ESynthMode::Monophonic;
   uint8_t pitchBendSemitones = 12;
   uint8_t clockDiv = 1;
-  // TODO: Also add output settings here
+  std::array<EOutputFunction, 9> outputFunctions;
+  std::array<bool, 9> outputIsMapped;
+  std::array<uint8_t, 9> outputMappedTo;
 };
+
+const uint32_t SETTINGS_SIGNATURE = 0x0B00B1E5;
+const uint32_t SETTINGS_ADDRESS = 0x0;
 
 class CSettings
 {
@@ -26,10 +32,23 @@ public:
   CSettings();
   ~CSettings() = default;
 
-  void loadSettings(SSettings& settings);
-  void saveSettings(const SSettings& settings);
-  SSettings getSettings() const;
+  /**
+   * @brief Load settings from flash
+   */
+  bool load();
+
+  /**
+   * @brief Save settings to flash
+   * @warning Flash can perform a limited amount of write cycles to the same block, make sure to limit writing cycles as much as possible.
+   */
+  void save();
+
+  /**
+   * @brief Get the current settings
+   * @return Current settings structure
+   */
+  SSettings& get();
 
 private:
-  SSettings mSettings; 
+  SSettings mSettings;
 };

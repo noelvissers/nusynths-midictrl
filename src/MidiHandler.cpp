@@ -42,7 +42,7 @@ bool CMidiHandler::learn(uint8_t &value, volatile bool &cancel)
 
 void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
 {
-  if (channel == 0 || channel == mSettings.getSettings().midiChannel)
+  if (channel == 0 || channel == mSettings.get().midiChannel)
   {
     switch (type)
     {
@@ -101,7 +101,7 @@ void CMidiHandler::midiFlush()
 
 bool CMidiHandler::validateLearn(uint8_t channel, uint8_t type, byte data1, byte data2, uint8_t &learnValue)
 {
-  if (channel == 0 || channel == mSettings.getSettings().midiChannel)
+  if (channel == 0 || channel == mSettings.get().midiChannel)
   {
     switch (type)
     {
@@ -226,7 +226,7 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 
       // Exit after first active output in polyphonic mode
       // Note: If multiple triggers is mapped to the same note, only 1 will be triggered in polyphonic mode
-      if (output.isDirty && mSettings.getSettings().synthMode == ESynthMode::Polyphonic)
+      if (output.isDirty && mSettings.get().synthMode == ESynthMode::Polyphonic)
         return;
     }
   }
@@ -271,7 +271,7 @@ void CMidiHandler::midiPitchBend(int value)
 
     if (output.function == EOutputFunction::Pitch)
     {
-      output.pitchBend = mOutputs.pitchBendToCv(value, mSettings.getSettings().pitchBendSemitones);
+      output.pitchBend = mOutputs.pitchBendToCv(value, mSettings.get().pitchBendSemitones);
       output.isDirty = true;
       mOutputs.setOutput(i, output);
     }
@@ -281,7 +281,7 @@ void CMidiHandler::midiPitchBend(int value)
 // MIDI system messages
 void CMidiHandler::systemClock()
 {
-  if ((_clkCount % mSettings.getSettings().clockDiv) == 0)
+  if ((_clkCount % mSettings.get().clockDiv) == 0)
   {
     SOutput output = mOutputs.getOutput(0);
     output.value = OUTPUT_HIGH;
