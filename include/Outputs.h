@@ -4,6 +4,7 @@
 #include <DAC8564.h>
 #include <cstdint>
 #include <array>
+#include "Settings.h"
 
 #define N_OUTPUTS 9       // Total number of outputs (1 SYNC, 4 CV, 4 GATE)
 #define OUTPUT_HIGH 32768 // 5V for DAC, HIGH for IO
@@ -59,6 +60,12 @@ public:
    * @brief Updates the outputs based on their current state.
    */
   void update();
+
+  /**
+   * @brief Sets the configuration for a the outputs based on stored settings.
+   * @param settings Reference to settings structure.
+   */
+  void setOutputs(const SSettings &settings);
 
   /**
    * @brief Sets the configuration for a specific output.

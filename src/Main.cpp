@@ -74,18 +74,8 @@ void setup()
 
   // Load saved configuration from flash
   if (settings.load())
-  {
-    for (auto i = 0; i < N_OUTPUTS; i++)
-    {
-      SOutput output = outputs.getOutput(i);
-
-      output.function = settings.get().outputFunctions[i];
-      output.isMapped = settings.get().outputIsMapped[i];
-      output.mappedTo = settings.get().outputMappedTo[i];
-      outputs.setOutput(i, output);
-    }
-  }
-
+    outputs.setOutputs(settings.get());
+  
   // TODO: Show startup animation
   // ...
 }

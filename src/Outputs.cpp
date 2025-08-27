@@ -1,6 +1,5 @@
 #include "Outputs.h"
 #include "HalConfiguration.h"
-#include "Settings.h"
 #include <Arduino.h>
 
 COutputs::COutputs() : mDac(SPI, _spiSpeed, _pinDacSync, _pinDacLdac, _pinDacEnable)
@@ -89,6 +88,20 @@ void COutputs::update()
       }
       output.isDirty = false;
     }
+  }
+}
+
+void COutputs::setOutputs(const SSettings &settings)
+{
+  for (auto i = 0; i < N_OUTPUTS; i++)
+  {
+    SOutput output = mOutputs[i];
+
+    mOutputs[i].function = settings.outputFunctions[i];
+    mOutputs[i].isMapped = settings.outputIsMapped[i];
+    mOutputs[i].mappedTo = settings.outputMappedTo[i];
+    
+    setOutput(i, output);
   }
 }
 
