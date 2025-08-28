@@ -4,11 +4,12 @@
 #include <DAC8564.h>
 #include <cstdint>
 #include <array>
-#include "Settings.h"
 
 #define N_OUTPUTS 9       // Total number of outputs (1 SYNC, 4 CV, 4 GATE)
 #define OUTPUT_HIGH 32768 // 5V for DAC, HIGH for IO
 #define OUTPUT_LOW 0
+
+struct SSettings; // Forward declaration from Settings.h
 
 enum class EOutputType : uint8_t
 {

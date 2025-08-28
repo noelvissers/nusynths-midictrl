@@ -1,4 +1,5 @@
 #include "Outputs.h"
+#include "Settings.h"
 #include "HalConfiguration.h"
 #include <Arduino.h>
 
@@ -100,7 +101,7 @@ void COutputs::setOutputs(const SSettings &settings)
     mOutputs[i].function = settings.outputFunctions[i];
     mOutputs[i].isMapped = settings.outputIsMapped[i];
     mOutputs[i].mappedTo = settings.outputMappedTo[i];
-    
+
     setOutput(i, output);
   }
 }
@@ -153,5 +154,4 @@ uint16_t COutputs::getPitch(uint16_t pitch, long pitchBend)
   if (pitch > 65535)
     return 65535;
   return static_cast<uint16_t>(totalPitch);
-  ;
 }

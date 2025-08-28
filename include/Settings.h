@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 #include "Outputs.h"
 
 constexpr int TRIGGER_LENGHT_MS = 1; // Trigger length in milliseconds
