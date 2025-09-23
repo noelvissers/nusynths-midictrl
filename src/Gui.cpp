@@ -5,22 +5,11 @@
 #define OP_SHUTDOWN 12
 #define OP_DISPLAYTEST 15
 
-CGui::CGui(int pinSck, int pinMosi, int pinSs)
+CGui::CGui(int pinSs, int pinSck, int pinMosi)
 {
-  // Software SPI
+  SPI_SS = pinSs;
   SPI_SCK = pinSck;
   SPI_MOSI = pinMosi;
-  SPI_SS = pinSs;
-
-  init();
-}
-
-CGui::CGui(int pinCs)
-{
-  // Hardware SPI
-  SPI_SCK = PIN_SPI_SCK;
-  SPI_MOSI = PIN_SPI_MOSI;
-  SPI_SS = pinCs;
 
   init();
 }

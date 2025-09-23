@@ -76,14 +76,15 @@ namespace GUI
   const byte CHAR_y = 0b00111011;
   const byte CHAR_Z = 0b01101101;
   const byte CHAR_z = 0b01101101;
-  const byte CHAR_dash = 0b00000001;
+
+  const byte DASH = 0b00000001;
+  const byte EMPTY = 0b00000001;
 }
 
 class CGui
 {
 public:
-  CGui(int pinSck, int pinMosi, int pinSs);
-  CGui(int pinSs);
+  CGui(int pinSs, int pinSck = PIN_SPI_SCK, int pinMosi = PIN_SPI_MOSI);
   ~CGui() = default;
 
   void setLed(int digit, int value, bool dot = false);
