@@ -93,10 +93,7 @@ public:
   void clear();
 
 private:
-  void init();
-  byte spiData[16];
   void spiTransfer(byte opcode, byte data);
-  byte status[64];
 
   int SPI_SCK;
   int SPI_MOSI;

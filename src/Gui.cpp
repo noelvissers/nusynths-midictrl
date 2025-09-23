@@ -11,7 +11,16 @@ CGui::CGui(int pinSs, int pinSck, int pinMosi)
   SPI_SCK = pinSck;
   SPI_MOSI = pinMosi;
 
-  init();
+  pinMode(SPI_SCK, OUTPUT);
+  pinMode(SPI_MOSI, OUTPUT);
+  pinMode(SPI_SS, OUTPUT);
+
+  digitalWrite(SPI_SS, HIGH); // Disable device
+
+  spiTransfer(OP_DISPLAYTEST, 0);
+  spiTransfer(OP_DECODEMODE, 0);
+  clear();
+  shutdown(true);
 }
 
 void CGui::setLed(int digit, int value, bool dot)
@@ -41,20 +50,6 @@ void CGui::clear()
 {
   for (int i = 0; i < 8; i++)
     spiTransfer(i + 1, 0);
-}
-
-void CGui::init()
-{
-  pinMode(SPI_SCK, OUTPUT);
-  pinMode(SPI_MOSI, OUTPUT);
-  pinMode(SPI_SS, OUTPUT);
-
-  digitalWrite(SPI_SS, HIGH); // Disable device
-
-  spiTransfer(OP_DISPLAYTEST, 0);
-  spiTransfer(OP_DECODEMODE, 0);
-  clear();
-  shutdown(true);
 }
 
 void CGui::spiTransfer(volatile byte opcode, volatile byte data)
