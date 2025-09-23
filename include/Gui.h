@@ -18,8 +18,7 @@ namespace GUI
 class CGui
 {
 public:
-  CGui(int pinSck, int pinMosi, int pinSs);
-  CGui(int pinSs, int pinSck, int pinMosi);
+  CGui(int pinSs, int pinSck = PIN_SPI_SCK, int pinMosi = PIN_SPI_MOSI);
   ~CGui() = default;
 
   void setString(const std::string &str);
