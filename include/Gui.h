@@ -19,7 +19,7 @@ class CGui
 {
 public:
   CGui(int pinSck, int pinMosi, int pinSs);
-  CGui(int pinSs);
+  CGui(int pinSs, int pinSck, int pinMosi);
   ~CGui() = default;
 
   void setString(const std::string &str);
@@ -29,10 +29,7 @@ public:
   void clear();
 
 private:
-  void init();
-  byte spiData[16];
   void spiTransfer(byte opcode, byte data);
-  byte status[64];
 
   int SPI_SCK;
   int SPI_MOSI;

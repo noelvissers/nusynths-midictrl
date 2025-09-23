@@ -71,6 +71,7 @@ void COutputs::update()
 
     if (output.isDirty)
     {
+      // TODO: Also set LEDs
       switch (output.type)
       {
       case EOutputType::Analog:
