@@ -20,7 +20,7 @@ bool CMidiHandler::learn(uint8_t &value, volatile bool &cancel)
 {
   SMidiSerialPacket midiSerialPacket;
   SMidiUsbPacket midiUsbPacket;
-  
+
   // Clear midi buffers
   midiFlush();
 
@@ -163,7 +163,6 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
         if (output.mappedTo == note)
         {
           output.value = OUTPUT_LOW;
-          ;
           output.isActive = false;
           output.isDirty = true;
         }
@@ -189,12 +188,16 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
       case EOutputFunction::Pitch:
         output.value = mOutputs.midiTo1VOct(note);
         output.mappedTo = note; // Use mappedTo for checking what note triggered this output
-        output.isActive = output.isDirty = true;
+        if (mSettings.get().synthMode == ESynthMode::Monophonic)
+          output.isActive = false; // Don't set to active in monophonic mode, so it is overwritten by the next note
+        output.isDirty = true;
         break;
       case EOutputFunction::Velocity:
         output.value = mOutputs.midiToCv(velocity);
         output.mappedTo = note; // Use mappedTo for checking what note triggered this output
-        output.isActive = output.isDirty = true;
+        if (mSettings.get().synthMode == ESynthMode::Monophonic)
+          output.isActive = false; // Don't set to active in monophonic mode, so it is overwritten by the next note
+        output.isDirty = true;
         break;
       case EOutputFunction::Gate:
         output.value = OUTPUT_HIGH;
@@ -225,7 +228,7 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
       mOutputs.setOutput(i, output);
 
       // Exit after first active output in polyphonic mode
-      // Note: If multiple triggers is mapped to the same note, only 1 will be triggered in polyphonic mode
+      // Note: If multiple triggers are mapped to the same note, only 1 will be triggered in polyphonic mode
       if (output.isDirty && mSettings.get().synthMode == ESynthMode::Polyphonic)
         return;
     }
