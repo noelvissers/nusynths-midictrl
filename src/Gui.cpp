@@ -8,7 +8,7 @@
 #define OP_SHUTDOWN 12
 #define OP_DISPLAYTEST 15
 
-CGui::CGui(int pinMosi, int pinSs, int pinSck)
+CGui::CGui(int pinSs, int pinSck, int pinMosi)
 {
   SPI_SS = pinSs;
   SPI_SCK = pinSck;
