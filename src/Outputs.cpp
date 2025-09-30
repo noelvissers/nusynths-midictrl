@@ -19,24 +19,32 @@ COutputs::COutputs(CGui &gui)
 
   mOutputs[1].type = EOutputType::Analog;
   mOutputs[1].dacChannel = DAC8564::Channel::A;
+  mOutputs[1].ledMask = 0b01000000;
   mOutputs[2].type = EOutputType::Analog;
   mOutputs[2].dacChannel = DAC8564::Channel::B;
+  mOutputs[2].ledMask = 0b00100000;
   mOutputs[3].type = EOutputType::Analog;
   mOutputs[3].dacChannel = DAC8564::Channel::C;
+  mOutputs[3].ledMask = 0b00010000;
   mOutputs[4].type = EOutputType::Analog;
   mOutputs[4].dacChannel = DAC8564::Channel::D;
+  mOutputs[4].ledMask = 0b00001000;
 
   mOutputs[5].type = EOutputType::Digital;
   mOutputs[5].outputPin = _pinGate1;
+  mOutputs[5].ledMask = 0b00000100;
   pinMode(_pinGate1, OUTPUT);
   mOutputs[6].type = EOutputType::Digital;
   mOutputs[6].outputPin = _pinGate2;
+  mOutputs[6].ledMask = 0b00000010;
   pinMode(_pinGate2, OUTPUT);
   mOutputs[7].type = EOutputType::Digital;
   mOutputs[7].outputPin = _pinGate3;
+  mOutputs[7].ledMask = 0b00000001;
   pinMode(_pinGate3, OUTPUT);
   mOutputs[8].type = EOutputType::Digital;
   mOutputs[8].outputPin = _pinGate4;
+  mOutputs[8].ledMask = 0b10000000;
   pinMode(_pinGate4, OUTPUT);
 }
 
@@ -88,6 +96,7 @@ void COutputs::update()
       default:
         break;
       }
+      mGui.setOutputLed(output.ledMask, output.value > 0 ? true : false);
       output.isDirty = false;
     }
   }

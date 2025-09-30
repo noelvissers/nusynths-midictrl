@@ -218,7 +218,7 @@ void CMenu::update() const
 
   // TODO: Implement GUI function to print string or leds based on menu structure
   //            7seg, leds
-  // gui.render(ABC,  0b00000001);
+  // mGui.render(ABC,  0b00000001);
 
   // if (!_currentMenu) return;
   // std::cout << "--- " << _currentMenu->getName() << " ---\n";

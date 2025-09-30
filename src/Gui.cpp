@@ -42,7 +42,7 @@ void CGui::startup()
   delay(250);
   setLed(3, 0b01000100);
   delay(250);
-  
+
   // n
   setLed(0, 0b00000100);
   delay(250);
@@ -50,7 +50,7 @@ void CGui::startup()
   delay(250);
   setLed(0, 0b00010101);
   delay(250);
-  
+
   // u
   setLed(1, 0b00000100);
   delay(250);
@@ -147,6 +147,16 @@ void CGui::setString(const std::string &str)
     setLed(j, data);
     j++;
   }
+}
+
+void CGui::setOutputLed(uint8_t mask, bool state)
+{
+  if (state)
+    mOutputLeds |= mask;
+  else
+    mOutputLeds &= ~mask;
+
+  setLed(3, mOutputLeds);
 }
 
 void CGui::setLed(int digit, int value, bool dot)

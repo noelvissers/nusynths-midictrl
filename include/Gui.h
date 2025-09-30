@@ -3,18 +3,6 @@
 #include <Arduino.h>
 #include <string>
 
-namespace GUI
-{
-  const byte LED_CV_1 = 0b01000000;
-  const byte LED_CV_2 = 0b00100000;
-  const byte LED_CV_3 = 0b00010000;
-  const byte LED_CV_4 = 0b00001000;
-  const byte LED_GATE_1 = 0b00000100;
-  const byte LED_GATE_2 = 0b00000010;
-  const byte LED_GATE_3 = 0b00000001;
-  const byte LED_GATE_4 = 0b10000000;
-}
-
 class CGui
 {
 public:
@@ -32,6 +20,13 @@ public:
    * @param str String to display (max 3 characters).
    */
   void setString(const std::string &str);
+
+  /**
+   * @brief Sets the state of an output LED.
+   * @param mask LED to update (bitmask).
+   * @param state True to turn on, false to turn off.
+   */
+  void setOutputLed(uint8_t mask, bool state);
 
   /**
    * @brief Sets the value of a specific LED.
@@ -59,6 +54,8 @@ public:
   void clear();
 
 private:
+  uint8_t mOutputLeds = 0b00000000; // State of output LEDs
+
   void setScanLimit(int limit);
   void spiTransfer(byte opcode, byte data);
 
