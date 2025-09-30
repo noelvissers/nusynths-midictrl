@@ -4,6 +4,7 @@
 
 #define OP_DECODEMODE 9
 #define OP_INTENSITY 10
+#define OP_SCANLIMIT 11
 #define OP_SHUTDOWN 12
 #define OP_DISPLAYTEST 15
 
@@ -20,6 +21,7 @@ CGui::CGui(int pinMosi, int pinSs, int pinSck)
   digitalWrite(SPI_SS, HIGH); // Disable device
 
   spiTransfer(OP_DISPLAYTEST, 0);
+  spiTransfer(OP_SCANLIMIT, 3); // Show 4 digits
   spiTransfer(OP_DECODEMODE, 0);
   clear();
   shutdown(true);
@@ -143,6 +145,12 @@ void CGui::clear()
 {
   for (int i = 0; i < 8; i++)
     spiTransfer(i + 1, 0);
+}
+
+void CGui::setScanLimit(int limit)
+{
+  if (limit >= 0 && limit < 8)
+    spiTransfer(OP_SCANLIMIT, limit);
 }
 
 void CGui::spiTransfer(volatile byte opcode, volatile byte data)

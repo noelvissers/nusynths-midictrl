@@ -28,6 +28,7 @@ public:
   void clear();
 
 private:
+  void setScanLimit(int limit);
   void spiTransfer(byte opcode, byte data);
 
   int SPI_SCK;
