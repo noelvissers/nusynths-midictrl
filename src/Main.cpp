@@ -9,10 +9,6 @@
 
 /**
  * TODO:
- * - Finish implementing EEPROM/Flash save functionality
- *     > Make checksum of settings when loading menu
- *     > Make checksum of settings when exiting menu
- *     > Save settings to flash when exiting menu if changed
  * - Finish menu handling with actual functions instead of nullptr
  * - Add briefs to all header files + finish documentation in readme
  */
