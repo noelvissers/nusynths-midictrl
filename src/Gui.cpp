@@ -24,7 +24,39 @@ CGui::CGui(int pinMosi, int pinSs, int pinSck)
   spiTransfer(OP_SCANLIMIT, 3); // Show 4 digits
   spiTransfer(OP_DECODEMODE, 0);
   clear();
-  shutdown(true);
+  shutdown(false);
+  setBrightness(8); // Medium brightness
+}
+
+void CGui::startup()
+{
+  // Startup animation
+
+  // LEDs
+  clear();
+  setLed(3, 0b10001000);
+  delay(250);
+  setLed(3, 0b10011001);
+  delay(250);
+  setLed(3, 0b10111011);
+  delay(250);
+  setLed(3, 0b11111111);
+  delay(250);
+  
+  // n
+  setLed(0, 0b00000100);
+  delay(250);
+  setLed(0, 0b00000101);
+  delay(250);
+  setLed(0, 0b00010101);
+  delay(250);
+  
+  // u
+  setLed(1, 0b00000100);
+  delay(250);
+  setLed(1, 0b00001100);
+  delay(250);
+  setLed(1, 0b00011100);
 }
 
 void CGui::setString(const std::string &str)
@@ -94,9 +126,8 @@ void CGui::setString(const std::string &str)
       {'z', 0b01101101},
       {'-', 0b00000001}};
 
-  int index = 0;
-
-  for (int i = 0; i < str.size() && index < 3; i++)
+  int j = 0;
+  for (int i = 0; i < str.size() && j < 3; i++)
   {
     char ch = str[i];
 
@@ -113,8 +144,8 @@ void CGui::setString(const std::string &str)
       data |= 0x80; // Add dot
       i++;
     }
-    setLed(index, data);
-    index++;
+    setLed(j, data);
+    j++;
   }
 }
 
