@@ -84,7 +84,7 @@ void loop()
 {
   if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
   {
-    Serial.write("Launching menu...");
+    Serial.println("Launching menu...");
     menu.bActive = true;
     while (menu.bActive)
     {
@@ -93,7 +93,7 @@ void loop()
       menu.handleInput();
     }
     settings.save();
-    Serial.write("Exiting menu...");
+    Serial.println("Exiting menu...");
   }
   midiHandler.read();
   outputs.update();
