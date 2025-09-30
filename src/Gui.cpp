@@ -126,8 +126,8 @@ void CGui::setString(const std::string &str)
       {'z', 0b01101101},
       {'-', 0b00000001}};
 
-  int j = 0;
-  for (int i = 0; i < str.size() && j < 3; i++)
+  unsigned int j = 0;
+  for (unsigned int i = 0; i < str.size() && j < 3; i++)
   {
     char ch = str[i];
 
