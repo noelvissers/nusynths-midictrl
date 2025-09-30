@@ -2,28 +2,35 @@
 #include <Arduino.h>
 
 // MenuItem
-CMenuItem::CMenuItem(const std::string &name) : _name(name) {}
+CMenuItem::CMenuItem(const std::string &name, uint8_t led) : _name(name) {}
+
 const std::string &CMenuItem::getName() const
 {
   return _name;
 }
 
+uint8_t CMenuItem::getLed() const
+{
+  return _led;
+}
+
 // SubMenu
-CSubMenu::CSubMenu(const std::string &name) : CMenuItem(name) {}
+CSubMenu::CSubMenu(const std::string &name, uint8_t led) : CMenuItem(name, led) {}
+
 bool CSubMenu::isSubMenu() const
 {
   return true;
 }
 
-CSubMenu &CSubMenu::addOption(const std::string &name, std::function<void()> onSelect)
+CSubMenu &CSubMenu::addOption(const std::string &name, uint8_t led, std::function<void()> onSelect)
 {
-  _items.push_back(std::unique_ptr<CMenuItem>(new CMenuOption(name, onSelect)));
+  _items.push_back(std::unique_ptr<CMenuItem>(new CMenuOption(name, led, onSelect)));
   return *this;
 }
 
-CSubMenu &CSubMenu::addSubMenu(const std::string &name)
+CSubMenu &CSubMenu::addSubMenu(const std::string &name, uint8_t led)
 {
-  std::unique_ptr<CSubMenu> newSubMenu(new CSubMenu(name));
+  std::unique_ptr<CSubMenu> newSubMenu(new CSubMenu(name, led));
   CSubMenu *newSubMenuPtr = newSubMenu.get();
   _items.push_back(std::move(newSubMenu));
   return *newSubMenuPtr;
@@ -35,8 +42,8 @@ const std::vector<std::unique_ptr<CMenuItem>> &CSubMenu::getItems() const
 }
 
 // MenuOption
-CMenuOption::CMenuOption(const std::string &name, std::function<void()> onSelect)
-    : CMenuItem(name), onSelectCallback(onSelect) {}
+CMenuOption::CMenuOption(const std::string &name, uint8_t led, std::function<void()> onSelect)
+    : CMenuItem(name, led), onSelectCallback(onSelect) {}
 
 bool CMenuOption::isSubMenu() const
 {
@@ -45,7 +52,7 @@ bool CMenuOption::isSubMenu() const
 
 // Menu
 CMenu::CMenu(const std::string &name, CGui &gui)
-    : CSubMenu(name), mGui(gui), _currentMenu(this), _selectedIndex(0) {}
+    : CSubMenu(name, 0), mGui(gui), _currentMenu(this), _selectedIndex(0) {}
 
 void CMenu::build()
 {
@@ -90,152 +97,136 @@ void CMenu::build()
   // Build menu
   {
     // Config
-    CSubMenu &configMenu = this->addSubMenu("Cnf");
+    CSubMenu &configMenu = this->addSubMenu("Cnf", 0);
     {
       // MIDI channel
-      configMenu.addSubMenu("Chn")
-          .addOption("All", nullptr) // OMNI
-          .addOption("1", nullptr)   // Channel 1
-          .addOption("2", nullptr)   // Channel 2
-          .addOption("3", nullptr)   // Channel 3
-          .addOption("4", nullptr)   // Channel 4
-          .addOption("5", nullptr)   // Channel 5
-          .addOption("6", nullptr)   // Channel 6
-          .addOption("7", nullptr)   // Channel 7
-          .addOption("8", nullptr)   // Channel 8
-          .addOption("9", nullptr)   // Channel 9
-          .addOption("10", nullptr)  // Channel 10
-          .addOption("11", nullptr)  // Channel 11
-          .addOption("12", nullptr)  // Channel 12
-          .addOption("13", nullptr)  // Channel 13
-          .addOption("14", nullptr)  // Channel 14
-          .addOption("15", nullptr)  // Channel 15
-          .addOption("16", nullptr); // Channel 16
+      configMenu.addSubMenu("Chn", 0)
+          .addOption("All", 0, nullptr) // OMNI
+          .addOption("1", 0, nullptr)   // Channel 1
+          .addOption("2", 0, nullptr)   // Channel 2
+          .addOption("3", 0, nullptr)   // Channel 3
+          .addOption("4", 0, nullptr)   // Channel 4
+          .addOption("5", 0, nullptr)   // Channel 5
+          .addOption("6", 0, nullptr)   // Channel 6
+          .addOption("7", 0, nullptr)   // Channel 7
+          .addOption("8", 0, nullptr)   // Channel 8
+          .addOption("9", 0, nullptr)   // Channel 9
+          .addOption("10", 0, nullptr)  // Channel 10
+          .addOption("11", 0, nullptr)  // Channel 11
+          .addOption("12", 0, nullptr)  // Channel 12
+          .addOption("13", 0, nullptr)  // Channel 13
+          .addOption("14", 0, nullptr)  // Channel 14
+          .addOption("15", 0, nullptr)  // Channel 15
+          .addOption("16", 0, nullptr); // Channel 16
       // Mode
-      configMenu.addSubMenu("Mod")
-          .addOption("Mon", nullptr)  // Mono
-          .addOption("Pol", nullptr); // Polyphonic
+      configMenu.addSubMenu("Mod", 0)
+          .addOption("Mon", 0, nullptr)  // Mono
+          .addOption("Pol", 0, nullptr); // Polyphonic
       // Pitch bend
-      configMenu.addSubMenu("Pb.")
-          .addOption("0", nullptr)   // 0 semitones
-          .addOption("1", nullptr)   // 1 semitone
-          .addOption("2", nullptr)   // 2 semitones
-          .addOption("3", nullptr)   // 3 semitones
-          .addOption("4", nullptr)   // 4 semitones
-          .addOption("5", nullptr)   // 5 semitones
-          .addOption("6", nullptr)   // 6 semitones
-          .addOption("7", nullptr)   // 7 semitones
-          .addOption("8", nullptr)   // 8 semitones
-          .addOption("9", nullptr)   // 9 semitones
-          .addOption("10", nullptr)  // 10 semitones
-          .addOption("11", nullptr)  // 11 semitones
-          .addOption("12", nullptr); // 12 semitones
+      configMenu.addSubMenu("Pb.", 0)
+          .addOption("0", 0, nullptr)   // 0 semitones
+          .addOption("1", 0, nullptr)   // 1 semitone
+          .addOption("2", 0, nullptr)   // 2 semitones
+          .addOption("3", 0, nullptr)   // 3 semitones
+          .addOption("4", 0, nullptr)   // 4 semitones
+          .addOption("5", 0, nullptr)   // 5 semitones
+          .addOption("6", 0, nullptr)   // 6 semitones
+          .addOption("7", 0, nullptr)   // 7 semitones
+          .addOption("8", 0, nullptr)   // 8 semitones
+          .addOption("9", 0, nullptr)   // 9 semitones
+          .addOption("10", 0, nullptr)  // 10 semitones
+          .addOption("11", 0, nullptr)  // 11 semitones
+          .addOption("12", 0, nullptr); // 12 semitones
       // Clock divider
-      configMenu.addSubMenu("Clk")
-          .addOption("1", nullptr)    // 1:1
-          .addOption("2", nullptr)    // /2
-          .addOption("4", nullptr)    // /4
-          .addOption("8", nullptr)    // /8
-          .addOption("16", nullptr)   // /16
-          .addOption("32", nullptr)   // /32
-          .addOption("64", nullptr)   // /64
-          .addOption("128", nullptr)  // /128
-          .addOption("256", nullptr); // /256
+      configMenu.addSubMenu("Clk", 0)
+          .addOption("1", 0, nullptr)    // 1:1
+          .addOption("2", 0, nullptr)    // /2
+          .addOption("4", 0, nullptr)    // /4
+          .addOption("8", 0, nullptr)    // /8
+          .addOption("16", 0, nullptr)   // /16
+          .addOption("32", 0, nullptr)   // /32
+          .addOption("64", 0, nullptr)   // /64
+          .addOption("128", 0, nullptr)  // /128
+          .addOption("256", 0, nullptr); // /256
     }
 
-    // Gate output 1
-    this->addSubMenu("1")
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
-    // Gate output 2
-    this->addSubMenu("2")
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
-    // Gate output 3
-    this->addSubMenu("3")
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
-    // Gate output 4
-    this->addSubMenu("4")
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
+    // CV output 1
+    this->addSubMenu("1", 0b01000000)
+        .addOption("Ptc", 0b01000000, nullptr) // Pitch
+        .addOption("VEL", 0b01000000, nullptr) // Velocity
+        .addOption("CC", 0b01000000, nullptr)  // Continues controller
+        .addOption("At", 0b01000000, nullptr)  // Aftertouch
+        .addOption("Gt", 0b01000000, nullptr)  // Gate
+        .addOption("Tr", 0b01000000, nullptr)  // Trigger
+        .addOption("Rst", 0b01000000, nullptr) // Reset
+        .addOption("-", 0b01000000, nullptr);  // Unassigned
+    // CV output 2
+    this->addSubMenu("2", 0b00100000)
+        .addOption("Ptc", 0b00100000, nullptr) // Pitch
+        .addOption("VEL", 0b00100000, nullptr) // Velocity
+        .addOption("CC", 0b00100000, nullptr)  // Continues controller
+        .addOption("At", 0b00100000, nullptr)  // Aftertouch
+        .addOption("Gt", 0b00100000, nullptr)  // Gate
+        .addOption("Tr", 0b00100000, nullptr)  // Trigger
+        .addOption("Rst", 0b00100000, nullptr) // Reset
+        .addOption("-", 0b00100000, nullptr);  // Unassigned
+    // CV output 3
+    this->addSubMenu("3", 0b00010000)
+        .addOption("Ptc", 0b00010000, nullptr) // Pitch
+        .addOption("VEL", 0b00010000, nullptr) // Velocity
+        .addOption("CC", 0b00010000, nullptr)  // Continues controller
+        .addOption("At", 0b00010000, nullptr)  // Aftertouch
+        .addOption("Gt", 0b00010000, nullptr)  // Gate
+        .addOption("Tr", 0b00010000, nullptr)  // Trigger
+        .addOption("Rst", 0b00010000, nullptr) // Reset
+        .addOption("-", 0b00010000, nullptr);  // Unassigned
+    // CV output 4
+    this->addSubMenu("4", 0b00001000)
+        .addOption("Ptc", 0b00001000, nullptr) // Pitch
+        .addOption("VEL", 0b00001000, nullptr) // Velocity
+        .addOption("CC", 0b00001000, nullptr)  // Continues controller
+        .addOption("At", 0b00001000, nullptr)  // Aftertouch
+        .addOption("Gt", 0b00001000, nullptr)  // Gate
+        .addOption("Tr", 0b00001000, nullptr)  // Trigger
+        .addOption("Rst", 0b00001000, nullptr) // Reset
+        .addOption("-", 0b00001000, nullptr);  // Unassigned
 
-    // CV output 1 (5)
-    this->addSubMenu("5")
-        .addOption("Ptc", nullptr) // Pitch
-        .addOption("VEL", nullptr) // Velocity
-        .addOption("CC", nullptr)  // Continues controller
-        .addOption("At", nullptr)  // Aftertouch
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
-    // CV output 2 (6)
-    this->addSubMenu("6")
-        .addOption("Ptc", nullptr) // Pitch
-        .addOption("VEL", nullptr) // Velocity
-        .addOption("CC", nullptr)  // Continues controller
-        .addOption("At", nullptr)  // Aftertouch
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
-    // CV output 3 (7)
-    this->addSubMenu("7")
-        .addOption("Ptc", nullptr) // Pitch
-        .addOption("VEL", nullptr) // Velocity
-        .addOption("CC", nullptr)  // Continues controller
-        .addOption("At", nullptr)  // Aftertouch
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
-    // CV output 4 (8)
-    this->addSubMenu("8")
-        .addOption("Ptc", nullptr) // Pitch
-        .addOption("VEL", nullptr) // Velocity
-        .addOption("CC", nullptr)  // Continues controller
-        .addOption("At", nullptr)  // Aftertouch
-        .addOption("Gt", nullptr)  // Gate
-        .addOption("Tr", nullptr)  // Trigger
-        .addOption("Rst", nullptr) // Reset
-        .addOption("-", nullptr);  // Unassigned
+    // Gate output 1
+    this->addSubMenu("5", 0b00000100)
+        .addOption("Gt", 0b00000100, nullptr)  // Gate
+        .addOption("Tr", 0b00000100, nullptr)  // Trigger
+        .addOption("Rst", 0b00000100, nullptr) // Reset
+        .addOption("-", 0b00000100, nullptr);  // Unassigned
+    // Gate output 2
+    this->addSubMenu("6", 0b00000010)
+        .addOption("Gt", 0b00000010, nullptr)  // Gate
+        .addOption("Tr", 0b00000010, nullptr)  // Trigger
+        .addOption("Rst", 0b00000010, nullptr) // Reset
+        .addOption("-", 0b00000010, nullptr);  // Unassigned
+    // Gate output 3
+    this->addSubMenu("7", 0b00000001)
+        .addOption("Gt", 0b00000001, nullptr)  // Gate
+        .addOption("Tr", 0b00000001, nullptr)  // Trigger
+        .addOption("Rst", 0b00000001, nullptr) // Reset
+        .addOption("-", 0b00000001, nullptr);  // Unassigned
+    // Gate output 4
+    this->addSubMenu("8", 0b10000000)
+        .addOption("Gt", 0b10000000, nullptr)  // Gate
+        .addOption("Tr", 0b10000000, nullptr)  // Trigger
+        .addOption("Rst", 0b10000000, nullptr) // Reset
+        .addOption("-", 0b10000000, nullptr);  // Unassigned
   }
 }
 
 void CMenu::update() const
 {
-  // TODO: Implement GUI here. Names can he handled in GUI functions to show which
-  // menu is currently active. Specific functions can be mapped in initialization function.
+  if (!_currentMenu)
+    return;
 
-  // TODO: Implement GUI function to print string or leds based on menu structure
-  //            7seg, leds
-  // mGui.render(ABC,  0b00000001);
+  const auto &items = _currentMenu->getItems();
 
-  // if (!_currentMenu) return;
-  // std::cout << "--- " << _currentMenu->getName() << " ---\n";
-  // const auto &items = _currentMenu->getItems();
-  // for (int i = 0; i < items.size(); ++i) {
-  //   if (i == _selectedIndex) {
-  //     std::cout << "> "; // Indicator for selected item
-  //   } else {
-  //     std::cout << "  ";
-  //   }
-  //   std::cout << items[i]->getName();
-  //   if (items[i]->isSubMenu()) {
-  //     std::cout << " ->"; // Indicator for a submenu
-  //   }
-  //   std::cout << "\n";
-  // }
-  // std::cout << "---------------------\n";
+  mGui.setString(items[_selectedIndex]->getName());
+  mGui.setLed(3, items[_selectedIndex]->getLed());
 }
 
 void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool &press)

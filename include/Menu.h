@@ -13,25 +13,27 @@
 class CMenuItem
 {
 public:
-  explicit CMenuItem(const std::string &name);
+  explicit CMenuItem(const std::string &name, uint8_t led);
   virtual ~CMenuItem() = default;
 
   const std::string &getName() const;
+  uint8_t getLed() const;
   virtual bool isSubMenu() const = 0;
 
 protected:
   std::string _name;
+  uint8_t _led;
 };
 
 // Menu item that conains other menu items
 class CSubMenu : public CMenuItem
 {
 public:
-  explicit CSubMenu(const std::string &name);
+  explicit CSubMenu(const std::string &name, uint8_t led);
   bool isSubMenu() const override;
 
-  CSubMenu &addOption(const std::string &name, std::function<void()> onSelect);
-  CSubMenu &addSubMenu(const std::string &name);
+  CSubMenu &addOption(const std::string &name, uint8_t led, std::function<void()> onSelect);
+  CSubMenu &addSubMenu(const std::string &name, uint8_t led);
 
   const std::vector<std::unique_ptr<CMenuItem>> &getItems() const;
 
@@ -43,7 +45,7 @@ private:
 class CMenuOption : public CMenuItem
 {
 public:
-  CMenuOption(const std::string &name, std::function<void()> onSelect);
+  CMenuOption(const std::string &name, uint8_t led, std::function<void()> onSelect);
   std::function<void()> onSelectCallback;
   bool isSubMenu() const override;
 };

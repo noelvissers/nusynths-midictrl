@@ -14,7 +14,6 @@
  *     > Make checksum of settings when exiting menu
  *     > Save settings to flash when exiting menu if changed
  * - Finish menu handling with actual functions instead of nullptr
- * - Add GUI implementation
  * - Add briefs to all header files + finish documentation in readme
  */
 

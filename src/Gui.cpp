@@ -144,8 +144,15 @@ void CGui::setString(const std::string &str)
       data |= 0x80; // Add dot
       i++;
     }
+
     setLed(j, data);
     j++;
+  }
+
+  // Clear remaining digits
+  for (; j < 3; j++)
+  {
+    setLed(j, 0x00);
   }
 }
 
