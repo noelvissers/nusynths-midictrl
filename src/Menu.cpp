@@ -44,7 +44,8 @@ bool CMenuOption::isSubMenu() const
 }
 
 // Menu
-CMenu::CMenu(const std::string &name) : CSubMenu(name), _currentMenu(this), _selectedIndex(0) {}
+CMenu::CMenu(const std::string &name, CGui &gui)
+    : CSubMenu(name), mGui(gui), _currentMenu(this), _selectedIndex(0) {}
 
 void CMenu::build()
 {
@@ -215,11 +216,10 @@ void CMenu::update() const
   // TODO: Implement GUI here. Names can he handled in GUI functions to show which
   // menu is currently active. Specific functions can be mapped in initialization function.
 
-
   // TODO: Implement GUI function to print string or leds based on menu structure
   //            7seg, leds
   // gui.render(ABC,  0b00000001);
-  
+
   // if (!_currentMenu) return;
   // std::cout << "--- " << _currentMenu->getName() << " ---\n";
   // const auto &items = _currentMenu->getItems();

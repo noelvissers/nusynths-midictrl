@@ -2,6 +2,7 @@
 
 #include "HalConfiguration.h"
 #include "MidiHandler.h"
+#include "Gui.h"
 #include "Menu.h"
 #include "Settings.h"
 #include "Outputs.h"
@@ -19,9 +20,10 @@
  */
 
 CSettings settings;
-COutputs outputs;
+CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
+COutputs outputs(gui);
 CMidiHandler midiHandler(outputs, settings);
-CMenu menu("Root menu");
+CMenu menu("Root menu", gui);
 
 // Interrupts
 bool rotaryEncClkLast = 0;
@@ -72,12 +74,15 @@ void setup()
   menu.build();
   outputs.init();
 
+  // Show startup animation
+  gui.startup();
+
   // Load saved configuration from flash (or default when no settings found)
   settings.load();
   outputs.setOutputs(settings.get());
   
-  // TODO: Show startup animation
-  // ...
+  // Clear display and LEDs
+  gui.clear();
 }
 
 // Main

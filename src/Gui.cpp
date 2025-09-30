@@ -36,11 +36,11 @@ void CGui::startup()
   clear();
   setLed(3, 0b10001000);
   delay(250);
-  setLed(3, 0b10011001);
+  setLed(3, 0b00010001);
   delay(250);
-  setLed(3, 0b10111011);
+  setLed(3, 0b00100010);
   delay(250);
-  setLed(3, 0b11111111);
+  setLed(3, 0b01000100);
   delay(250);
   
   // n

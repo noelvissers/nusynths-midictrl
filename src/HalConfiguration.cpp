@@ -29,6 +29,9 @@ const uint8_t _pinGate4 = 19; // PA05
 // Sync [5V DIO]
 const uint8_t _pinSync = 20; // PA06
 
+// MIDI
+//const uint8_t _pinMidi = 14; // PA22
+
 // SPI
 const uint32_t _spiSpeed = 24000000; // 24 MHz (Maximum SPI speed for MKRZero)
 
@@ -36,7 +39,8 @@ const uint32_t _spiSpeed = 24000000; // 24 MHz (Maximum SPI speed for MKRZero)
 const uint8_t _pinDacSync = 7;   // PA21
 const uint8_t _pinDacLdac = 11;  // PA08
 const uint8_t _pinDacEnable = 6; // PA20
+//const uint8_t _pinDacMosi = 8; // PA16
 
-const uint8_t _pinDisplayCs = 21; // PA07
-const uint8_t _pinDisplayClk = 3; // PA11
-const uint8_t _pinDisplayDin = 2; // PA10
+const uint8_t _pinDisplaySs = 21;  // PA07
+const uint8_t _pinDisplaySck = 3;  // PA11
+const uint8_t _pinDisplayMosi = 2; // PA10

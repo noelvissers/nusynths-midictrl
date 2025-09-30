@@ -3,7 +3,8 @@
 #include "HalConfiguration.h"
 #include <Arduino.h>
 
-COutputs::COutputs() : mDac(SPI, _spiSpeed, _pinDacSync, _pinDacLdac, _pinDacEnable)
+COutputs::COutputs(CGui &gui)
+    : mGui(gui), mDac(SPI, _spiSpeed, _pinDacSync, _pinDacLdac, _pinDacEnable)
 {
   // Default initialization
   SOutput defaultOutput;
@@ -71,7 +72,6 @@ void COutputs::update()
 
     if (output.isDirty)
     {
-      // TODO: Also set LEDs
       switch (output.type)
       {
       case EOutputType::Analog:

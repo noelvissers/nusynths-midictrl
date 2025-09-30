@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Gui.h"
+
 #include <SPI.h>
 #include <DAC8564.h>
 #include <cstdint>
@@ -49,7 +51,7 @@ struct SOutput
 class COutputs
 {
 public:
-  COutputs();
+  COutputs(CGui &gui);
   ~COutputs() = default;
 
   /**
@@ -105,7 +107,9 @@ public:
   long pitchBendToCv(int pitchBend, uint8_t semitones);
 
 private:
+  CGui &mGui;
   DAC8564 mDac;
   std::array<SOutput, N_OUTPUTS> mOutputs;
+
   uint16_t getPitch(uint16_t pitch, long pitchBend);
 };

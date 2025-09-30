@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Gui.h"
+
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -50,8 +52,8 @@ public:
 class CMenu : public CSubMenu
 {
 public:
-  CMenu(const std::string &name);
-  ~CMenu() = default; 
+  CMenu(const std::string &name, CGui &gui);
+  ~CMenu() = default;
 
   void build();
 
@@ -60,7 +62,9 @@ public:
   void handleInput();
 
   bool bActive = false; // Flag to indicate if the menu is active
+
 private:
+  CGui &mGui;
   CSubMenu *_currentMenu;
   int _selectedIndex;
   std::stack<std::pair<CSubMenu *, int>> _navigationStack;
