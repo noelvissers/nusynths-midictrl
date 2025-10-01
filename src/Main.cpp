@@ -9,8 +9,7 @@
 
 /**
  * TODO:
- * - Finish menu handling with actual functions instead of nullptr
- * - Check USB MIDI device serrings, like name 
+ * - Change USB MIDI device name, use testing VID/PID for now (https://pid.codes/)
  * - Add briefs to all header files + finish documentation in readme
  */
 
@@ -18,7 +17,7 @@ CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
 COutputs outputs(gui);
 CMidiHandler midiHandler(outputs, settings);
-CMenu menu("Root menu", gui);
+CMenu menu("Root menu", gui, settings);
 
 // Interrupts
 bool rotaryEncClkLast = 0;

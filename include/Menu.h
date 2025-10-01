@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Settings.h"
 #include "Gui.h"
 
 #include <functional>
@@ -54,7 +55,7 @@ public:
 class CMenu : public CSubMenu
 {
 public:
-  CMenu(const std::string &name, CGui &gui);
+  CMenu(const std::string &name, CGui &gui, CSettings &settings);
   ~CMenu() = default;
 
   void build();
@@ -67,6 +68,7 @@ public:
 
 private:
   CGui &mGui;
+  CSettings &mSettings;
   CSubMenu *_currentMenu;
   int _selectedIndex;
   std::stack<std::pair<CSubMenu *, int>> _navigationStack;

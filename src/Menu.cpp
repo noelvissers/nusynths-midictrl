@@ -1,6 +1,8 @@
 #include "Menu.h"
 #include <Arduino.h>
 
+#include "Outputs.h"
+
 // MenuItem
 CMenuItem::CMenuItem(const std::string &name, uint8_t led) : _name(name) {}
 
@@ -51,8 +53,8 @@ bool CMenuOption::isSubMenu() const
 }
 
 // Menu
-CMenu::CMenu(const std::string &name, CGui &gui)
-    : CSubMenu(name, 0), mGui(gui), _currentMenu(this), _selectedIndex(0) {}
+CMenu::CMenu(const std::string &name, CGui &gui, CSettings &settings)
+    : CSubMenu(name, 0), mGui(gui), mSettings(settings), _currentMenu(this), _selectedIndex(0) {}
 
 void CMenu::build()
 {
@@ -94,128 +96,210 @@ void CMenu::build()
    *   └─ Unassigned() [-]
    */
 
-  // Build menu
+  // Config
+  CSubMenu &configMenu = this->addSubMenu("Cnf", 0b11111111);
   {
-    // Config
-    CSubMenu &configMenu = this->addSubMenu("Cnf", 0);
-    {
-      // MIDI channel
-      configMenu.addSubMenu("Chn", 0)
-          .addOption("All", 0, nullptr) // OMNI
-          .addOption("1", 0, nullptr)   // Channel 1
-          .addOption("2", 0, nullptr)   // Channel 2
-          .addOption("3", 0, nullptr)   // Channel 3
-          .addOption("4", 0, nullptr)   // Channel 4
-          .addOption("5", 0, nullptr)   // Channel 5
-          .addOption("6", 0, nullptr)   // Channel 6
-          .addOption("7", 0, nullptr)   // Channel 7
-          .addOption("8", 0, nullptr)   // Channel 8
-          .addOption("9", 0, nullptr)   // Channel 9
-          .addOption("10", 0, nullptr)  // Channel 10
-          .addOption("11", 0, nullptr)  // Channel 11
-          .addOption("12", 0, nullptr)  // Channel 12
-          .addOption("13", 0, nullptr)  // Channel 13
-          .addOption("14", 0, nullptr)  // Channel 14
-          .addOption("15", 0, nullptr)  // Channel 15
-          .addOption("16", 0, nullptr); // Channel 16
-      // Mode
-      configMenu.addSubMenu("Mod", 0)
-          .addOption("Mon", 0, nullptr)  // Mono
-          .addOption("Pol", 0, nullptr); // Polyphonic
-      // Pitch bend
-      configMenu.addSubMenu("Pb.", 0)
-          .addOption("0", 0, nullptr)   // 0 semitones
-          .addOption("1", 0, nullptr)   // 1 semitone
-          .addOption("2", 0, nullptr)   // 2 semitones
-          .addOption("3", 0, nullptr)   // 3 semitones
-          .addOption("4", 0, nullptr)   // 4 semitones
-          .addOption("5", 0, nullptr)   // 5 semitones
-          .addOption("6", 0, nullptr)   // 6 semitones
-          .addOption("7", 0, nullptr)   // 7 semitones
-          .addOption("8", 0, nullptr)   // 8 semitones
-          .addOption("9", 0, nullptr)   // 9 semitones
-          .addOption("10", 0, nullptr)  // 10 semitones
-          .addOption("11", 0, nullptr)  // 11 semitones
-          .addOption("12", 0, nullptr); // 12 semitones
-      // Clock divider
-      configMenu.addSubMenu("Clk", 0)
-          .addOption("1", 0, nullptr)    // 1:1
-          .addOption("2", 0, nullptr)    // /2
-          .addOption("4", 0, nullptr)    // /4
-          .addOption("8", 0, nullptr)    // /8
-          .addOption("16", 0, nullptr)   // /16
-          .addOption("32", 0, nullptr)   // /32
-          .addOption("64", 0, nullptr)   // /64
-          .addOption("128", 0, nullptr)  // /128
-          .addOption("256", 0, nullptr); // /256
-    }
-
-    // CV output 1
-    this->addSubMenu("1", 0b01000000)
-        .addOption("Ptc", 0b01000000, nullptr) // Pitch
-        .addOption("VEL", 0b01000000, nullptr) // Velocity
-        .addOption("CC", 0b01000000, nullptr)  // Continues controller
-        .addOption("At", 0b01000000, nullptr)  // Aftertouch
-        .addOption("Gt", 0b01000000, nullptr)  // Gate
-        .addOption("Tr", 0b01000000, nullptr)  // Trigger
-        .addOption("Rst", 0b01000000, nullptr) // Reset
-        .addOption("-", 0b01000000, nullptr);  // Unassigned
-    // CV output 2
-    this->addSubMenu("2", 0b00100000)
-        .addOption("Ptc", 0b00100000, nullptr) // Pitch
-        .addOption("VEL", 0b00100000, nullptr) // Velocity
-        .addOption("CC", 0b00100000, nullptr)  // Continues controller
-        .addOption("At", 0b00100000, nullptr)  // Aftertouch
-        .addOption("Gt", 0b00100000, nullptr)  // Gate
-        .addOption("Tr", 0b00100000, nullptr)  // Trigger
-        .addOption("Rst", 0b00100000, nullptr) // Reset
-        .addOption("-", 0b00100000, nullptr);  // Unassigned
-    // CV output 3
-    this->addSubMenu("3", 0b00010000)
-        .addOption("Ptc", 0b00010000, nullptr) // Pitch
-        .addOption("VEL", 0b00010000, nullptr) // Velocity
-        .addOption("CC", 0b00010000, nullptr)  // Continues controller
-        .addOption("At", 0b00010000, nullptr)  // Aftertouch
-        .addOption("Gt", 0b00010000, nullptr)  // Gate
-        .addOption("Tr", 0b00010000, nullptr)  // Trigger
-        .addOption("Rst", 0b00010000, nullptr) // Reset
-        .addOption("-", 0b00010000, nullptr);  // Unassigned
-    // CV output 4
-    this->addSubMenu("4", 0b00001000)
-        .addOption("Ptc", 0b00001000, nullptr) // Pitch
-        .addOption("VEL", 0b00001000, nullptr) // Velocity
-        .addOption("CC", 0b00001000, nullptr)  // Continues controller
-        .addOption("At", 0b00001000, nullptr)  // Aftertouch
-        .addOption("Gt", 0b00001000, nullptr)  // Gate
-        .addOption("Tr", 0b00001000, nullptr)  // Trigger
-        .addOption("Rst", 0b00001000, nullptr) // Reset
-        .addOption("-", 0b00001000, nullptr);  // Unassigned
-
-    // Gate output 1
-    this->addSubMenu("5", 0b00000100)
-        .addOption("Gt", 0b00000100, nullptr)  // Gate
-        .addOption("Tr", 0b00000100, nullptr)  // Trigger
-        .addOption("Rst", 0b00000100, nullptr) // Reset
-        .addOption("-", 0b00000100, nullptr);  // Unassigned
-    // Gate output 2
-    this->addSubMenu("6", 0b00000010)
-        .addOption("Gt", 0b00000010, nullptr)  // Gate
-        .addOption("Tr", 0b00000010, nullptr)  // Trigger
-        .addOption("Rst", 0b00000010, nullptr) // Reset
-        .addOption("-", 0b00000010, nullptr);  // Unassigned
-    // Gate output 3
-    this->addSubMenu("7", 0b00000001)
-        .addOption("Gt", 0b00000001, nullptr)  // Gate
-        .addOption("Tr", 0b00000001, nullptr)  // Trigger
-        .addOption("Rst", 0b00000001, nullptr) // Reset
-        .addOption("-", 0b00000001, nullptr);  // Unassigned
-    // Gate output 4
-    this->addSubMenu("8", 0b10000000)
-        .addOption("Gt", 0b10000000, nullptr)  // Gate
-        .addOption("Tr", 0b10000000, nullptr)  // Trigger
-        .addOption("Rst", 0b10000000, nullptr) // Reset
-        .addOption("-", 0b10000000, nullptr);  // Unassigned
+    // MIDI channel
+    configMenu.addSubMenu("Chn", 0)
+        .addOption("All", 0, [this]()
+                   { mSettings.get().midiChannel = 0; }) // OMNI
+        .addOption("1", 0, [this]()
+                   { mSettings.get().midiChannel = 1; }) // Channel 1
+        .addOption("2", 0, [this]()
+                   { mSettings.get().midiChannel = 2; })
+        .addOption("3", 0, [this]()
+                   { mSettings.get().midiChannel = 3; })
+        .addOption("4", 0, [this]()
+                   { mSettings.get().midiChannel = 4; })
+        .addOption("5", 0, [this]()
+                   { mSettings.get().midiChannel = 5; })
+        .addOption("6", 0, [this]()
+                   { mSettings.get().midiChannel = 6; })
+        .addOption("7", 0, [this]()
+                   { mSettings.get().midiChannel = 7; })
+        .addOption("8", 0, [this]()
+                   { mSettings.get().midiChannel = 8; })
+        .addOption("9", 0, [this]()
+                   { mSettings.get().midiChannel = 9; })
+        .addOption("10", 0, [this]()
+                   { mSettings.get().midiChannel = 10; })
+        .addOption("11", 0, [this]()
+                   { mSettings.get().midiChannel = 11; })
+        .addOption("12", 0, [this]()
+                   { mSettings.get().midiChannel = 12; })
+        .addOption("13", 0, [this]()
+                   { mSettings.get().midiChannel = 13; })
+        .addOption("14", 0, [this]()
+                   { mSettings.get().midiChannel = 14; })
+        .addOption("15", 0, [this]()
+                   { mSettings.get().midiChannel = 15; })
+        .addOption("16", 0, [this]()
+                   { mSettings.get().midiChannel = 16; });
+    // Mode
+    configMenu.addSubMenu("Mod", 0)
+        .addOption("Mon", 0, [this]()
+                   { mSettings.get().synthMode = ESynthMode::Monophonic; })
+        .addOption("Pol", 0, [this]()
+                   { mSettings.get().synthMode = ESynthMode::Polyphonic; });
+    // Pitch bend
+    configMenu.addSubMenu("Pb.", 0)
+        .addOption("0", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 0; }) // 0 semitones
+        .addOption("1", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 1; }) // 1 semitone
+        .addOption("2", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 2; }) // 2 semitones
+        .addOption("3", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 3; })
+        .addOption("4", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 4; })
+        .addOption("5", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 5; })
+        .addOption("6", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 6; })
+        .addOption("7", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 7; })
+        .addOption("8", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 8; })
+        .addOption("9", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 9; })
+        .addOption("10", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 10; })
+        .addOption("11", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 11; })
+        .addOption("12", 0, [this]()
+                   { mSettings.get().pitchBendSemitones = 12; });
+    // Clock divider
+    configMenu.addSubMenu("Clk", 0)
+        .addOption("1", 0, [this]()
+                   { mSettings.get().clockDiv = 1; }) // 1:1
+        .addOption("2", 0, [this]()
+                   { mSettings.get().clockDiv = 2; }) // /2
+        .addOption("4", 0, [this]()
+                   { mSettings.get().clockDiv = 4; }) // /4
+        .addOption("8", 0, [this]()
+                   { mSettings.get().clockDiv = 8; }) // /8
+        .addOption("16", 0, [this]()
+                   { mSettings.get().clockDiv = 16; }) // /16
+        .addOption("32", 0, [this]()
+                   { mSettings.get().clockDiv = 32; }) // /32
+        .addOption("64", 0, [this]()
+                   { mSettings.get().clockDiv = 64; }) // /64
+        .addOption("128", 0, [this]()
+                   { mSettings.get().clockDiv = 128; }); // /128
   }
+  // CV output 1
+  this->addSubMenu("1", 0b01000000)
+      .addOption("Ptc", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::Pitch; })
+      .addOption("VEL", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::Velocity; })
+      .addOption("CC", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::ContinuesController; })
+      .addOption("At", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::AfterTouch; })
+      .addOption("Gt", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::Reset; })
+      .addOption("-", 0b01000000, [this]()
+                 { mSettings.get().outputFunctions[1] = EOutputFunction::Unassigned; });
+  // CV output 2
+  this->addSubMenu("2", 0b00100000)
+      .addOption("Ptc", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::Pitch; })
+      .addOption("VEL", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::Velocity; })
+      .addOption("CC", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::ContinuesController; })
+      .addOption("At", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::AfterTouch; })
+      .addOption("Gt", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::Reset; })
+      .addOption("-", 0b00100000, [this]()
+                 { mSettings.get().outputFunctions[2] = EOutputFunction::Unassigned; });
+  // CV output 3
+  this->addSubMenu("3", 0b00010000)
+      .addOption("Ptc", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::Pitch; })
+      .addOption("VEL", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::Velocity; })
+      .addOption("CC", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::ContinuesController; })
+      .addOption("At", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::AfterTouch; })
+      .addOption("Gt", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::Reset; })
+      .addOption("-", 0b00010000, [this]()
+                 { mSettings.get().outputFunctions[3] = EOutputFunction::Unassigned; });
+  // CV output 4
+  this->addSubMenu("4", 0b00001000)
+      .addOption("Ptc", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Pitch; })
+      .addOption("VEL", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Velocity; })
+      .addOption("CC", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::ContinuesController; })
+      .addOption("At", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::AfterTouch; })
+      .addOption("Gt", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+      .addOption("-", 0b00001000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+  // Gate output 1
+  this->addSubMenu("5", 0b00000100)
+      .addOption("Gt", 0b00000100, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b00000100, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b00000100, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+      .addOption("-", 0b00000100, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+  // Gate output 2
+  this->addSubMenu("6", 0b00000010)
+      .addOption("Gt", 0b00000010, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b00000010, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b00000010, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+      .addOption("-", 0b00000010, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+  // Gate output 3
+  this->addSubMenu("7", 0b00000001)
+      .addOption("Gt", 0b00000001, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b00000001, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b00000001, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+      .addOption("-", 0b00000001, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+  // Gate output 4
+  this->addSubMenu("8", 0b10000000)
+      .addOption("Gt", 0b10000000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+      .addOption("Tr", 0b10000000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+      .addOption("Rst", 0b10000000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+      .addOption("-", 0b10000000, [this]()
+                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
 }
 
 void CMenu::update() const
