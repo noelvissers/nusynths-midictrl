@@ -9,7 +9,7 @@
 
 /**
  * TODO:
- * - Change USB MIDI device name, use testing VID/PID for now (https://pid.codes/)
+ * - Change board config in mkrzero_nu_midictrl.json. Use testing VID/PID for now (https://pid.codes/) and use default bootloader VID/PID
  * - Add briefs to all header files + finish documentation in readme
  */
 
