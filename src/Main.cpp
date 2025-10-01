@@ -10,6 +10,7 @@
 /**
  * TODO:
  * - Finish menu handling with actual functions instead of nullptr
+ * - Check USB MIDI device serrings, like name 
  * - Add briefs to all header files + finish documentation in readme
  */
 
