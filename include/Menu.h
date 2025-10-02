@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Settings.h"
+#include "MidiHandler.h"
+#include "Outputs.h"
 #include "Gui.h"
 
 #include <functional>
@@ -69,7 +71,7 @@ public:
 class CMenu : public CSubMenu
 {
 public:
-  CMenu(const std::string &name, CGui &gui, CSettings &settings);
+  CMenu(const std::string &name, CGui &gui, CSettings &settings, CMidiHandler &midiHandler);
   ~CMenu() = default;
 
   void build();
@@ -83,9 +85,12 @@ public:
 private:
   CGui &mGui;
   CSettings &mSettings;
+  CMidiHandler &mMidiHandler;
   CSubMenu *_currentMenu;
   int _selectedIndex;
   std::stack<std::pair<CSubMenu *, int>> _navigationStack;
+
+  void setOutputFunction(uint16_t index, EOutputFunction function);
 
   bool _next = false;
   bool _prev = false;

@@ -1,8 +1,6 @@
 #include "Menu.h"
 #include <Arduino.h>
 
-#include "Outputs.h"
-
 // MenuItem
 CMenuItem::CMenuItem(const std::string &name, uint8_t led) : _name(name) {}
 
@@ -53,8 +51,8 @@ bool CMenuOption::isSubMenu() const
 }
 
 // Menu
-CMenu::CMenu(const std::string &name, CGui &gui, CSettings &settings)
-    : CSubMenu(name, 0), mGui(gui), mSettings(settings), _currentMenu(this), _selectedIndex(0) {}
+CMenu::CMenu(const std::string &name, CGui &gui, CSettings &settings, CMidiHandler &midiHandler)
+    : CSubMenu(name, 0), mGui(gui), mSettings(settings), mMidiHandler(midiHandler), _currentMenu(this), _selectedIndex(0) {}
 
 void CMenu::build()
 {
@@ -153,115 +151,115 @@ void CMenu::build()
   // CV output 1
   this->addSubMenu("1", 0b01000000)
       .addOption("Ptc", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::Pitch; })
+                 { setOutputFunction(1, EOutputFunction::Pitch); })
       .addOption("VEL", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::Velocity; })
+                 { setOutputFunction(1, EOutputFunction::Velocity); })
       .addOption("CC", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::ContinuesController; })
+                 { setOutputFunction(1, EOutputFunction::ContinuesController); })
       .addOption("At", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::AfterTouch; })
+                 { setOutputFunction(1, EOutputFunction::AfterTouch); })
       .addOption("Gt", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::Gate; })
+                 { setOutputFunction(1, EOutputFunction::Gate); })
       .addOption("Tr", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::Trigger; })
+                 { setOutputFunction(1, EOutputFunction::Trigger); })
       .addOption("Rst", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::Reset; })
+                 { setOutputFunction(1, EOutputFunction::Reset); })
       .addOption("-", 0b01000000, [this]()
-                 { mSettings.get().outputFunctions[1] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(1, EOutputFunction::Unassigned); });
   // CV output 2
   this->addSubMenu("2", 0b00100000)
       .addOption("Ptc", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::Pitch; })
+                 { setOutputFunction(2, EOutputFunction::Pitch); })
       .addOption("VEL", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::Velocity; })
+                 { setOutputFunction(2, EOutputFunction::Velocity); })
       .addOption("CC", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::ContinuesController; })
+                 { setOutputFunction(2, EOutputFunction::ContinuesController); })
       .addOption("At", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::AfterTouch; })
+                 { setOutputFunction(2, EOutputFunction::AfterTouch); })
       .addOption("Gt", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::Gate; })
+                 { setOutputFunction(2, EOutputFunction::Gate); })
       .addOption("Tr", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::Trigger; })
+                 { setOutputFunction(2, EOutputFunction::Trigger); })
       .addOption("Rst", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::Reset; })
+                 { setOutputFunction(2, EOutputFunction::Reset); })
       .addOption("-", 0b00100000, [this]()
-                 { mSettings.get().outputFunctions[2] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(2, EOutputFunction::Unassigned); });
   // CV output 3
   this->addSubMenu("3", 0b00010000)
       .addOption("Ptc", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::Pitch; })
+                 { setOutputFunction(3, EOutputFunction::Pitch); })
       .addOption("VEL", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::Velocity; })
+                 { setOutputFunction(3, EOutputFunction::Velocity); })
       .addOption("CC", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::ContinuesController; })
+                 { setOutputFunction(3, EOutputFunction::ContinuesController); })
       .addOption("At", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::AfterTouch; })
+                 { setOutputFunction(3, EOutputFunction::AfterTouch); })
       .addOption("Gt", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::Gate; })
+                 { setOutputFunction(3, EOutputFunction::Gate); })
       .addOption("Tr", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::Trigger; })
+                 { setOutputFunction(3, EOutputFunction::Trigger); })
       .addOption("Rst", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::Reset; })
+                 { setOutputFunction(3, EOutputFunction::Reset); })
       .addOption("-", 0b00010000, [this]()
-                 { mSettings.get().outputFunctions[3] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(3, EOutputFunction::Unassigned); });
   // CV output 4
   this->addSubMenu("4", 0b00001000)
       .addOption("Ptc", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Pitch; })
+                 { setOutputFunction(4, EOutputFunction::Pitch); })
       .addOption("VEL", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Velocity; })
+                 { setOutputFunction(4, EOutputFunction::Velocity); })
       .addOption("CC", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::ContinuesController; })
+                 { setOutputFunction(4, EOutputFunction::ContinuesController); })
       .addOption("At", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::AfterTouch; })
+                 { setOutputFunction(4, EOutputFunction::AfterTouch); })
       .addOption("Gt", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+                 { setOutputFunction(4, EOutputFunction::Gate); })
       .addOption("Tr", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+                 { setOutputFunction(4, EOutputFunction::Trigger); })
       .addOption("Rst", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+                 { setOutputFunction(4, EOutputFunction::Reset); })
       .addOption("-", 0b00001000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(4, EOutputFunction::Unassigned); });
   // Gate output 1
   this->addSubMenu("5", 0b00000100)
       .addOption("Gt", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[5] = EOutputFunction::Gate; })
+                 { setOutputFunction(5, EOutputFunction::Gate); })
       .addOption("Tr", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[5] = EOutputFunction::Trigger; })
+                 { setOutputFunction(5, EOutputFunction::Trigger); })
       .addOption("Rst", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[5] = EOutputFunction::Reset; })
+                 { setOutputFunction(5, EOutputFunction::Reset); })
       .addOption("-", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[5] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(5, EOutputFunction::Unassigned); });
   // Gate output 2
   this->addSubMenu("6", 0b00000010)
       .addOption("Gt", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[6] = EOutputFunction::Gate; })
+                 { setOutputFunction(6, EOutputFunction::Gate); })
       .addOption("Tr", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[6] = EOutputFunction::Trigger; })
+                 { setOutputFunction(6, EOutputFunction::Trigger); })
       .addOption("Rst", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[6] = EOutputFunction::Reset; })
+                 { setOutputFunction(6, EOutputFunction::Reset); })
       .addOption("-", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[6] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(6, EOutputFunction::Unassigned); });
   // Gate output 3
   this->addSubMenu("7", 0b00000001)
       .addOption("Gt", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[7] = EOutputFunction::Gate; })
+                 { setOutputFunction(7, EOutputFunction::Gate); })
       .addOption("Tr", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[7] = EOutputFunction::Trigger; })
+                 { setOutputFunction(7, EOutputFunction::Trigger); })
       .addOption("Rst", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[7] = EOutputFunction::Reset; })
+                 { setOutputFunction(7, EOutputFunction::Reset); })
       .addOption("-", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[7] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(7, EOutputFunction::Unassigned); });
   // Gate output 4
   this->addSubMenu("8", 0b10000000)
       .addOption("Gt", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[8] = EOutputFunction::Gate; })
+                 { setOutputFunction(8, EOutputFunction::Gate); })
       .addOption("Tr", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[8] = EOutputFunction::Trigger; })
+                 { setOutputFunction(8, EOutputFunction::Trigger); })
       .addOption("Rst", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[8] = EOutputFunction::Reset; })
+                 { setOutputFunction(8, EOutputFunction::Reset); })
       .addOption("-", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[8] = EOutputFunction::Unassigned; });
+                 { setOutputFunction(8, EOutputFunction::Unassigned); });
 }
 
 void CMenu::update() const
@@ -347,4 +345,38 @@ void CMenu::handleInput()
   }
 
   _next = _prev = _back = _select = false;
+}
+
+void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
+{
+  if (function == EOutputFunction::ContinuesController)
+  {
+    // MIDI learn required
+    uint8_t cc;
+    if (mMidiHandler.learn(cc, _back))
+    {
+      mSettings.get().outputIsMapped[index] = true;
+      mSettings.get().outputMappedTo[index] = cc;
+      mSettings.get().outputFunctions[index] = function;
+    }
+  }
+  else if (function == EOutputFunction::Trigger)
+  {
+    // MIDI learn optional
+    uint8_t key;
+    if (mMidiHandler.learn(key, _back))
+    {
+      mSettings.get().outputIsMapped[index] = true;
+      mSettings.get().outputMappedTo[index] = key;
+    }
+    else
+    {
+      mSettings.get().outputIsMapped[index] = false;
+    }
+    mSettings.get().outputFunctions[index] = function;
+  }
+  else
+  {
+    mSettings.get().outputFunctions[index] = function;
+  }
 }

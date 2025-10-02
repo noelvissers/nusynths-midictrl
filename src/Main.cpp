@@ -8,13 +8,12 @@
 #include "Outputs.h"
 
 // TODO: Change board config in mkrzero_nu_midictrl.json. Use testing VID/PID for now (https://pid.codes/) and use default bootloader VID/PID
-// TODO: Learn is not correctly implemented yet in menu selection
 
 CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
 COutputs outputs(gui);
 CMidiHandler midiHandler(outputs, settings);
-CMenu menu("Root menu", gui, settings);
+CMenu menu("Root menu", gui, settings, midiHandler);
 
 // Interrupts
 bool rotaryEncClkLast = 0;
@@ -90,6 +89,7 @@ void loop()
       menu.handleInput();
     }
     settings.save();
+    // TODO: Update outputs with new settings
     Serial.println("Exiting menu...");
   }
   midiHandler.read();
