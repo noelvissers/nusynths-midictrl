@@ -7,11 +7,8 @@
 #include "Settings.h"
 #include "Outputs.h"
 
-/**
- * TODO:
- * - Change board config in mkrzero_nu_midictrl.json. Use testing VID/PID for now (https://pid.codes/) and use default bootloader VID/PID
- * - Add briefs to all header files + finish documentation in readme
- */
+// TODO: Change board config in mkrzero_nu_midictrl.json. Use testing VID/PID for now (https://pid.codes/) and use default bootloader VID/PID
+// TODO: Learn is not correctly implemented yet in menu selection
 
 CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
@@ -74,7 +71,7 @@ void setup()
   // Load saved configuration from flash (or default when no settings found)
   settings.load();
   outputs.setOutputs(settings.get());
-  
+
   // Clear display and LEDs
   gui.clear();
 }

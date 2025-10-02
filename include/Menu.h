@@ -17,8 +17,22 @@ public:
   explicit CMenuItem(const std::string &name, uint8_t led);
   virtual ~CMenuItem() = default;
 
+  /**
+   * @brief Get the name of the menu item
+   * @return Name of the menu item
+   */
   const std::string &getName() const;
+
+  /**
+   * @brief Get the LED associated with the menu item
+   * @return LED mask (example 0b00000001)
+   */
   uint8_t getLed() const;
+
+  /**
+   * @brief Check if the menu item is a submenu
+   * @return True if it is a submenu
+   */
   virtual bool isSubMenu() const = 0;
 
 protected:

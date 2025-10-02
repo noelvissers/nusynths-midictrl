@@ -58,44 +58,6 @@ CMenu::CMenu(const std::string &name, CGui &gui, CSettings &settings)
 
 void CMenu::build()
 {
-  // Menu structure:
-  /*
-   * Root
-   * ├─ Settings [Cnf + All LEDs]
-   * │  ├─ Midi channel [Chn]
-   * │  │  ├─ All() [All]
-   * │  │  ├─ 1() [1]
-   * │  │  ├─ ...
-   * │  │  └─ 16() [16]
-   * │  ├─ Mode [Mod]
-   * │  │  ├─ Mono() [Mon]
-   * │  │  └─ Poly() [Pol]
-   * │  ├─ Pitch bend [Pb.]
-   * │  │  ├─ 0 semitones() [0]
-   * │  │  ├─ 1 semitones() [1]
-   * │  │  ├─ 2 semitones() [2]
-   * │  │  ├─ ...
-   * │  │  └─ 12 semitones() [12]
-   * │  └─ Clock div [Clk]
-   * │     ├─ 1 div() [1]
-   * │     ├─ ...
-   * │     └─ 256 div() [256]
-   * ├─ Output GATE [1..4 + LED]
-   * │  ├─ Gate() [Gt]
-   * │  ├─ Trigger() [Tr] → Learn MIDI note [Optional]
-   * │  ├─ Reset() [Rst]
-   * │  └─ Unassigned() [-]
-   * └─ Output CV [5..8 + LED]
-   *   ├─ Pitch() [Ptc]
-   *   ├─ Velocity() [VEL]
-   *   ├─ CC() [CC] → Learn MIDI CC [Required]
-   *   ├─ AfterTouch() [At.]
-   *   ├─ Gate() [Gt]
-   *   ├─ Trigger() [Tr] → Learn MIDI note [Optional]
-   *   ├─ Reset() [Rst]
-   *   └─ Unassigned() [-]
-   */
-
   // Config
   CSubMenu &configMenu = this->addSubMenu("Cnf", 0b11111111);
   {
@@ -263,43 +225,43 @@ void CMenu::build()
   // Gate output 1
   this->addSubMenu("5", 0b00000100)
       .addOption("Gt", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+                 { mSettings.get().outputFunctions[5] = EOutputFunction::Gate; })
       .addOption("Tr", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+                 { mSettings.get().outputFunctions[5] = EOutputFunction::Trigger; })
       .addOption("Rst", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+                 { mSettings.get().outputFunctions[5] = EOutputFunction::Reset; })
       .addOption("-", 0b00000100, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+                 { mSettings.get().outputFunctions[5] = EOutputFunction::Unassigned; });
   // Gate output 2
   this->addSubMenu("6", 0b00000010)
       .addOption("Gt", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+                 { mSettings.get().outputFunctions[6] = EOutputFunction::Gate; })
       .addOption("Tr", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+                 { mSettings.get().outputFunctions[6] = EOutputFunction::Trigger; })
       .addOption("Rst", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+                 { mSettings.get().outputFunctions[6] = EOutputFunction::Reset; })
       .addOption("-", 0b00000010, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+                 { mSettings.get().outputFunctions[6] = EOutputFunction::Unassigned; });
   // Gate output 3
   this->addSubMenu("7", 0b00000001)
       .addOption("Gt", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+                 { mSettings.get().outputFunctions[7] = EOutputFunction::Gate; })
       .addOption("Tr", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+                 { mSettings.get().outputFunctions[7] = EOutputFunction::Trigger; })
       .addOption("Rst", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+                 { mSettings.get().outputFunctions[7] = EOutputFunction::Reset; })
       .addOption("-", 0b00000001, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+                 { mSettings.get().outputFunctions[7] = EOutputFunction::Unassigned; });
   // Gate output 4
   this->addSubMenu("8", 0b10000000)
       .addOption("Gt", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Gate; })
+                 { mSettings.get().outputFunctions[8] = EOutputFunction::Gate; })
       .addOption("Tr", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Trigger; })
+                 { mSettings.get().outputFunctions[8] = EOutputFunction::Trigger; })
       .addOption("Rst", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Reset; })
+                 { mSettings.get().outputFunctions[8] = EOutputFunction::Reset; })
       .addOption("-", 0b10000000, [this]()
-                 { mSettings.get().outputFunctions[4] = EOutputFunction::Unassigned; });
+                 { mSettings.get().outputFunctions[8] = EOutputFunction::Unassigned; });
 }
 
 void CMenu::update() const
