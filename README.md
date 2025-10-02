@@ -56,7 +56,7 @@ Each output can be configured to a certain function via the configuration menu:
 |Reset                 |CV + GATE         |0-5V, 1ms
 
 
-\* Optional
+\* Optional (press rotary encoder to cancel)
 
 ### Menu structure:
 

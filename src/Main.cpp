@@ -12,7 +12,7 @@
 CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
 COutputs outputs(gui);
-CMidiHandler midiHandler(outputs, settings);
+CMidiHandler midiHandler(outputs, settings, gui);
 CMenu menu("Root menu", gui, settings, midiHandler);
 
 // Interrupts

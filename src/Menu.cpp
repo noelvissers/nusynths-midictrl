@@ -328,7 +328,13 @@ void CMenu::handleInput()
     {
       CMenuOption *option = static_cast<CMenuOption *>(selectedItem);
       if (option->onSelectCallback)
+      {
         option->onSelectCallback();
+
+        // Blink all leds to confirm action
+        mGui.setLed(3, 0b11111111);
+        delay(200);
+      }
     }
   }
   else if (_back)
@@ -353,7 +359,7 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
   {
     // MIDI learn required
     uint8_t cc;
-    if (mMidiHandler.learn(cc, _back))
+    if (mMidiHandler.learn(cc, _select))
     {
       mSettings.get().outputIsMapped[index] = true;
       mSettings.get().outputMappedTo[index] = cc;
@@ -364,7 +370,7 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
   {
     // MIDI learn optional
     uint8_t key;
-    if (mMidiHandler.learn(key, _back))
+    if (mMidiHandler.learn(key, _select))
     {
       mSettings.get().outputIsMapped[index] = true;
       mSettings.get().outputMappedTo[index] = key;

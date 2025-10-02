@@ -2,6 +2,7 @@
 
 #include "Outputs.h"
 #include "Settings.h"
+#include "Gui.h"
 #include "MidiOverSerial.h"
 #include "MidiOverUsb.h"
 #include <MIDI.h>
@@ -10,7 +11,7 @@
 class CMidiHandler
 {
 public:
-  CMidiHandler(COutputs &outputs, CSettings &settings);
+  CMidiHandler(COutputs &outputs, CSettings &settings, CGui &gui);
   ~CMidiHandler() = default;
 
   /**
@@ -29,6 +30,7 @@ public:
 private:
   COutputs &mOutputs;
   CSettings &mSettings;
+  CGui &mGui;
 
   CMidiSerial mMidiSerial;
   CMidiUsb mMidiUsb;
