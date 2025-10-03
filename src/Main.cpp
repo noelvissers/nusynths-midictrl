@@ -89,6 +89,7 @@ void loop()
     }
     settings.save();
     outputs.setOutputs(settings.get());
+    rotaryEncButtonLast = millis(); // Make sure that menu is not immediately reopened
   }
   midiHandler.read();
   outputs.update();

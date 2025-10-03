@@ -347,9 +347,12 @@ void CMenu::handleInput()
       _navigationStack.pop();
     }
     else
+    {
       bActive = false; // Exit menu if back is pressed on root
+      mGui.clear();
+    }
   }
-
+  
   _next = _prev = _back = _select = false;
 }
 
