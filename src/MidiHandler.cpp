@@ -1,7 +1,7 @@
 #include "MidiHandler.h"
 
-CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings)
-    : mOutputs(outputs), mSettings(settings) {}
+CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings, CGui &gui)
+    : mOutputs(outputs), mSettings(settings), mGui(gui) {}
 
 void CMidiHandler::read()
 {
@@ -21,11 +21,27 @@ bool CMidiHandler::learn(uint8_t &value, volatile bool &cancel)
   SMidiSerialPacket midiSerialPacket;
   SMidiUsbPacket midiUsbPacket;
 
+  mGui.setString("Lrn.");
+  bool ledState = true;
+  unsigned long ledStart = millis();
+
   // Clear midi buffers
   midiFlush();
 
   do
   {
+    // Blink LED
+    unsigned long currentMillis = millis();
+    if (currentMillis - ledStart >= 500)
+    {
+      ledStart = currentMillis;
+      if (ledState)
+        mGui.setString("Lrn");
+      else
+        mGui.setString("Lrn.");
+      ledState = !ledState;
+    }
+
     if (mMidiSerial.getPacket(midiSerialPacket))
     {
       if (validateLearn(midiSerialPacket.channel, midiSerialPacket.type, midiSerialPacket.dataByte1, midiSerialPacket.dataByte2, value))

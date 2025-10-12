@@ -7,17 +7,13 @@
 #include "Settings.h"
 #include "Outputs.h"
 
-/**
- * TODO:
- * - Finish menu handling with actual functions instead of nullptr
- * - Add briefs to all header files + finish documentation in readme
- */
+// TODO: Change board config in mkrzero_nu_midictrl.json. Use testing VID/PID for now (https://pid.codes/) and use default bootloader VID/PID
 
 CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
 COutputs outputs(gui);
-CMidiHandler midiHandler(outputs, settings);
-CMenu menu("Root menu", gui);
+CMidiHandler midiHandler(outputs, settings, gui);
+CMenu menu("Root menu", gui, settings, midiHandler);
 
 // Interrupts
 bool rotaryEncClkLast = 0;
@@ -74,7 +70,7 @@ void setup()
   // Load saved configuration from flash (or default when no settings found)
   settings.load();
   outputs.setOutputs(settings.get());
-  
+
   // Clear display and LEDs
   gui.clear();
 }
@@ -84,7 +80,6 @@ void loop()
 {
   if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
   {
-    Serial.println("Launching menu...");
     menu.bActive = true;
     while (menu.bActive)
     {
@@ -93,7 +88,8 @@ void loop()
       menu.handleInput();
     }
     settings.save();
-    Serial.println("Exiting menu...");
+    outputs.setOutputs(settings.get());
+    rotaryEncButtonLast = millis(); // Make sure that menu is not immediately reopened
   }
   midiHandler.read();
   outputs.update();

@@ -2,6 +2,7 @@
 
 #include "Outputs.h"
 #include "Settings.h"
+#include "Gui.h"
 #include "MidiOverSerial.h"
 #include "MidiOverUsb.h"
 #include <MIDI.h>
@@ -10,15 +11,26 @@
 class CMidiHandler
 {
 public:
-  CMidiHandler(COutputs &outputs, CSettings &settings);
+  CMidiHandler(COutputs &outputs, CSettings &settings, CGui &gui);
   ~CMidiHandler() = default;
 
+  /**
+   * @brief Reads MIDI packets from both USB and Serial interfaces and processes them.
+   */
   void read();
+
+  /**
+   * @brief Learn mode to capture the next MIDI message and map it to a control
+   * @param value Reference to store the learned MIDI value (note number or controller number)
+   * @param cancel Reference to a volatile boolean that can be set to true to cancel the learn action
+   * @return Returns true if a valid MIDI message was learned, false if cancelled
+   */
   bool learn(uint8_t &value, volatile bool &cancel);
 
 private:
   COutputs &mOutputs;
   CSettings &mSettings;
+  CGui &mGui;
 
   CMidiSerial mMidiSerial;
   CMidiUsb mMidiUsb;
