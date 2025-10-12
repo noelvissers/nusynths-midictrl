@@ -35,28 +35,65 @@ void CGui::startup()
   // LEDs
   clear();
   setLed(3, 0b10001000);
-  delay(250);
+  delay(100);
   setLed(3, 0b00010001);
-  delay(250);
+  delay(100);
   setLed(3, 0b00100010);
-  delay(250);
+  delay(100);
   setLed(3, 0b01000100);
-  delay(250);
+  delay(100);
+  setLed(3, 0b00000000);
 
-  // n
+  // Snake
   setLed(0, 0b00000100);
-  delay(250);
-  setLed(0, 0b00000101);
-  delay(250);
-  setLed(0, 0b00010101);
-  delay(250);
+  delay(75);
+  setLed(0, 0b00000110);
+  delay(75);
+  setLed(0, 0b01000110);
+  delay(75);
+  setLed(0, 0b01000010);
+  setLed(1, 0b01000000);
+  delay(75);
+  setLed(0, 0b01000000);
+  setLed(2, 0b01000000);
+  delay(75);
+  setLed(0, 0b00000000);
+  setLed(2, 0b01100000);
+  delay(75);
+  setLed(1, 0b00000000);
+  setLed(2, 0b01101000);
+  delay(75);
+  setLed(2, 0b00101000);
+  setLed(1, 0b00001000);
+  delay(75);
+  setLed(2, 0b00001000);
+  setLed(0, 0b00001000);
+  delay(75);
+  setLed(2, 0b00000000);
+  setLed(0, 0b00001100);
+  delay(75);
+  setLed(1, 0b00000000);
+  setLed(0, 0b00001110);
+  delay(75);
 
-  // u
-  setLed(1, 0b00000100);
-  delay(250);
-  setLed(1, 0b00001100);
-  delay(250);
-  setLed(1, 0b00011100);
+  // N
+  setLed(0, 0b00000110);
+  delay(75);
+  setLed(0, 0b01000110);
+  delay(75);
+  setLed(0, 0b01100110);
+  setLed(1, 0b00000010);
+  delay(75);
+  setLed(0, 0b01110110);
+  setLed(1, 0b00000110);
+  delay(75);
+
+  // U
+  setLed(1, 0b00001110);
+  delay(75);
+  setLed(1, 0b00011110);
+  delay(75);
+  setLed(1, 0b00111110);
 }
 
 void CGui::setString(const std::string &str)
@@ -124,7 +161,8 @@ void CGui::setString(const std::string &str)
       {'y', 0b00111011},
       {'Z', 0b01101101},
       {'z', 0b01101101},
-      {'-', 0b00000001}};
+      {'-', 0b00000001},
+      {'_', 0b00001000}};
 
   unsigned int j = 0;
   for (unsigned int i = 0; i < str.size() && j < 3; i++)
