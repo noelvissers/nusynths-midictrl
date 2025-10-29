@@ -1,16 +1,12 @@
 #include "MidiHandler.h"
-#include "HalConfiguration.h"
-
-Uart SerialMidi(&sercom5, _pinMidiRx, _pinMidiTx, SERCOM_RX_PAD_0, UART_TX_PAD_2);
-
-void SERCOM5_Handler() {
-  SerialMidi.IrqHandler();
-}
 
 CMidiHandler::CMidiHandler(COutputs &outputs, CSettings &settings, CGui &gui)
-    : mOutputs(outputs), mSettings(settings), mGui(gui) {
-      MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, SerialMidi, MIDI, midi::DefaultSettings);
-    }
+    : mOutputs(outputs), mSettings(settings), mGui(gui) {}
+
+void CMidiHandler::begin()
+{
+  mMidiSerial.begin();
+}
 
 void CMidiHandler::read()
 {

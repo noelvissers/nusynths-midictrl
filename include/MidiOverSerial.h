@@ -17,6 +17,11 @@ public:
   ~CMidiSerial() = default;
 
   /**
+   * @brief Initializes the MIDI Serial interface.
+   */
+  void begin();
+
+  /**
    * @brief Gets a MIDI packet.
    * @param midiEventPacket Reference to event packet struct.
    * @return Returns true if successful.

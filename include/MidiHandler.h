@@ -15,6 +15,11 @@ public:
   ~CMidiHandler() = default;
 
   /**
+   * @brief Initializes the MIDI interfaces.
+   */
+  void begin();
+
+  /**
    * @brief Reads MIDI packets from both USB and Serial interfaces and processes them.
    */
   void read();

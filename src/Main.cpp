@@ -71,7 +71,7 @@ void setup()
   settings.load();
   outputs.setOutputs(settings.get());
 
-  midiHandler.begin(); // TODO: init midi with correct pins (UART)
+  midiHandler.begin();
 
   // Clear display and LEDs
   gui.clear();
