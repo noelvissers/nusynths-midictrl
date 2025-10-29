@@ -16,12 +16,15 @@ CMidiHandler midiHandler(outputs, settings, gui);
 CMenu menu("Root menu", gui, settings, midiHandler);
 
 // Interrupts
-bool rotaryEncClkLast = 0;
+bool rotaryEncClkLast = true;
 void isrRotaryEncorder()
 {
+  // Read CLK pin
   bool rotaryEncClk = (*_portRotaryEncClk & _maskRotaryEncClk) != 0;
-  if (rotaryEncClk != rotaryEncClkLast && rotaryEncClk == 1)
+  // Detect falling edge
+  if (rotaryEncClk != rotaryEncClkLast && rotaryEncClk == 0)
   {
+    // Read DATA pin
     bool rotaryEncData = (*_portRotaryEncData & _maskRotaryEncData) != 0;
     if (rotaryEncClk == rotaryEncData)
       _flagRotaryEncCcw = true;
@@ -34,6 +37,7 @@ void isrRotaryEncorder()
 unsigned long rotaryEncButtonLast = 0;
 void isrRotaryEncButton()
 {
+  // Read BUTTON pin
   bool rotaryEncButton = (*_portRotaryEncButton & _maskRotaryEncButton) != 0;
   if (!rotaryEncButton)
   {
