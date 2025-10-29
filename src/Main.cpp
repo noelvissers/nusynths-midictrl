@@ -15,23 +15,27 @@ COutputs outputs(gui);
 CMidiHandler midiHandler(outputs, settings, gui);
 CMenu menu("Root menu", gui, settings, midiHandler);
 
+unsigned long lastTrig = 0;
+unsigned long lastTrigCw = 0;
+unsigned long lastTrigCcw = 0;
 // Interrupts
-bool rotaryEncClkLast = true;
 void isrRotaryEncorder()
 {
-  // Read CLK pin
-  bool rotaryEncClk = (*_portRotaryEncClk & _maskRotaryEncClk) != 0;
-  // Detect falling edge
-  if (rotaryEncClk != rotaryEncClkLast && rotaryEncClk == 0)
+  bool rotaryEncClk = (*_portRotaryEncClk & digitalPinToBitMask(_pinRotaryEncClk)) != 0;
+  if (!rotaryEncClk)
   {
-    // Read DATA pin
-    bool rotaryEncData = (*_portRotaryEncData & _maskRotaryEncData) != 0;
-    if (rotaryEncClk == rotaryEncData)
+    bool rotaryEncData = (*_portRotaryEncData & digitalPinToBitMask(_pinRotaryEncData)) != 0;
+    if ((rotaryEncData == rotaryEncClk) && ((millis() - lastTrig) > 35) && (millis() - lastTrigCw) > 120)
+    {
+      lastTrig = lastTrigCcw = millis();
       _flagRotaryEncCcw = true;
-    else
+    }
+    else if (((millis() - lastTrig) > 35) && (millis() - lastTrigCcw) > 120)
+    {
+      lastTrig = lastTrigCw = millis();
       _flagRotaryEncCw = true;
+    }
   }
-  rotaryEncClkLast = rotaryEncClk;
 }
 
 unsigned long rotaryEncButtonLast = 0;
