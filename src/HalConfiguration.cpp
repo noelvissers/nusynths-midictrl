@@ -4,16 +4,16 @@
 
 // Rotary encoder
 const uint8_t _pinRotaryEncButton = 5; // PB11
-const uint8_t _pinRotaryEncClk = 4;    // PB10
-const uint8_t _pinRotaryEncData = 1;   // PA23
+const uint8_t _pinRotaryEncClk = 1;    // PA23
+const uint8_t _pinRotaryEncData = 4;   // PB10
 
 // Rotary encoder port and bit masks for faster IO read/writes
-const uint8_t _maskRotaryEncButton = digitalPinToBitMask(_pinRotaryEncButton);
-volatile uint32_t *_portRotaryEncButton = portInputRegister(digitalPinToPort(_pinRotaryEncButton));
-const uint8_t _maskRotaryEncClk = digitalPinToBitMask(_pinRotaryEncClk);
-volatile uint32_t *_portRotaryEncClk = portInputRegister(digitalPinToPort(_pinRotaryEncClk));
-const uint8_t _maskRotaryEncData = digitalPinToBitMask(_pinRotaryEncData);
-volatile uint32_t *_portRotaryEncData = portInputRegister(digitalPinToPort(_pinRotaryEncData));
+uint32_t _maskRotaryEncButton = 0;                 // Value set in setup()
+volatile uint32_t *_portRotaryEncButton = nullptr; // Value set in setup()
+uint32_t _maskRotaryEncClk = 0;                    // Value set in setup()
+volatile uint32_t *_portRotaryEncClk = nullptr;    // Value set in setup()
+uint32_t _maskRotaryEncData = 0;                   // Value set in setup()
+volatile uint32_t *_portRotaryEncData = nullptr;   // Value set in setup()
 
 // Rotary encoder flags
 volatile bool _flagRotaryEncButton = false;
@@ -41,6 +41,8 @@ const uint8_t _pinDacSync = 7;   // PA21
 const uint8_t _pinDacLdac = 11;  // PA08
 const uint8_t _pinDacEnable = 6; // PA20
 // const uint8_t _pinDacMosi = 8; // PA16
+// const uint8_t _pinDacMiso = 10; // PA19
+// const uint8_t _pinDacSck = 9; // PA17
 
 const uint8_t _pinDisplaySs = 21;  // PA07
 const uint8_t _pinDisplaySck = 3;  // PA11

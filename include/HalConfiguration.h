@@ -8,12 +8,12 @@ extern const uint8_t _pinRotaryEncClk;
 extern const uint8_t _pinRotaryEncData;
 
 // Rotary encoder port and bit masks for faster IO read/writes
-extern const uint8_t _maskRotaryEncButton;
-extern volatile uint32_t *_portRotaryEncButton;
-extern const uint8_t _maskRotaryEncClk;
-extern volatile uint32_t *_portRotaryEncClk;
-extern const uint8_t _maskRotaryEncData;
-extern volatile uint32_t *_portRotaryEncData;
+extern uint32_t _maskRotaryEncButton;            // Value set in setup()
+extern volatile uint32_t *_portRotaryEncButton; // Value set in setup()
+extern uint32_t _maskRotaryEncClk;               // Value set in setup()
+extern volatile uint32_t *_portRotaryEncClk;    // Value set in setup()
+extern uint32_t _maskRotaryEncData;              // Value set in setup()
+extern volatile uint32_t *_portRotaryEncData;   // Value set in setup()
 
 // Rotary encoder flags
 extern volatile bool _flagRotaryEncButton;
@@ -41,6 +41,8 @@ extern const uint8_t _pinDacSync;
 extern const uint8_t _pinDacLdac;
 extern const uint8_t _pinDacEnable;
 // extern const uint8_t _pinDacMosi;
+// extern const uint8_t _pinDacMiso;
+// extern const uint8_t _pinDacSck;
 
 extern const uint8_t _pinDisplaySs;
 extern const uint8_t _pinDisplaySck;

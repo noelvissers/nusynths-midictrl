@@ -277,8 +277,12 @@ void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool
 {
   while (press)
     ; // Wait for button to be released
+
+  next = prev = false;
   while (!next && !prev && !press)
     ; // Wait for any input
+
+  noInterrupts();
 
   if (next)
     _next = true;
@@ -305,6 +309,7 @@ void CMenu::handleInput()
   if (!_currentMenu || _currentMenu->getItems().empty())
   {
     _next = _prev = _back = _select = false;
+    interrupts();
     return;
   }
 
@@ -352,7 +357,8 @@ void CMenu::handleInput()
       mGui.clear();
     }
   }
-  
+
+  interrupts();
   _next = _prev = _back = _select = false;
 }
 

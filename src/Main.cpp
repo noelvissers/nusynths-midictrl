@@ -15,27 +15,29 @@ COutputs outputs(gui);
 CMidiHandler midiHandler(outputs, settings, gui);
 CMenu menu("Root menu", gui, settings, midiHandler);
 
-unsigned long lastTrig = 0;
-unsigned long lastTrigCw = 0;
-unsigned long lastTrigCcw = 0;
-// Interrupts
+static volatile unsigned long lastTrig = 0;
+static volatile bool stateLast = 0;
 void isrRotaryEncorder()
 {
-  bool rotaryEncClk = (*_portRotaryEncClk & digitalPinToBitMask(_pinRotaryEncClk)) != 0;
+  unsigned long now = millis();
+  if (now - lastTrig < 5)
+    return; // Debounce
+
+  bool rotaryEncClk = (*_portRotaryEncClk & _maskRotaryEncClk) != 0;
+  bool rotaryEncData = (*_portRotaryEncData & _maskRotaryEncData) != 0;
+
+  if (rotaryEncClk == stateLast)
+    return; // No change
+
   if (!rotaryEncClk)
   {
-    bool rotaryEncData = (*_portRotaryEncData & digitalPinToBitMask(_pinRotaryEncData)) != 0;
-    if ((rotaryEncData == rotaryEncClk) && ((millis() - lastTrig) > 35) && (millis() - lastTrigCw) > 120)
-    {
-      lastTrig = lastTrigCcw = millis();
-      _flagRotaryEncCcw = true;
-    }
-    else if (((millis() - lastTrig) > 35) && (millis() - lastTrigCcw) > 120)
-    {
-      lastTrig = lastTrigCw = millis();
+    if (rotaryEncClk == rotaryEncData)
       _flagRotaryEncCw = true;
-    }
+    else
+      _flagRotaryEncCcw = true;
   }
+  lastTrig = now;
+  stateLast = rotaryEncClk;
 }
 
 unsigned long rotaryEncButtonLast = 0;
@@ -57,18 +59,28 @@ void setup()
 {
   Serial.begin(115200);
 
-  // Pin modes
-  pinMode(LED_BUILTIN, OUTPUT);
+  // ISR Rotarty Encoder Button
   pinMode(_pinRotaryEncButton, INPUT);
-  pinMode(_pinRotaryEncClk, INPUT);
-  pinMode(_pinRotaryEncData, INPUT);
-
-  // Interrupts
+  _maskRotaryEncButton = digitalPinToBitMask(_pinRotaryEncButton);
+  _portRotaryEncButton = portInputRegister(digitalPinToPort(_pinRotaryEncButton));
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncButton), isrRotaryEncButton, CHANGE);
+
+  // ISR Rotarty Encoder Clk
+  pinMode(_pinRotaryEncClk, INPUT);
+  _maskRotaryEncClk = digitalPinToBitMask(_pinRotaryEncClk);
+  _portRotaryEncClk = portInputRegister(digitalPinToPort(_pinRotaryEncClk));
   attachInterrupt(digitalPinToInterrupt(_pinRotaryEncClk), isrRotaryEncorder, CHANGE);
 
-  // Initialize
+  // ISR Rotarty Encoder Data
+  pinMode(_pinRotaryEncData, INPUT);
+  _maskRotaryEncData = digitalPinToBitMask(_pinRotaryEncData);
+  _portRotaryEncData = portInputRegister(digitalPinToPort(_pinRotaryEncData));
+  attachInterrupt(digitalPinToInterrupt(_pinRotaryEncData), isrRotaryEncorder, CHANGE);
+
+  // LED
+  pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH); // Turn on LED
+
   menu.build();
   outputs.init();
 
