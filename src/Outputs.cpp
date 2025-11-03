@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 COutputs::COutputs(CGui &gui)
-    : mGui(gui), mDac(SPI, _spiSpeed, _pinDacSync, _pinDacLdac, _pinDacEnable)
+    : mGui(gui), mDac(_spiSpeed, _pinDacEnable, _pinDacSync)
 {
   // Default initialization
   SOutput defaultOutput;
@@ -58,8 +58,10 @@ void COutputs::init()
   digitalWrite(_pinGate3, LOW);
   digitalWrite(_pinGate4, LOW);
 
+  pinMode(_pinDacLdac, OUTPUT);
+  digitalWrite(_pinDacLdac, LOW); // Don't use hardware sync
   mDac.begin();
-  mDac.enable();
+  mDac.setOperatingModeAll(DAC8564::OperatingMode::NORMAL_OPERATION);
 }
 
 void COutputs::update()
@@ -88,7 +90,7 @@ void COutputs::update()
           value = getPitch(output.value, output.pitchBend);
         else
           value = output.value;
-        mDac.write(output.dacChannel, value);
+        mDac.write(DAC8564::Address::ADDR_0, DAC8564::Load::WRITE_N_LOAD_N, output.dacChannel, value);
         break;
       case EOutputType::Digital:
         digitalWrite(output.outputPin, output.value > 0 ? HIGH : LOW);
