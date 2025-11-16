@@ -32,10 +32,6 @@ extern const uint8_t _pinSync;
 // SPI
 extern const uint32_t _spiSpeed;
 
-// MIDI
-extern const uint8_t _pinMidiRx;
-extern const uint8_t _pinMidiTx;
-
 // DAC8564
 extern const uint8_t _pinDacSync;
 extern const uint8_t _pinDacLdac;

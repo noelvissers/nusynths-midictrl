@@ -29,10 +29,6 @@ const uint8_t _pinGate4 = 19; // PA05
 // Sync [5V DIO]
 const uint8_t _pinSync = 20; // PA06
 
-// MIDI
-const uint8_t _pinMidiRx = 0;  // PA22 SERCOM5 (alt) PAD[0]
-const uint8_t _pinMidiTx = 14; // PB22 SERCOM5 (alt) PAD[2] (NC)
-
 // SPI
 const uint32_t _spiSpeed = 24000000; // 24 MHz (Maximum SPI speed for MKRZero)
 

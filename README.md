@@ -100,6 +100,8 @@ Menu
 
 Open the project in [Visual Studio Code](https://code.visualstudio.com/) with the [PlatformIO](https://platformio.org/) extension installed.
 
+This source code uses a custom variant.cpp/.h that is not included in this repository (yet). It is the mkrzero variant with Serial1 definition removed, so a custom Serial1 can be defined in the source code. This is needed since MIDI (RX) is routed to PA22 instead of PB23.
+
 ## Dependencies
 
 [fortyseveneffects/MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) [v5.0.2]
