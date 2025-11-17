@@ -11,7 +11,7 @@
 #define OUTPUT_HIGH 32768 // 5V for DAC, HIGH for IO
 #define OUTPUT_LOW 0
 
-struct SSettings; // Forward declaration from Settings.h
+struct SSystemSettings; // Forward declaration from Settings.h
 
 enum class EOutputType : uint8_t
 {
@@ -33,9 +33,8 @@ enum class EOutputFunction : uint8_t
   Unassigned = 0
 };
 
-// TODO: Rename to SOutputConfig
-// This should hold all necessary information about an output for run-time use
-struct SOutput
+// Hold all necessary information about an output for run-time use
+struct SOutputConfig
 {
   EOutputType type = EOutputType::Undefined;
   EOutputFunction function = EOutputFunction::Unassigned;
@@ -71,21 +70,21 @@ public:
    * @brief Sets the configuration for a the outputs based on stored settings.
    * @param settings Reference to settings structure.
    */
-  void setOutputs(const SSettings &settings);
+  void setOutputs(const SSystemSettings &settings);
 
   /**
    * @brief Sets the configuration for a specific output.
    * @param index The index of the output to set (0 to N_OUTPUTS-1).
    * @param outputConfig The configuration for the output.
    */
-  void setOutput(uint16_t index, const SOutput &outputConfig);
+  void setOutput(uint16_t index, const SOutputConfig &outputConfig);
 
   /**
    * @brief Gets the configuration for a specific output.
    * @param index The index of the output to get (0 to N_OUTPUTS-1).
    * @return The configuration for the output.
    */
-  SOutput getOutput(uint16_t index) const;
+  SOutputConfig getOutput(uint16_t index) const;
 
   /**
    * @brief Maps a MIDI note to a 16 bit 1V/Oct value for the DAC.

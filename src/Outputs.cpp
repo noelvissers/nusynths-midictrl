@@ -7,7 +7,7 @@ COutputs::COutputs(CGui &gui)
     : mGui(gui), mDac(_spiSpeed, _pinDacEnable, _pinDacSync)
 {
   // Default initialization
-  SOutput defaultOutput;
+  SOutputConfig defaultOutput;
 
   for (auto i = 0; i < N_OUTPUTS; ++i)
     mOutputs[i] = defaultOutput;
@@ -104,30 +104,30 @@ void COutputs::update()
   }
 }
 
-void COutputs::setOutputs(const SSettings &settings)
+void COutputs::setOutputs(const SSystemSettings &settings)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
     // TODO: This won't work since output is not modified.
-    SOutput output = mOutputs[i];
+    SOutputConfig output = mOutputs[i];
 
-    mOutputs[i].function = settings.outputFunctions[i];
-    mOutputs[i].isMapped = settings.outputIsMapped[i];
-    mOutputs[i].mappedTo = settings.outputMappedTo[i];
+    output.function = settings.outputSettings[i].function;
+    output.isMapped = settings.outputSettings[i].isMapped;
+    output.mappedTo = settings.outputSettings[i].mappedTo;
 
     setOutput(i, output);
   }
 }
 
-void COutputs::setOutput(uint16_t index, const SOutput &outputConfig)
+void COutputs::setOutput(uint16_t index, const SOutputConfig &config)
 {
   if (index < mOutputs.size())
-    mOutputs[index] = outputConfig;
+    mOutputs[index] = config;
 }
 
-SOutput COutputs::getOutput(uint16_t index) const
+SOutputConfig COutputs::getOutput(uint16_t index) const
 {
-  SOutput output;
+  SOutputConfig output;
 
   if (index < mOutputs.size())
     output = mOutputs[index];

@@ -15,26 +15,21 @@ enum class ESynthMode
   Polyphonic = 1
 };
 
-// TODO: Rename to SSystemSettings
-// This should hold all necessary information about the system for load-time use
-// This is the structure that will be stored in flash, and can be edited via the menu
-struct SSettings
+struct SOutputSettings
+{
+  EOutputFunction function = EOutputFunction::Unassigned;
+  bool isMapped = false;    // Indicates if the output is mapped to a specific MIDI note or CC
+  uint8_t mappedTo = 0;     // Mapped value
+};
+
+// Hold all necessary information about the system for load-time use, can be edited via the menu
+struct SSystemSettings
 {
   uint8_t midiChannel = 0; // 1-16, 0 for omni
   ESynthMode synthMode = ESynthMode::Monophonic;
   uint8_t pitchBendSemitones = 12;
   uint8_t clockDiv = 1;
-  // TODO: This should be an array of structs holding output config 
-  std::array<EOutputFunction, 9> outputFunctions;
-  std::array<bool, 9> outputIsMapped;
-  std::array<uint8_t, 9> outputMappedTo;
-
-  SSettings()
-  {
-    outputFunctions.fill(EOutputFunction::Unassigned);
-    outputIsMapped.fill(false);
-    outputMappedTo.fill(0);
-  }
+  std::array<SOutputSettings, 9> outputSettings;
 };
 
 class CSettings
@@ -55,11 +50,11 @@ public:
   void save();
 
   /**
-   * @brief Get the current settings
-   * @return Current settings structure
+   * @brief Get the current system settings
+   * @return Current system settings struct
    */
-  SSettings& get();
+  SSystemSettings& get();
 
 private:
-  SSettings mSettings;
+  SSystemSettings mSettings;
 };
