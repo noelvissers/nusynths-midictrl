@@ -1,8 +1,6 @@
 #include "Menu.h"
 #include <Arduino.h>
 
-//TODO: Fix text, some chars are not displayed correctly
-
 // MenuItem
 CMenuItem::CMenuItem(const std::string &name, const uint8_t &led) : _name(name), _led(led) {}
 
@@ -44,7 +42,7 @@ const std::vector<std::unique_ptr<CMenuItem>> &CSubMenu::getItems() const
 }
 
 // MenuOption
-CMenuOption::CMenuOption(const std::string &name, const uint8_t & led, std::function<void()> onSelect)
+CMenuOption::CMenuOption(const std::string &name, const uint8_t &led, std::function<void()> onSelect)
     : CMenuItem(name, led), onSelectCallback(onSelect) {}
 
 bool CMenuOption::isSubMenu() const
@@ -270,6 +268,7 @@ void CMenu::update() const
     return;
 
   const auto &items = _currentMenu->getItems();
+  // TODO: Selected index should correspond to the current setting
 
   mGui.setString(items[_selectedIndex]->getName());
   mGui.setLed(3, items[_selectedIndex]->getLed());
@@ -337,9 +336,22 @@ void CMenu::handleInput()
 
         // Blink all leds to confirm action
         mGui.setLed(3, 0b11111111);
-        delay(200);
+        delay(250);
 
-        //TODO: Go to prev item?
+        // Back action after executing function
+        if (!_navigationStack.empty())
+        {
+          auto lastState = _navigationStack.top();
+          _currentMenu = lastState.first;
+          _selectedIndex = lastState.second;
+          _navigationStack.pop();
+        }
+        else
+        {
+          // Exit menu if back action is on root
+          bActive = false;
+          mGui.clear();
+        }
       }
     }
   }
@@ -354,7 +366,8 @@ void CMenu::handleInput()
     }
     else
     {
-      bActive = false; // Exit menu if back is pressed on root
+      // Exit menu if back is pressed on root
+      bActive = false;
       mGui.clear();
     }
   }

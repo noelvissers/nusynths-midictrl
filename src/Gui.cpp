@@ -28,6 +28,7 @@ CGui::CGui(int pinSs, int pinSck, int pinMosi)
   setBrightness(8); // Medium brightness
 }
 
+// TODO: Add idle animation/state
 void CGui::startup()
 {
   // Startup animation
@@ -96,6 +97,7 @@ void CGui::startup()
   setLed(1, 0b00111110);
 }
 
+// TODO: Fix text, some chars are not displayed correctly
 void CGui::setString(const std::string &str)
 {
   static const std::unordered_map<char, byte> charMap = {
