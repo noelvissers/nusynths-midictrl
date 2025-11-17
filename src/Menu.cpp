@@ -1,8 +1,10 @@
 #include "Menu.h"
 #include <Arduino.h>
 
+//TODO: Fix text, some chars are not displayed correctly
+
 // MenuItem
-CMenuItem::CMenuItem(const std::string &name, uint8_t led) : _name(name) {}
+CMenuItem::CMenuItem(const std::string &name, const uint8_t &led) : _name(name), _led(led) {}
 
 const std::string &CMenuItem::getName() const
 {
@@ -15,20 +17,20 @@ uint8_t CMenuItem::getLed() const
 }
 
 // SubMenu
-CSubMenu::CSubMenu(const std::string &name, uint8_t led) : CMenuItem(name, led) {}
+CSubMenu::CSubMenu(const std::string &name, const uint8_t &led) : CMenuItem(name, led) {}
 
 bool CSubMenu::isSubMenu() const
 {
   return true;
 }
 
-CSubMenu &CSubMenu::addOption(const std::string &name, uint8_t led, std::function<void()> onSelect)
+CSubMenu &CSubMenu::addOption(const std::string &name, const uint8_t &led, std::function<void()> onSelect)
 {
   _items.push_back(std::unique_ptr<CMenuItem>(new CMenuOption(name, led, onSelect)));
   return *this;
 }
 
-CSubMenu &CSubMenu::addSubMenu(const std::string &name, uint8_t led)
+CSubMenu &CSubMenu::addSubMenu(const std::string &name, const uint8_t &led)
 {
   std::unique_ptr<CSubMenu> newSubMenu(new CSubMenu(name, led));
   CSubMenu *newSubMenuPtr = newSubMenu.get();
@@ -42,7 +44,7 @@ const std::vector<std::unique_ptr<CMenuItem>> &CSubMenu::getItems() const
 }
 
 // MenuOption
-CMenuOption::CMenuOption(const std::string &name, uint8_t led, std::function<void()> onSelect)
+CMenuOption::CMenuOption(const std::string &name, const uint8_t & led, std::function<void()> onSelect)
     : CMenuItem(name, led), onSelectCallback(onSelect) {}
 
 bool CMenuOption::isSubMenu() const
@@ -282,8 +284,6 @@ void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool
   while (!next && !prev && !press)
     ; // Wait for any input
 
-  noInterrupts();
-
   if (next)
     _next = true;
   else if (prev)
@@ -309,7 +309,6 @@ void CMenu::handleInput()
   if (!_currentMenu || _currentMenu->getItems().empty())
   {
     _next = _prev = _back = _select = false;
-    interrupts();
     return;
   }
 
@@ -339,6 +338,8 @@ void CMenu::handleInput()
         // Blink all leds to confirm action
         mGui.setLed(3, 0b11111111);
         delay(200);
+
+        //TODO: Go to prev item?
       }
     }
   }
