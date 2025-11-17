@@ -15,6 +15,11 @@ public:
   void startup();
 
   /**
+   * @brief Display idle state.
+   */
+  void idle();
+
+  /**
    * @brief Sets the string to be displayed on the 7-segment display.
    *        Supports characters 0-9, A-Z, a-z, '-' and '.'.
    * @param str String to display (max 3 characters).

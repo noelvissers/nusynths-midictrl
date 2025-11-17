@@ -28,7 +28,6 @@ CGui::CGui(int pinSs, int pinSck, int pinMosi)
   setBrightness(8); // Medium brightness
 }
 
-// TODO: Add idle animation/state
 void CGui::startup()
 {
   // Startup animation
@@ -95,6 +94,12 @@ void CGui::startup()
   setLed(1, 0b00011110);
   delay(75);
   setLed(1, 0b00111110);
+}
+
+void CGui::idle()
+{
+  clear();
+  setLed(2, 0, true);
 }
 
 // TODO: Fix text, some chars are not displayed correctly

@@ -108,7 +108,6 @@ void COutputs::setOutputs(const SSystemSettings &settings)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    // TODO: This won't work since output is not modified.
     SOutputConfig output = mOutputs[i];
 
     output.function = settings.outputSettings[i].function;

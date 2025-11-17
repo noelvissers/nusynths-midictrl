@@ -93,8 +93,9 @@ void setup()
 
   midiHandler.begin();
 
-  // Clear display and LEDs
-  gui.clear();
+  // Show idle state
+  delay(1000);
+  gui.idle();
 }
 
 // Main
