@@ -33,6 +33,8 @@ enum class EOutputFunction : uint8_t
   Unassigned = 0
 };
 
+// TODO: Rename to SOutputConfig
+// This should hold all necessary information about an output for run-time use
 struct SOutput
 {
   EOutputType type = EOutputType::Undefined;

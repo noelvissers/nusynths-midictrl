@@ -6,19 +6,25 @@
 
 constexpr int TRIGGER_LENGHT_MS = 1; // Trigger length in milliseconds
 
+const uint32_t SETTINGS_SIGNATURE = 0x0B00B1E5;
+const uint32_t SETTINGS_ADDRESS = 0x0;
+
 enum class ESynthMode
 {
   Monophonic = 0,
   Polyphonic = 1
 };
 
-// Settings
+// TODO: Rename to SSystemSettings
+// This should hold all necessary information about the system for load-time use
+// This is the structure that will be stored in flash, and can be edited via the menu
 struct SSettings
 {
   uint8_t midiChannel = 0; // 1-16, 0 for omni
   ESynthMode synthMode = ESynthMode::Monophonic;
   uint8_t pitchBendSemitones = 12;
   uint8_t clockDiv = 1;
+  // TODO: This should be an array of structs holding output config 
   std::array<EOutputFunction, 9> outputFunctions;
   std::array<bool, 9> outputIsMapped;
   std::array<uint8_t, 9> outputMappedTo;
@@ -30,9 +36,6 @@ struct SSettings
     outputMappedTo.fill(0);
   }
 };
-
-const uint32_t SETTINGS_SIGNATURE = 0x0B00B1E5;
-const uint32_t SETTINGS_ADDRESS = 0x0;
 
 class CSettings
 {

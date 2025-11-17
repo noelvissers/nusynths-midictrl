@@ -108,6 +108,7 @@ void COutputs::setOutputs(const SSettings &settings)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
+    // TODO: This won't work since output is not modified.
     SOutput output = mOutputs[i];
 
     mOutputs[i].function = settings.outputFunctions[i];
