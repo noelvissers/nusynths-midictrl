@@ -1,6 +1,8 @@
 #include "Menu.h"
 #include <Arduino.h>
 
+// TODO: led doesnt need to be a reference
+
 // MenuItem
 CMenuItem::CMenuItem(const std::string &name, const uint8_t &led) : _name(name), _led(led) {}
 
@@ -51,8 +53,8 @@ bool CMenuOption::isSubMenu() const
 }
 
 // Menu
-CMenu::CMenu(const std::string &name, CGui &gui, CSettings &settings, CMidiHandler &midiHandler)
-    : CSubMenu(name, 0), mGui(gui), mSettings(settings), mMidiHandler(midiHandler), _currentMenu(this), _selectedIndex(0) {}
+CMenu::CMenu(const std::string &name, CGui &gui, CSettings &systemSettings, CMidiHandler &midiHandler)
+    : CSubMenu(name, 0), mGui(gui), mSystemSettings(systemSettings), mMidiHandler(midiHandler), _currentMenu(this), _selectedIndex(0) {}
 
 void CMenu::build()
 {
@@ -62,91 +64,91 @@ void CMenu::build()
     // MIDI channel
     configMenu.addSubMenu("Chn", 0)
         .addOption("All", 0, [this]()
-                   { mSettings.get().midiChannel = 0; }) // OMNI
+                   { mSystemSettings.get().midiChannel = 0; }) // OMNI
         .addOption("1", 0, [this]()
-                   { mSettings.get().midiChannel = 1; }) // Channel 1
+                   { mSystemSettings.get().midiChannel = 1; }) // Channel 1
         .addOption("2", 0, [this]()
-                   { mSettings.get().midiChannel = 2; })
+                   { mSystemSettings.get().midiChannel = 2; })
         .addOption("3", 0, [this]()
-                   { mSettings.get().midiChannel = 3; })
+                   { mSystemSettings.get().midiChannel = 3; })
         .addOption("4", 0, [this]()
-                   { mSettings.get().midiChannel = 4; })
+                   { mSystemSettings.get().midiChannel = 4; })
         .addOption("5", 0, [this]()
-                   { mSettings.get().midiChannel = 5; })
+                   { mSystemSettings.get().midiChannel = 5; })
         .addOption("6", 0, [this]()
-                   { mSettings.get().midiChannel = 6; })
+                   { mSystemSettings.get().midiChannel = 6; })
         .addOption("7", 0, [this]()
-                   { mSettings.get().midiChannel = 7; })
+                   { mSystemSettings.get().midiChannel = 7; })
         .addOption("8", 0, [this]()
-                   { mSettings.get().midiChannel = 8; })
+                   { mSystemSettings.get().midiChannel = 8; })
         .addOption("9", 0, [this]()
-                   { mSettings.get().midiChannel = 9; })
+                   { mSystemSettings.get().midiChannel = 9; })
         .addOption("10", 0, [this]()
-                   { mSettings.get().midiChannel = 10; })
+                   { mSystemSettings.get().midiChannel = 10; })
         .addOption("11", 0, [this]()
-                   { mSettings.get().midiChannel = 11; })
+                   { mSystemSettings.get().midiChannel = 11; })
         .addOption("12", 0, [this]()
-                   { mSettings.get().midiChannel = 12; })
+                   { mSystemSettings.get().midiChannel = 12; })
         .addOption("13", 0, [this]()
-                   { mSettings.get().midiChannel = 13; })
+                   { mSystemSettings.get().midiChannel = 13; })
         .addOption("14", 0, [this]()
-                   { mSettings.get().midiChannel = 14; })
+                   { mSystemSettings.get().midiChannel = 14; })
         .addOption("15", 0, [this]()
-                   { mSettings.get().midiChannel = 15; })
+                   { mSystemSettings.get().midiChannel = 15; })
         .addOption("16", 0, [this]()
-                   { mSettings.get().midiChannel = 16; });
+                   { mSystemSettings.get().midiChannel = 16; });
     // Mode
     configMenu.addSubMenu("Mod", 0)
         .addOption("Mon", 0, [this]()
-                   { mSettings.get().synthMode = ESynthMode::Monophonic; })
+                   { mSystemSettings.get().synthMode = ESynthMode::Monophonic; })
         .addOption("Pol", 0, [this]()
-                   { mSettings.get().synthMode = ESynthMode::Polyphonic; });
+                   { mSystemSettings.get().synthMode = ESynthMode::Polyphonic; });
     // Pitch bend
     configMenu.addSubMenu("Pb.", 0)
         .addOption("0", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 0; }) // 0 semitones
+                   { mSystemSettings.get().pitchBendSemitones = 0; }) // 0 semitones
         .addOption("1", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 1; }) // 1 semitone
+                   { mSystemSettings.get().pitchBendSemitones = 1; }) // 1 semitone
         .addOption("2", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 2; }) // 2 semitones
+                   { mSystemSettings.get().pitchBendSemitones = 2; }) // 2 semitones
         .addOption("3", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 3; })
+                   { mSystemSettings.get().pitchBendSemitones = 3; })
         .addOption("4", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 4; })
+                   { mSystemSettings.get().pitchBendSemitones = 4; })
         .addOption("5", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 5; })
+                   { mSystemSettings.get().pitchBendSemitones = 5; })
         .addOption("6", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 6; })
+                   { mSystemSettings.get().pitchBendSemitones = 6; })
         .addOption("7", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 7; })
+                   { mSystemSettings.get().pitchBendSemitones = 7; })
         .addOption("8", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 8; })
+                   { mSystemSettings.get().pitchBendSemitones = 8; })
         .addOption("9", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 9; })
+                   { mSystemSettings.get().pitchBendSemitones = 9; })
         .addOption("10", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 10; })
+                   { mSystemSettings.get().pitchBendSemitones = 10; })
         .addOption("11", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 11; })
+                   { mSystemSettings.get().pitchBendSemitones = 11; })
         .addOption("12", 0, [this]()
-                   { mSettings.get().pitchBendSemitones = 12; });
+                   { mSystemSettings.get().pitchBendSemitones = 12; });
     // Clock divider
     configMenu.addSubMenu("Clk", 0)
         .addOption("1", 0, [this]()
-                   { mSettings.get().clockDiv = 1; }) // 1:1
+                   { mSystemSettings.get().clockDiv = 1; }) // 1:1
         .addOption("2", 0, [this]()
-                   { mSettings.get().clockDiv = 2; }) // /2
+                   { mSystemSettings.get().clockDiv = 2; }) // /2
         .addOption("4", 0, [this]()
-                   { mSettings.get().clockDiv = 4; }) // /4
+                   { mSystemSettings.get().clockDiv = 4; }) // /4
         .addOption("8", 0, [this]()
-                   { mSettings.get().clockDiv = 8; }) // /8
+                   { mSystemSettings.get().clockDiv = 8; }) // /8
         .addOption("16", 0, [this]()
-                   { mSettings.get().clockDiv = 16; }) // /16
+                   { mSystemSettings.get().clockDiv = 16; }) // /16
         .addOption("32", 0, [this]()
-                   { mSettings.get().clockDiv = 32; }) // /32
+                   { mSystemSettings.get().clockDiv = 32; }) // /32
         .addOption("64", 0, [this]()
-                   { mSettings.get().clockDiv = 64; }) // /64
+                   { mSystemSettings.get().clockDiv = 64; }) // /64
         .addOption("128", 0, [this]()
-                   { mSettings.get().clockDiv = 128; }); // /128
+                   { mSystemSettings.get().clockDiv = 128; }); // /128
   }
   // CV output 1
   this->addSubMenu("1", 0b01000000)
@@ -268,7 +270,6 @@ void CMenu::update() const
     return;
 
   const auto &items = _currentMenu->getItems();
-  // TODO: Selected index should correspond to the current setting
 
   mGui.setString(items[_selectedIndex]->getName());
   mGui.setLed(3, items[_selectedIndex]->getLed());
@@ -325,7 +326,7 @@ void CMenu::handleInput()
     {
       _navigationStack.push({_currentMenu, _selectedIndex});
       _currentMenu = static_cast<CSubMenu *>(selectedItem);
-      _selectedIndex = 0;
+      _selectedIndex = getIndexFromSetting(selectedItem);
     }
     else
     {
@@ -376,6 +377,27 @@ void CMenu::handleInput()
   _next = _prev = _back = _select = false;
 }
 
+int CMenu::getIndexFromSetting(CMenuItem *selected)
+{
+  if (!selected->isSubMenu())
+    return;
+    
+  if (selected->getName() == "Cnf")
+    return 0; // Config menu has no saved index
+  // TODO: implement
+  // Check which menu we are in and return the corresponding index based on current settings
+  // Check if menu can be better implemented with parent/child relationships, maybe add Ids
+
+  /**
+   * Check if selected is Cnf
+   *  return 0 since Cnf is not a saved index
+   * Check if selected parent is Cnf
+   *  get index by setting, based on name
+   * else, get index by output
+   */
+  return 0;
+}
+
 void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
 {
   if (function == EOutputFunction::ContinuesController)
@@ -384,9 +406,9 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
     uint8_t cc;
     if (mMidiHandler.learn(cc, _select))
     {
-      mSettings.get().outputSettings[index].function = function;
-      mSettings.get().outputSettings[index].isMapped = true;
-      mSettings.get().outputSettings[index].mappedTo = cc;
+      mSystemSettings.get().outputSettings[index].function = function;
+      mSystemSettings.get().outputSettings[index].isMapped = true;
+      mSystemSettings.get().outputSettings[index].mappedTo = cc;
     }
   }
   else if (function == EOutputFunction::Trigger)
@@ -395,17 +417,17 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
     uint8_t key;
     if (mMidiHandler.learn(key, _select))
     {
-      mSettings.get().outputSettings[index].isMapped = true;
-      mSettings.get().outputSettings[index].mappedTo = key;
+      mSystemSettings.get().outputSettings[index].isMapped = true;
+      mSystemSettings.get().outputSettings[index].mappedTo = key;
     }
     else
     {
-      mSettings.get().outputSettings[index].isMapped = false;
+      mSystemSettings.get().outputSettings[index].isMapped = false;
     }
-    mSettings.get().outputSettings[index].function = function;
+    mSystemSettings.get().outputSettings[index].function = function;
   }
   else
   {
-    mSettings.get().outputSettings[index].function = function;
+    mSystemSettings.get().outputSettings[index].function = function;
   }
 }

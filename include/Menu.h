@@ -71,7 +71,7 @@ public:
 class CMenu : public CSubMenu
 {
 public:
-  CMenu(const std::string &name, CGui &gui, CSettings &settings, CMidiHandler &midiHandler);
+  CMenu(const std::string &name, CGui &gui, CSettings &systemSettings, CMidiHandler &midiHandler);
   ~CMenu() = default;
 
   void build();
@@ -84,12 +84,13 @@ public:
 
 private:
   CGui &mGui;
-  CSettings &mSettings;
+  CSettings &mSystemSettings;
   CMidiHandler &mMidiHandler;
   CSubMenu *_currentMenu;
   int _selectedIndex;
   std::stack<std::pair<CSubMenu *, int>> _navigationStack;
 
+  int getIndexFromSetting(CMenuItem *selected);
   void setOutputFunction(uint16_t index, EOutputFunction function);
 
   bool _next = false;
