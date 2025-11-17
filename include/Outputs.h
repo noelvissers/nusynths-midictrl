@@ -111,7 +111,7 @@ public:
 private:
   CGui &mGui;
   DAC8564 mDac;
-  std::array<SOutput, N_OUTPUTS> mOutputs;
+  std::array<SOutputConfig, N_OUTPUTS> mOutputs;
 
   uint16_t getPitch(uint16_t pitch, long pitchBend);
 };

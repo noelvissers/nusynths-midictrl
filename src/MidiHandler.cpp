@@ -169,7 +169,7 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    SOutput output = mOutputs.getOutput(i);
+    SOutputConfig output = mOutputs.getOutput(i);
 
     if (output.isActive)
     {
@@ -200,7 +200,7 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    SOutput output = mOutputs.getOutput(i);
+    SOutputConfig output = mOutputs.getOutput(i);
 
     if (!output.isActive)
     {
@@ -260,7 +260,7 @@ void CMidiHandler::midiControlChange(byte subchannel, byte value)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    SOutput output = mOutputs.getOutput(i);
+    SOutputConfig output = mOutputs.getOutput(i);
 
     if (output.function == EOutputFunction::ContinuesController && output.mappedTo == subchannel)
     {
@@ -275,7 +275,7 @@ void CMidiHandler::midiAfterTouchChannel(byte velocity)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    SOutput output = mOutputs.getOutput(i);
+    SOutputConfig output = mOutputs.getOutput(i);
 
     if (output.function == EOutputFunction::AfterTouch)
     {
@@ -291,7 +291,7 @@ void CMidiHandler::midiPitchBend(int value)
   // 'value' is a 14 bit value, ranging from -8192 to 8191 with the center point being 0
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    SOutput output = mOutputs.getOutput(i);
+    SOutputConfig output = mOutputs.getOutput(i);
 
     if (output.function == EOutputFunction::Pitch)
     {
@@ -307,7 +307,8 @@ void CMidiHandler::systemClock()
 {
   if ((_clkCount % mSettings.get().clockDiv) == 0)
   {
-    SOutput output = mOutputs.getOutput(0);
+    SOutputConfig output = mOutputs.getOutput(0);
+
     output.value = OUTPUT_HIGH;
     output.resetTime = micros() + (TRIGGER_LENGHT_MS * 1000);
     output.isActive = output.isDirty = true;
@@ -329,7 +330,7 @@ void CMidiHandler::systemStop()
 
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
-    SOutput output = mOutputs.getOutput(i);
+    SOutputConfig output = mOutputs.getOutput(i);
 
     if (output.function == EOutputFunction::Reset)
     {

@@ -19,7 +19,7 @@ void CSettings::load()
   else
   {
     // Invalid signature, load defaults
-    mSettings = SSettings();
+    mSettings = SSystemSettings();
   }
 }
 
@@ -28,13 +28,13 @@ void CSettings::save()
 {
   // Load settings to compare
   int signature;
-  SSettings savedSettings;
+  SSystemSettings savedSettings;
   EEPROM.get(SETTINGS_ADDRESS, signature);
   if (signature == SETTINGS_SIGNATURE)
     EEPROM.get(SETTINGS_ADDRESS + sizeof(signature), savedSettings);
 
   // Check if settings have changed to avoid unnecessary writes
-  if (memcmp(&savedSettings, &mSettings, sizeof(SSettings)) != 0)
+  if (memcmp(&savedSettings, &mSettings, sizeof(SSystemSettings)) != 0)
   {
     EEPROM.put(SETTINGS_ADDRESS, SETTINGS_SIGNATURE);
     EEPROM.put(SETTINGS_ADDRESS + sizeof(SETTINGS_SIGNATURE), mSettings);
@@ -44,7 +44,7 @@ void CSettings::save()
   }
 }
 
-SSettings &CSettings::get()
+SSystemSettings &CSettings::get()
 {
   return mSettings;
 }

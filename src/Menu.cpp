@@ -384,9 +384,9 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
     uint8_t cc;
     if (mMidiHandler.learn(cc, _select))
     {
-      mSettings.get().outputIsMapped[index] = true;
-      mSettings.get().outputMappedTo[index] = cc;
-      mSettings.get().outputFunctions[index] = function;
+      mSettings.get().outputSettings[index].function = function;
+      mSettings.get().outputSettings[index].isMapped = true;
+      mSettings.get().outputSettings[index].mappedTo = cc;
     }
   }
   else if (function == EOutputFunction::Trigger)
@@ -395,17 +395,17 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
     uint8_t key;
     if (mMidiHandler.learn(key, _select))
     {
-      mSettings.get().outputIsMapped[index] = true;
-      mSettings.get().outputMappedTo[index] = key;
+      mSettings.get().outputSettings[index].isMapped = true;
+      mSettings.get().outputSettings[index].mappedTo = key;
     }
     else
     {
-      mSettings.get().outputIsMapped[index] = false;
+      mSettings.get().outputSettings[index].isMapped = false;
     }
-    mSettings.get().outputFunctions[index] = function;
+    mSettings.get().outputSettings[index].function = function;
   }
   else
   {
-    mSettings.get().outputFunctions[index] = function;
+    mSettings.get().outputSettings[index].function = function;
   }
 }
