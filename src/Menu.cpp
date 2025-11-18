@@ -441,13 +441,12 @@ int CMenu::getIndexFromSetting(CMenuItem *selected)
         break;
       }
     }
-
-    if (index < 0 || index > items)
-      index = 0;
-
-    Serial.println("Starting index: " + String(index));
-    return index;
   }
+
+  if (index < 0 || index > items)
+    index = 0;
+  Serial.println("Starting index: " + String(index));
+  return index;
 }
 
 void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
