@@ -1,10 +1,9 @@
 #include "Menu.h"
 #include <Arduino.h>
-
-// TODO: led doesnt need to be a reference
+#include <iostream>
 
 // MenuItem
-CMenuItem::CMenuItem(const std::string &name, const uint8_t &led) : _name(name), _led(led) {}
+CMenuItem::CMenuItem(const std::string &name, const uint8_t led) : _name(name), _led(led) {}
 
 const std::string &CMenuItem::getName() const
 {
@@ -17,20 +16,20 @@ uint8_t CMenuItem::getLed() const
 }
 
 // SubMenu
-CSubMenu::CSubMenu(const std::string &name, const uint8_t &led) : CMenuItem(name, led) {}
+CSubMenu::CSubMenu(const std::string &name, const uint8_t led) : CMenuItem(name, led) {}
 
 bool CSubMenu::isSubMenu() const
 {
   return true;
 }
 
-CSubMenu &CSubMenu::addOption(const std::string &name, const uint8_t &led, std::function<void()> onSelect)
+CSubMenu &CSubMenu::addOption(const std::string &name, const uint8_t led, std::function<void()> onSelect)
 {
   _items.push_back(std::unique_ptr<CMenuItem>(new CMenuOption(name, led, onSelect)));
   return *this;
 }
 
-CSubMenu &CSubMenu::addSubMenu(const std::string &name, const uint8_t &led)
+CSubMenu &CSubMenu::addSubMenu(const std::string &name, const uint8_t led)
 {
   std::unique_ptr<CSubMenu> newSubMenu(new CSubMenu(name, led));
   CSubMenu *newSubMenuPtr = newSubMenu.get();
@@ -44,7 +43,7 @@ const std::vector<std::unique_ptr<CMenuItem>> &CSubMenu::getItems() const
 }
 
 // MenuOption
-CMenuOption::CMenuOption(const std::string &name, const uint8_t &led, std::function<void()> onSelect)
+CMenuOption::CMenuOption(const std::string &name, const uint8_t led, std::function<void()> onSelect)
     : CMenuItem(name, led), onSelectCallback(onSelect) {}
 
 bool CMenuOption::isSubMenu() const
@@ -264,7 +263,7 @@ void CMenu::build()
                  { setOutputFunction(8, EOutputFunction::Unassigned); });
 }
 
-void CMenu::update() const
+void CMenu::display() const
 {
   if (!_currentMenu)
     return;
@@ -304,7 +303,7 @@ void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool
   return;
 }
 
-void CMenu::handleInput()
+void CMenu::update()
 {
   if (!_currentMenu || _currentMenu->getItems().empty())
   {
@@ -380,21 +379,60 @@ void CMenu::handleInput()
 int CMenu::getIndexFromSetting(CMenuItem *selected)
 {
   if (!selected->isSubMenu())
-    return;
-    
-  if (selected->getName() == "Cnf")
-    return 0; // Config menu has no saved index
-  // TODO: implement
-  // Check which menu we are in and return the corresponding index based on current settings
-  // Check if menu can be better implemented with parent/child relationships, maybe add Ids
+    return 0;
 
-  /**
-   * Check if selected is Cnf
-   *  return 0 since Cnf is not a saved index
-   * Check if selected parent is Cnf
-   *  get index by setting, based on name
-   * else, get index by output
-   */
+  if (_navigationStack.empty()) // In root menu
+  {
+    if (selected->getName() == "Cnf")
+      return 0; // Config menu
+    else
+    {
+      try
+      {
+        int outputChannel = stoi(selected->getName());
+        EOutputFunction function = mSystemSettings.get().outputSettings.at(outputChannel).function;
+        if (outputChannel <= 4) // CV
+          return static_cast<int>(function);
+        else // Gate
+          return (static_cast<int>(function) - 4);
+      }
+      catch (const std::exception e)
+      {
+        return 0;
+      }
+    }
+  }
+  else if (_navigationStack.top().first->getName() == "Cnf") // Part of Cnf menu
+  {
+    if(selected->getName() == "Chn")
+      return mSystemSettings.get().midiChannel;
+    else if(selected->getName() == "Mod")
+      return static_cast<int>(mSystemSettings.get().synthMode);
+    else if(selected->getName() == "Pb.")
+      return mSystemSettings.get().pitchBendSemitones;
+    else if(selected->getName() == "Clk")
+      switch (mSystemSettings.get().clockDiv)
+      {
+      case 1:
+        return 0;
+      case 2:
+        return 1;
+      case 4:
+        return 2;
+      case 8:
+        return 3;
+      case 16:
+        return 4;
+      case 32:
+        return 5;
+      case 64:
+        return 6;
+      case 128:
+        return 7;
+      default:
+        return 0;
+      }
+  }
   return 0;
 }
 

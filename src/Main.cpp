@@ -106,9 +106,9 @@ void loop()
     menu.bActive = true;
     while (menu.bActive)
     {
-      menu.update();
+      menu.display();
       menu.waitForInput(_flagRotaryEncCw, _flagRotaryEncCcw, _flagRotaryEncButton);
-      menu.handleInput();
+      menu.update();
     }
     settings.save();
     outputs.setOutputs(settings.get());

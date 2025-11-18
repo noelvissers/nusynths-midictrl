@@ -16,7 +16,7 @@
 class CMenuItem
 {
 public:
-  explicit CMenuItem(const std::string &name, const uint8_t &led);
+  explicit CMenuItem(const std::string &name, const uint8_t led);
   virtual ~CMenuItem() = default;
 
   /**
@@ -46,11 +46,11 @@ protected:
 class CSubMenu : public CMenuItem
 {
 public:
-  explicit CSubMenu(const std::string &name, const uint8_t &led);
+  explicit CSubMenu(const std::string &name, const uint8_t led);
   bool isSubMenu() const override;
 
-  CSubMenu &addOption(const std::string &name, const uint8_t &led, std::function<void()> onSelect);
-  CSubMenu &addSubMenu(const std::string &name, const uint8_t &led);
+  CSubMenu &addOption(const std::string &name, const uint8_t led, std::function<void()> onSelect);
+  CSubMenu &addSubMenu(const std::string &name, const uint8_t led);
 
   const std::vector<std::unique_ptr<CMenuItem>> &getItems() const;
 
@@ -62,7 +62,7 @@ private:
 class CMenuOption : public CMenuItem
 {
 public:
-  CMenuOption(const std::string &name, const uint8_t &led, std::function<void()> onSelect);
+  CMenuOption(const std::string &name, const uint8_t led, std::function<void()> onSelect);
   std::function<void()> onSelectCallback;
   bool isSubMenu() const override;
 };
@@ -76,9 +76,9 @@ public:
 
   void build();
 
-  void update() const;
+  void display() const;
   void waitForInput(volatile bool &next, volatile bool &prev, volatile bool &press);
-  void handleInput();
+  void update();
 
   bool bActive = false; // Flag to indicate if the menu is active
 
