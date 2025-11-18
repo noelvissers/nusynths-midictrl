@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include <Arduino.h>
 #include <cstdint>
+#include <math.h>
 
 CMenu::CMenu(CGui &gui, CSettings &settings, CMidiHandler &midi) : mGui(gui), mSettings(settings), mMidi(midi) {}
 
@@ -88,10 +89,12 @@ void CMenu::subMenuConfig()
       subMenuConfigClock();
       break;
 
-    case -2: // TODO: Get index from current setting
+    case -2: // Not saved in settings, return 0
+    {
       _index[1] = 0;
       subMenuConfig();
       break;
+    }
     case -1: // Wrap around to last menu
       _index[1] = 3;
       subMenuConfig();
@@ -114,10 +117,13 @@ void CMenu::subMenuConfigMidiChannel()
   {
     switch (_index[2])
     {
-    case -2: // TODO: Get index from current setting
-      _index[2] = 0;
+    case -2: // Get index from current setting
+    {
+      _index[2] = mSettings.get().midiChannel;
+      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigMidiChannel();
       break;
+    }
     case -1: // Wrap around to last menu
       _index[2] = 1;
       subMenuConfigMidiChannel();
@@ -160,10 +166,13 @@ void CMenu::subMenuConfigMode()
   {
     switch (_index[2])
     {
-    case -2: // TODO: Get index from current setting
-      _index[2] = 0;
+    case -2: // Get index from current setting
+    {
+      _index[2] = static_cast<int>(mSettings.get().synthMode);
+      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigMode();
       break;
+    }
     case -1: // Wrap around to last menu
       _index[2] = 1;
       subMenuConfigMode();
@@ -206,10 +215,13 @@ void CMenu::subMenuConfigPitchBend()
   {
     switch (_index[2])
     {
-    case -2: // TODO: Get index from current setting
-      _index[2] = 0;
+    case -2: // Get index from current setting
+    {
+      _index[2] = mSettings.get().pitchBendSemitones;
+      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigPitchBend();
       break;
+    }
     case -1: // Wrap around to last menu
       _index[2] = 1;
       subMenuConfigPitchBend();
@@ -249,10 +261,13 @@ void CMenu::subMenuConfigClock()
   {
     switch (_index[2])
     {
-    case -2: // TODO: Get index from current setting
-      _index[2] = 0;
+    case -2: // Get index from current setting
+    {
+      _index[2] = log2(mSettings.get().clockDiv);
+      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigClock();
       break;
+    }
     case -1: // Wrap around to last menu
       _index[2] = 7;
       subMenuConfigClock();
@@ -296,10 +311,43 @@ void CMenu::subMenuOutputCv(uint16_t outputIndex)
   {
     switch (_index[1])
     {
-    case -2: // TODO: Get index from current setting
-      _index[1] = 0;
+    case -2: // Get index from current setting
+    {
+      EOutputFunction output = mSettings.get().outputSettings[outputIndex].function;
+      switch (output)
+      {
+      case EOutputFunction::Pitch:
+        _index[1] = 0;
+        break;
+      case EOutputFunction::Velocity:
+        _index[1] = 1;
+        break;
+      case EOutputFunction::ContinuesController:
+        _index[1] = 2;
+        break;
+      case EOutputFunction::AfterTouch:
+        _index[1] = 3;
+        break;
+      case EOutputFunction::Gate:
+        _index[1] = 4;
+        break;
+      case EOutputFunction::Trigger:
+        _index[1] = 5;
+        break;
+      case EOutputFunction::Reset:
+        _index[1] = 6;
+        break;
+      case EOutputFunction::Unassigned:
+        _index[1] = 7;
+        break;
+      default:
+        _index[1] = 0;
+        break;
+      }
+      Serial.println("Retrieved index from settings" + _index[1]);
       subMenuOutputCv(outputIndex);
       break;
+    }
     case -1: // Wrap around to last menu
       _index[1] = 7;
       subMenuOutputCv(outputIndex);
@@ -348,10 +396,31 @@ void CMenu::subMenuOutputGate(uint16_t outputIndex)
   {
     switch (_index[1])
     {
-    case -2: // TODO: Get index from current setting
-      _index[1] = 0;
+    case -2: // Get index from current setting
+    {
+      EOutputFunction output = mSettings.get().outputSettings[outputIndex].function;
+      switch (output)
+      {
+      case EOutputFunction::Gate:
+        _index[1] = 0;
+        break;
+      case EOutputFunction::Trigger:
+        _index[1] = 1;
+        break;
+      case EOutputFunction::Reset:
+        _index[1] = 2;
+        break;
+      case EOutputFunction::Unassigned:
+        _index[1] = 3;
+        break;
+      default:
+        _index[1] = 0;
+        break;
+      }
+      Serial.println("Retrieved index from settings" + _index[1]);
       subMenuOutputGate(outputIndex);
       break;
+    }
     case -1: // Wrap around to last menu
       _index[1] = 3;
       subMenuOutputGate(outputIndex);
