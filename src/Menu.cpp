@@ -378,62 +378,76 @@ void CMenu::update()
 
 int CMenu::getIndexFromSetting(CMenuItem *selected)
 {
+  // This part could be better structured / less hardcoded but works for now
+
   if (!selected->isSubMenu())
     return 0;
 
-  if (_navigationStack.empty()) // In root menu
+  int items = static_cast<CSubMenu *>(selected)->getItems().size();
+  Serial.println("Items: " + String(items));
+
+  int index = 0;
+
+  if (_navigationStack.empty()) // Child of root menu
   {
-    if (selected->getName() == "Cnf")
-      return 0; // Config menu
-    else
+    int item = atoi(selected->getName().c_str());
+    if (item >= 1 && item <= 8) // Output menus
     {
-      try
-      {
-        int outputChannel = stoi(selected->getName());
-        EOutputFunction function = mSystemSettings.get().outputSettings.at(outputChannel).function;
-        if (outputChannel <= 4) // CV
-          return static_cast<int>(function);
-        else // Gate
-          return (static_cast<int>(function) - 4);
-      }
-      catch (const std::exception e)
-      {
-        return 0;
-      }
+      EOutputFunction function = mSystemSettings.get().outputSettings.at(item).function;
+      if (item <= 4) // CV
+        index = static_cast<int>(function);
+      else // Gate
+        index = static_cast<int>(function) - 4;
     }
   }
-  else if (_navigationStack.top().first->getName() == "Cnf") // Part of Cnf menu
+  else // Child of custom submenu
   {
-    if(selected->getName() == "Chn")
-      return mSystemSettings.get().midiChannel;
-    else if(selected->getName() == "Mod")
-      return static_cast<int>(mSystemSettings.get().synthMode);
-    else if(selected->getName() == "Pb.")
-      return mSystemSettings.get().pitchBendSemitones;
-    else if(selected->getName() == "Clk")
+    if (selected->getName() == "Chn")
+      index = mSystemSettings.get().midiChannel;
+    else if (selected->getName() == "Mod")
+      index = static_cast<int>(mSystemSettings.get().synthMode);
+    else if (selected->getName() == "Pb.")
+      index = mSystemSettings.get().pitchBendSemitones;
+    else if (selected->getName() == "Clk")
+    {
       switch (mSystemSettings.get().clockDiv)
       {
       case 1:
-        return 0;
+        index = 0;
+        break;
       case 2:
-        return 1;
+        index = 1;
+        break;
       case 4:
-        return 2;
+        index = 2;
+        break;
       case 8:
-        return 3;
+        index = 3;
+        break;
       case 16:
-        return 4;
+        index = 4;
+        break;
       case 32:
-        return 5;
+        index = 5;
+        break;
       case 64:
-        return 6;
+        index = 6;
+        break;
       case 128:
-        return 7;
+        index = 7;
+        break;
       default:
-        return 0;
+        index = 0;
+        break;
       }
+    }
+
+    if (index < 0 || index > items)
+      index = 0;
+
+    Serial.println("Starting index: " + String(index));
+    return index;
   }
-  return 0;
 }
 
 void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
