@@ -1,285 +1,410 @@
 #include "Menu.h"
 #include <Arduino.h>
-#include <iostream>
+#include <cstdint>
 
-// MenuItem
-CMenuItem::CMenuItem(const std::string &name, const uint8_t led) : _name(name), _led(led) {}
+CMenu::CMenu(CGui &gui, CSettings &settings, CMidiHandler &midi) : mGui(gui), mSettings(settings), mMidi(midi) {}
 
-const std::string &CMenuItem::getName() const
+// Root menu (DEPTH = 0)
+void CMenu::display()
 {
-  return _name;
-}
+  Serial.print("Menu: index:");
+  Serial.print(_index[0]);
+  Serial.print(", sub:");
+  Serial.print(_index[1]);
+  Serial.print(", subsub:");
+  Serial.print(_index[2]);
+  Serial.print(", depth:");
+  Serial.println(_depth);
 
-uint8_t CMenuItem::getLed() const
-{
-  return _led;
-}
-
-// SubMenu
-CSubMenu::CSubMenu(const std::string &name, const uint8_t led) : CMenuItem(name, led) {}
-
-bool CSubMenu::isSubMenu() const
-{
-  return true;
-}
-
-CSubMenu &CSubMenu::addOption(const std::string &name, const uint8_t led, std::function<void()> onSelect)
-{
-  _items.push_back(std::unique_ptr<CMenuItem>(new CMenuOption(name, led, onSelect)));
-  return *this;
-}
-
-CSubMenu &CSubMenu::addSubMenu(const std::string &name, const uint8_t led)
-{
-  std::unique_ptr<CSubMenu> newSubMenu(new CSubMenu(name, led));
-  CSubMenu *newSubMenuPtr = newSubMenu.get();
-  _items.push_back(std::move(newSubMenu));
-  return *newSubMenuPtr;
-}
-
-const std::vector<std::unique_ptr<CMenuItem>> &CSubMenu::getItems() const
-{
-  return _items;
-}
-
-// MenuOption
-CMenuOption::CMenuOption(const std::string &name, const uint8_t led, std::function<void()> onSelect)
-    : CMenuItem(name, led), onSelectCallback(onSelect) {}
-
-bool CMenuOption::isSubMenu() const
-{
-  return false;
-}
-
-// Menu
-CMenu::CMenu(const std::string &name, CGui &gui, CSettings &systemSettings, CMidiHandler &midiHandler)
-    : CSubMenu(name, 0), mGui(gui), mSystemSettings(systemSettings), mMidiHandler(midiHandler), _currentMenu(this), _selectedIndex(0) {}
-
-void CMenu::build()
-{
-  // Config
-  CSubMenu &configMenu = this->addSubMenu("Cnf", 0b11111111);
+  switch (_index[0])
   {
-    // MIDI channel
-    configMenu.addSubMenu("Chn", 0)
-        .addOption("All", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 0; }) // OMNI
-        .addOption("1", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 1; }) // Channel 1
-        .addOption("2", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 2; })
-        .addOption("3", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 3; })
-        .addOption("4", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 4; })
-        .addOption("5", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 5; })
-        .addOption("6", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 6; })
-        .addOption("7", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 7; })
-        .addOption("8", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 8; })
-        .addOption("9", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 9; })
-        .addOption("10", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 10; })
-        .addOption("11", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 11; })
-        .addOption("12", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 12; })
-        .addOption("13", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 13; })
-        .addOption("14", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 14; })
-        .addOption("15", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 15; })
-        .addOption("16", 0, [this]()
-                   { mSystemSettings.get().midiChannel = 16; });
-    // Mode
-    configMenu.addSubMenu("Mod", 0)
-        .addOption("Mon", 0, [this]()
-                   { mSystemSettings.get().synthMode = ESynthMode::Monophonic; })
-        .addOption("Pol", 0, [this]()
-                   { mSystemSettings.get().synthMode = ESynthMode::Polyphonic; });
-    // Pitch bend
-    configMenu.addSubMenu("Pb.", 0)
-        .addOption("0", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 0; }) // 0 semitones
-        .addOption("1", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 1; }) // 1 semitone
-        .addOption("2", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 2; }) // 2 semitones
-        .addOption("3", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 3; })
-        .addOption("4", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 4; })
-        .addOption("5", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 5; })
-        .addOption("6", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 6; })
-        .addOption("7", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 7; })
-        .addOption("8", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 8; })
-        .addOption("9", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 9; })
-        .addOption("10", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 10; })
-        .addOption("11", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 11; })
-        .addOption("12", 0, [this]()
-                   { mSystemSettings.get().pitchBendSemitones = 12; });
-    // Clock divider
-    configMenu.addSubMenu("Clk", 0)
-        .addOption("1", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 1; }) // 1:1
-        .addOption("2", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 2; }) // /2
-        .addOption("4", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 4; }) // /4
-        .addOption("8", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 8; }) // /8
-        .addOption("16", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 16; }) // /16
-        .addOption("32", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 32; }) // /32
-        .addOption("64", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 64; }) // /64
-        .addOption("128", 0, [this]()
-                   { mSystemSettings.get().clockDiv = 128; }); // /128
+  case 0: // Configuration
+    subMenuConfig();
+    break;
+  case 1 ... 4: // Output 1 ... 4
+    subMenuOutputCv(_index[0]);
+    break;
+  case 5 ... 8: // Output 5 ... 8
+    subMenuOutputGate(_index[0]);
+    break;
+
+  case -1: // Wrap around to last menu
+    _index[0] = 8;
+    display();
+    break;
+  default:
+    _index[0] = 0;
+    display();
+    break;
   }
-  // CV output 1
-  this->addSubMenu("1", 0b01000000)
-      .addOption("Ptc", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::Pitch); })
-      .addOption("VEL", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::Velocity); })
-      .addOption("CC", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::ContinuesController); })
-      .addOption("At", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::AfterTouch); })
-      .addOption("Gt", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::Gate); })
-      .addOption("Tr", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::Reset); })
-      .addOption("-", 0b01000000, [this]()
-                 { setOutputFunction(1, EOutputFunction::Unassigned); });
-  // CV output 2
-  this->addSubMenu("2", 0b00100000)
-      .addOption("Ptc", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::Pitch); })
-      .addOption("VEL", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::Velocity); })
-      .addOption("CC", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::ContinuesController); })
-      .addOption("At", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::AfterTouch); })
-      .addOption("Gt", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::Gate); })
-      .addOption("Tr", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::Reset); })
-      .addOption("-", 0b00100000, [this]()
-                 { setOutputFunction(2, EOutputFunction::Unassigned); });
-  // CV output 3
-  this->addSubMenu("3", 0b00010000)
-      .addOption("Ptc", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::Pitch); })
-      .addOption("VEL", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::Velocity); })
-      .addOption("CC", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::ContinuesController); })
-      .addOption("At", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::AfterTouch); })
-      .addOption("Gt", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::Gate); })
-      .addOption("Tr", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::Reset); })
-      .addOption("-", 0b00010000, [this]()
-                 { setOutputFunction(3, EOutputFunction::Unassigned); });
-  // CV output 4
-  this->addSubMenu("4", 0b00001000)
-      .addOption("Ptc", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::Pitch); })
-      .addOption("VEL", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::Velocity); })
-      .addOption("CC", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::ContinuesController); })
-      .addOption("At", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::AfterTouch); })
-      .addOption("Gt", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::Gate); })
-      .addOption("Tr", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::Reset); })
-      .addOption("-", 0b00001000, [this]()
-                 { setOutputFunction(4, EOutputFunction::Unassigned); });
-  // Gate output 1
-  this->addSubMenu("5", 0b00000100)
-      .addOption("Gt", 0b00000100, [this]()
-                 { setOutputFunction(5, EOutputFunction::Gate); })
-      .addOption("Tr", 0b00000100, [this]()
-                 { setOutputFunction(5, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b00000100, [this]()
-                 { setOutputFunction(5, EOutputFunction::Reset); })
-      .addOption("-", 0b00000100, [this]()
-                 { setOutputFunction(5, EOutputFunction::Unassigned); });
-  // Gate output 2
-  this->addSubMenu("6", 0b00000010)
-      .addOption("Gt", 0b00000010, [this]()
-                 { setOutputFunction(6, EOutputFunction::Gate); })
-      .addOption("Tr", 0b00000010, [this]()
-                 { setOutputFunction(6, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b00000010, [this]()
-                 { setOutputFunction(6, EOutputFunction::Reset); })
-      .addOption("-", 0b00000010, [this]()
-                 { setOutputFunction(6, EOutputFunction::Unassigned); });
-  // Gate output 3
-  this->addSubMenu("7", 0b00000001)
-      .addOption("Gt", 0b00000001, [this]()
-                 { setOutputFunction(7, EOutputFunction::Gate); })
-      .addOption("Tr", 0b00000001, [this]()
-                 { setOutputFunction(7, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b00000001, [this]()
-                 { setOutputFunction(7, EOutputFunction::Reset); })
-      .addOption("-", 0b00000001, [this]()
-                 { setOutputFunction(7, EOutputFunction::Unassigned); });
-  // Gate output 4
-  this->addSubMenu("8", 0b10000000)
-      .addOption("Gt", 0b10000000, [this]()
-                 { setOutputFunction(8, EOutputFunction::Gate); })
-      .addOption("Tr", 0b10000000, [this]()
-                 { setOutputFunction(8, EOutputFunction::Trigger); })
-      .addOption("Rst", 0b10000000, [this]()
-                 { setOutputFunction(8, EOutputFunction::Reset); })
-      .addOption("-", 0b10000000, [this]()
-                 { setOutputFunction(8, EOutputFunction::Unassigned); });
 }
 
-void CMenu::display() const
+void CMenu::update(volatile bool &next, volatile bool &prev, volatile bool &press)
 {
-  if (!_currentMenu)
-    return;
+  waitForInput(next, prev, press);
 
-  const auto &items = _currentMenu->getItems();
-
-  mGui.setString(items[_selectedIndex]->getName());
-  mGui.setLed(3, items[_selectedIndex]->getLed());
+  if (_next)
+    _index[_depth]++;
+  else if (_prev)
+    _index[_depth]--;
+  else if (_select)
+  {
+    if (_depth < int(sizeof(_index)))
+    {
+      _depth++;
+      _index[_depth] = -2;
+    }
+  }
+  else if (_back)
+  {
+    if (_depth == 0) // Exit menu
+    {
+      std::fill(std::begin(_index), std::end(_index), 0);
+      _active = false;
+    }
+    else
+      _depth--;
+  }
 }
 
+// Private submenus
+// Configuration menu
+void CMenu::subMenuConfig()
+{
+  if (_depth >= 1) // Menu is selected
+  {
+    switch (_index[1])
+    {
+    case 0: // MIDI channel
+      subMenuConfigMidiChannel();
+      break;
+    case 1: // Synth mode
+      subMenuConfigMode();
+      break;
+    case 2: // Pitch bend semitones
+      subMenuConfigPitchBend();
+      break;
+    case 3: // Clock division
+      subMenuConfigClock();
+      break;
+
+    case -2: // TODO: Get index from current setting
+      _index[1] = 0;
+      subMenuConfig();
+      break;
+    case -1: // Wrap around to last menu
+      _index[1] = 3;
+      subMenuConfig();
+      break;
+    default:
+      _index[1] = 0;
+      subMenuConfig();
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString("Cnf");
+    mGui.setLed(3, 0b11111111);
+  }
+}
+void CMenu::subMenuConfigMidiChannel()
+{
+  if (_depth >= 2) // Menu is selected
+  {
+    switch (_index[2])
+    {
+    case -2: // TODO: Get index from current setting
+      _index[2] = 0;
+      subMenuConfigMidiChannel();
+      break;
+    case -1: // Wrap around to last menu
+      _index[2] = 1;
+      subMenuConfigMidiChannel();
+      break;
+
+    case 0:
+      optionConfigMidiChannel(0, "All");
+      break;
+    case 1 ... 16:
+      optionConfigMidiChannel(_index[2], std::to_string(_index[2]));
+      break;
+
+    default:
+      _index[2] = 0;
+      subMenuConfigMidiChannel();
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString("Chn");
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::optionConfigMidiChannel(uint8_t channel, std::string onHighlight)
+{
+  if (_depth >= 3) // Menu is selected
+  {
+    mSettings.get().midiChannel = channel;
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(onHighlight);
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::subMenuConfigMode()
+{
+  if (_depth >= 2) // Menu is selected
+  {
+    switch (_index[2])
+    {
+    case -2: // TODO: Get index from current setting
+      _index[2] = 0;
+      subMenuConfigMode();
+      break;
+    case -1: // Wrap around to last menu
+      _index[2] = 1;
+      subMenuConfigMode();
+      break;
+
+    case 0: // Monophonic
+      optionConfigMode(ESynthMode::Monophonic, "Mon");
+      break;
+    case 1: // Polyphonic
+      optionConfigMode(ESynthMode::Polyphonic, "Pol");
+      break;
+
+    default:
+      _index[2] = 0;
+      subMenuConfigMode();
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString("Mod");
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::optionConfigMode(ESynthMode mode, std::string onHighlight)
+{
+  if (_depth >= 3) // Menu is selected
+  {
+    mSettings.get().synthMode = mode;
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(onHighlight);
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::subMenuConfigPitchBend()
+{
+  if (_depth >= 2) // Menu is selected
+  {
+    switch (_index[2])
+    {
+    case -2: // TODO: Get index from current setting
+      _index[2] = 0;
+      subMenuConfigPitchBend();
+      break;
+    case -1: // Wrap around to last menu
+      _index[2] = 1;
+      subMenuConfigPitchBend();
+      break;
+
+    case 0 ... 12:
+      optionConfigPitchBend(_index[2], std::to_string(_index[2]));
+      break;
+
+    default:
+      _index[2] = 0;
+      subMenuConfigPitchBend();
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString("Pb");
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::optionConfigPitchBend(uint8_t pitchBendSemitones, std::string onHighlight)
+{
+  if (_depth >= 3) // Menu is selected
+  {
+    mSettings.get().pitchBendSemitones = pitchBendSemitones;
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(onHighlight);
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::subMenuConfigClock()
+{
+  if (_depth >= 2) // Menu is selected
+  {
+    switch (_index[2])
+    {
+    case -2: // TODO: Get index from current setting
+      _index[2] = 0;
+      subMenuConfigClock();
+      break;
+    case -1: // Wrap around to last menu
+      _index[2] = 7;
+      subMenuConfigClock();
+      break;
+
+    case 0 ... 7:
+    {
+      uint8_t clkdiv = uint8_t(pow(2, _index[2]));
+      optionConfigClock(clkdiv, std::to_string(clkdiv));
+      break;
+    }
+    default:
+      _index[2] = 0;
+      subMenuConfigClock();
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString("Clk");
+    mGui.setLed(3, 0);
+  }
+}
+void CMenu::optionConfigClock(uint8_t clockDiv, std::string onHighlight)
+{
+  if (_depth >= 3) // Menu is selected
+  {
+    mSettings.get().clockDiv = clockDiv;
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(onHighlight);
+    mGui.setLed(3, 0);
+  }
+}
+
+// Output menu
+void CMenu::subMenuOutputCv(uint16_t outputIndex)
+{
+  if (_depth >= 1) // Menu is selected
+  {
+    switch (_index[1])
+    {
+    case -2: // TODO: Get index from current setting
+      _index[1] = 0;
+      subMenuOutputCv(outputIndex);
+      break;
+    case -1: // Wrap around to last menu
+      _index[1] = 7;
+      subMenuOutputCv(outputIndex);
+      break;
+
+    case 0: // Pitch
+      optionOutput(outputIndex, EOutputFunction::Pitch, "Ptc");
+      break;
+    case 1: // Velocity
+      optionOutput(outputIndex, EOutputFunction::Velocity, "Vel");
+      break;
+    case 2: // CC
+      optionOutput(outputIndex, EOutputFunction::ContinuesController, "Cc");
+      break;
+    case 3: // Aftertouch
+      optionOutput(outputIndex, EOutputFunction::AfterTouch, "At");
+      break;
+    case 4: // Gate
+      optionOutput(outputIndex, EOutputFunction::Gate, "Gt");
+      break;
+    case 5: // Trigger
+      optionOutput(outputIndex, EOutputFunction::Trigger, "Tr");
+      break;
+    case 6: // Reset
+      optionOutput(outputIndex, EOutputFunction::Reset, "Rst");
+      break;
+    case 7: // Unassigned
+      optionOutput(outputIndex, EOutputFunction::Unassigned, "-");
+      break;
+    default:
+      _index[1] = 0;
+      subMenuOutputCv(outputIndex);
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(std::to_string(outputIndex));
+    uint8_t ledValue = (outputIndex <= 8) ? _ledMap[outputIndex] : 0;
+    mGui.setLed(3, ledValue);
+  }
+}
+void CMenu::subMenuOutputGate(uint16_t outputIndex)
+{
+  if (_depth >= 1) // Menu is selected
+  {
+    switch (_index[1])
+    {
+    case -2: // TODO: Get index from current setting
+      _index[1] = 0;
+      subMenuOutputGate(outputIndex);
+      break;
+    case -1: // Wrap around to last menu
+      _index[1] = 3;
+      subMenuOutputGate(outputIndex);
+      break;
+
+    case 0: // Gate
+      optionOutput(outputIndex, EOutputFunction::Gate, "Gt");
+      break;
+    case 1: // Trigger
+      optionOutput(outputIndex, EOutputFunction::Trigger, "Tr");
+      break;
+    case 2: // Reset
+      optionOutput(outputIndex, EOutputFunction::Reset, "Rst");
+      break;
+    case 3: // Unassigned
+      optionOutput(outputIndex, EOutputFunction::Unassigned, "-");
+      break;
+    default:
+      _index[1] = 0;
+      subMenuOutputGate(outputIndex);
+      break;
+    }
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(std::to_string(outputIndex));
+    uint8_t ledValue = (outputIndex <= 8) ? _ledMap[outputIndex] : 0;
+    mGui.setLed(3, ledValue);
+  }
+}
+void CMenu::optionOutput(uint16_t outputIndex, EOutputFunction function, std::string onHighlight)
+{
+  if (_depth >= 2) // Menu is selected
+  {
+    setOutputFunction(outputIndex, function);
+  }
+  else // Menu is highlighted
+  {
+    mGui.setString(onHighlight);
+    uint8_t ledValue = (outputIndex <= 8) ? _ledMap[outputIndex] : 0;
+    mGui.setLed(3, ledValue);
+  }
+}
+
+// Private functions
 void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool &press)
 {
   while (press)
     ; // Wait for button to be released
 
-  next = prev = false;
+  next = prev = false;                     // Reset external flags
+  _next = _prev = _select = _back = false; // Reset internal flags
+
   while (!next && !prev && !press)
     ; // Wait for any input
 
@@ -303,182 +428,36 @@ void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool
   return;
 }
 
-void CMenu::update()
-{
-  if (!_currentMenu || _currentMenu->getItems().empty())
-  {
-    _next = _prev = _back = _select = false;
-    return;
-  }
-
-  const auto &items = _currentMenu->getItems();
-  int itemCount = items.size();
-
-  if (_next)
-    _selectedIndex = (_selectedIndex + 1) % itemCount;
-  else if (_prev)
-    _selectedIndex = (_selectedIndex - 1 + itemCount) % itemCount;
-  else if (_select)
-  {
-    CMenuItem *selectedItem = items[_selectedIndex].get();
-    if (selectedItem->isSubMenu())
-    {
-      _navigationStack.push({_currentMenu, _selectedIndex});
-      _currentMenu = static_cast<CSubMenu *>(selectedItem);
-      _selectedIndex = getIndexFromSetting(selectedItem);
-    }
-    else
-    {
-      CMenuOption *option = static_cast<CMenuOption *>(selectedItem);
-      if (option->onSelectCallback)
-      {
-        option->onSelectCallback();
-
-        // Blink all leds to confirm action
-        mGui.setLed(3, 0b11111111);
-        delay(250);
-
-        // Back action after executing function
-        if (!_navigationStack.empty())
-        {
-          auto lastState = _navigationStack.top();
-          _currentMenu = lastState.first;
-          _selectedIndex = lastState.second;
-          _navigationStack.pop();
-        }
-        else
-        {
-          // Exit menu if back action is on root
-          bActive = false;
-          mGui.clear();
-        }
-      }
-    }
-  }
-  else if (_back)
-  {
-    if (!_navigationStack.empty())
-    {
-      auto &lastState = _navigationStack.top();
-      _currentMenu = lastState.first;
-      _selectedIndex = lastState.second;
-      _navigationStack.pop();
-    }
-    else
-    {
-      // Exit menu if back is pressed on root
-      bActive = false;
-      mGui.clear();
-    }
-  }
-
-  interrupts();
-  _next = _prev = _back = _select = false;
-}
-
-int CMenu::getIndexFromSetting(CMenuItem *selected)
-{
-  // This part could be better structured / less hardcoded but works for now
-
-  if (!selected->isSubMenu())
-    return 0;
-
-  int items = static_cast<CSubMenu *>(selected)->getItems().size();
-  Serial.println("Items: " + String(items));
-
-  int index = 0;
-
-  if (_navigationStack.empty()) // Child of root menu
-  {
-    int item = atoi(selected->getName().c_str());
-    if (item >= 1 && item <= 8) // Output menus
-    {
-      EOutputFunction function = mSystemSettings.get().outputSettings.at(item).function;
-      if (item <= 4) // CV
-        index = static_cast<int>(function);
-      else // Gate
-        index = static_cast<int>(function) - 4;
-    }
-  }
-  else // Child of custom submenu
-  {
-    if (selected->getName() == "Chn")
-      index = mSystemSettings.get().midiChannel;
-    else if (selected->getName() == "Mod")
-      index = static_cast<int>(mSystemSettings.get().synthMode);
-    else if (selected->getName() == "Pb.")
-      index = mSystemSettings.get().pitchBendSemitones;
-    else if (selected->getName() == "Clk")
-    {
-      switch (mSystemSettings.get().clockDiv)
-      {
-      case 1:
-        index = 0;
-        break;
-      case 2:
-        index = 1;
-        break;
-      case 4:
-        index = 2;
-        break;
-      case 8:
-        index = 3;
-        break;
-      case 16:
-        index = 4;
-        break;
-      case 32:
-        index = 5;
-        break;
-      case 64:
-        index = 6;
-        break;
-      case 128:
-        index = 7;
-        break;
-      default:
-        index = 0;
-        break;
-      }
-    }
-  }
-
-  if (index < 0 || index > items)
-    index = 0;
-  Serial.println("Starting index: " + String(index));
-  return index;
-}
-
 void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
 {
   if (function == EOutputFunction::ContinuesController)
   {
     // MIDI learn required
     uint8_t cc;
-    if (mMidiHandler.learn(cc, _select))
+    if (mMidi.learn(cc, _select))
     {
-      mSystemSettings.get().outputSettings[index].function = function;
-      mSystemSettings.get().outputSettings[index].isMapped = true;
-      mSystemSettings.get().outputSettings[index].mappedTo = cc;
+      mSettings.get().outputSettings[index].function = function;
+      mSettings.get().outputSettings[index].isMapped = true;
+      mSettings.get().outputSettings[index].mappedTo = cc;
     }
   }
   else if (function == EOutputFunction::Trigger)
   {
     // MIDI learn optional
     uint8_t key;
-    if (mMidiHandler.learn(key, _select))
+    if (mMidi.learn(key, _select))
     {
-      mSystemSettings.get().outputSettings[index].isMapped = true;
-      mSystemSettings.get().outputSettings[index].mappedTo = key;
+      mSettings.get().outputSettings[index].isMapped = true;
+      mSettings.get().outputSettings[index].mappedTo = key;
     }
     else
     {
-      mSystemSettings.get().outputSettings[index].isMapped = false;
+      mSettings.get().outputSettings[index].isMapped = false;
     }
-    mSystemSettings.get().outputSettings[index].function = function;
+    mSettings.get().outputSettings[index].function = function;
   }
   else
   {
-    mSystemSettings.get().outputSettings[index].function = function;
+    mSettings.get().outputSettings[index].function = function;
   }
 }

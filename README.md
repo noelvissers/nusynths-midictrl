@@ -50,7 +50,7 @@ Each output can be configured to a certain function via the configuration menu:
 |Pitch                 |CV                |1V/Oct (0-10V)
 |Velocity              |CV                |0-10V
 |CC + MIDI learn       |CV                |0-10V
-|AfterTouch            |CV                |0-10V
+|Aftertouch            |CV                |0-10V
 |Gate                  |CV + GATE         |0-5V
 |Trigger + MIDI learn* |CV + GATE         |0-5V, 1ms
 |Reset                 |CV + GATE         |0-5V, 1ms
@@ -84,7 +84,7 @@ Menu
 │  ├─ Pitch
 │  ├─ Velocity
 │  ├─ CC → Learn MIDI CC [Required]
-│  ├─ AfterTouch
+│  ├─ Aftertouch
 │  ├─ Gate
 │  ├─ Trigger → Learn MIDI note [Optional]
 │  ├─ Reset

@@ -13,7 +13,7 @@ CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
 COutputs outputs(gui);
 CMidiHandler midiHandler(outputs, settings, gui);
-CMenu menu("Root menu", gui, settings, midiHandler);
+CMenu menu(gui, settings, midiHandler);
 
 static volatile unsigned long lastTrig = 0;
 static volatile bool stateLast = 0;
@@ -81,7 +81,6 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH); // Turn on LED
 
-  menu.build();
   outputs.init();
 
   // Show startup animation
@@ -103,12 +102,11 @@ void loop()
 {
   if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
   {
-    menu.bActive = true;
-    while (menu.bActive)
+    menu.start();
+    while (menu.active())
     {
       menu.display();
-      menu.waitForInput(_flagRotaryEncCw, _flagRotaryEncCcw, _flagRotaryEncButton);
-      menu.update();
+      menu.update(_flagRotaryEncCw, _flagRotaryEncCcw, _flagRotaryEncButton);
     }
     settings.save();
     outputs.setOutputs(settings.get());
