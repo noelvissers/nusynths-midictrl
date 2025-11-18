@@ -1,4 +1,6 @@
 #include "Menu.h"
+#include "HalConfiguration.h"
+
 #include <Arduino.h>
 #include <cstdint>
 #include <math.h>
@@ -58,6 +60,13 @@ void CMenu::update(volatile bool &next, volatile bool &prev, volatile bool &pres
     else
       _depth--;
   }
+}
+
+void CMenu::start()
+{
+  _index = {0, 0, 0, 0};
+  _depth = 0;
+  _active = true;
 }
 
 // Private submenus
@@ -493,26 +502,33 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
   {
     // MIDI learn required
     uint8_t cc;
-    if (mMidi.learn(cc, _select))
+    if (mMidi.learn(cc, _flagRotaryEncButton))
     {
       mSettings.get().outputSettings[index].function = function;
       mSettings.get().outputSettings[index].isMapped = true;
       mSettings.get().outputSettings[index].mappedTo = cc;
     }
     else
+    {
+      while (_flagRotaryEncButton)
+        ;
+      cancelOption();
       return;
+    }
   }
   else if (function == EOutputFunction::Trigger)
   {
     // MIDI learn optional
     uint8_t key;
-    if (mMidi.learn(key, _select))
+    if (mMidi.learn(key, _flagRotaryEncButton))
     {
       mSettings.get().outputSettings[index].isMapped = true;
       mSettings.get().outputSettings[index].mappedTo = key;
     }
     else
     {
+      while (_flagRotaryEncButton)
+        ;
       mSettings.get().outputSettings[index].isMapped = false;
     }
     mSettings.get().outputSettings[index].function = function;
@@ -531,6 +547,25 @@ void CMenu::confirmOption()
     _depth = 0;
   mGui.setLed(3, 0b11111111);
   delay(250);
+  mGui.setLed(3, 0);
+  display();
+}
+
+void CMenu::cancelOption()
+{
+  _depth -= 2;
+  if (_depth < 0)
+    _depth = 0;
+  mGui.setLed(3, 0b11111111);
+  delay(75);
+  mGui.setLed(3, 0);
+  delay(75);
+  mGui.setLed(3, 0b11111111);
+  delay(75);
+  mGui.setLed(3, 0);
+  delay(75);
+  mGui.setLed(3, 0b11111111);
+  delay(75);
   mGui.setLed(3, 0);
   display();
 }

@@ -13,7 +13,7 @@ public:
 
   void display();
   void update(volatile bool &next, volatile bool &prev, volatile bool &press);
-  void start() { _active = true; }
+  void start();
   bool active() { return _active; }
 
 private:
@@ -45,6 +45,7 @@ private:
   void waitForInput(volatile bool &next, volatile bool &prev, volatile bool &press);
   void setOutputFunction(uint16_t index, EOutputFunction function);
   void confirmOption();
+  void cancelOption();
 
   bool _next = false;
   bool _prev = false;
