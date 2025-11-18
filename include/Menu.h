@@ -21,7 +21,7 @@ private:
   CSettings &mSettings;
   CMidiHandler &mMidi;
 
-  std::array<int, 3> _index = {0, 0, 0};
+  std::array<int, 4> _index = {0, 0, 0, 0};
   int _depth = 0;
   bool _active = false;
 
@@ -44,6 +44,7 @@ private:
   // Functions
   void waitForInput(volatile bool &next, volatile bool &prev, volatile bool &press);
   void setOutputFunction(uint16_t index, EOutputFunction function);
+  void confirmOption();
 
   bool _next = false;
   bool _prev = false;

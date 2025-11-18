@@ -102,7 +102,6 @@ void CGui::idle()
   setLed(2, 0, true);
 }
 
-// TODO: Fix text, some chars are not displayed correctly
 void CGui::setString(const std::string &str)
 {
   static const std::unordered_map<char, byte> charMap = {
@@ -121,7 +120,7 @@ void CGui::setString(const std::string &str)
       {'B', 0b01111111},
       {'b', 0b00011111},
       {'C', 0b01001110},
-      {'c', 0b00011001},
+      {'c', 0b00001101},
       {'D', 0b01111100},
       {'d', 0b00111101},
       {'E', 0b01001111},

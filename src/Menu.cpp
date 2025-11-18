@@ -8,17 +8,13 @@ CMenu::CMenu(CGui &gui, CSettings &settings, CMidiHandler &midi) : mGui(gui), mS
 // Root menu (DEPTH = 0)
 void CMenu::display()
 {
-  Serial.print("Menu: index:");
-  Serial.print(_index[0]);
-  Serial.print(", sub:");
-  Serial.print(_index[1]);
-  Serial.print(", subsub:");
-  Serial.print(_index[2]);
-  Serial.print(", depth:");
-  Serial.println(_depth);
-
   switch (_index[0])
   {
+  case -1: // Wrap around to last menu
+    _index[0] = 8;
+    display();
+    break;
+
   case 0: // Configuration
     subMenuConfig();
     break;
@@ -29,10 +25,6 @@ void CMenu::display()
     subMenuOutputGate(_index[0]);
     break;
 
-  case -1: // Wrap around to last menu
-    _index[0] = 8;
-    display();
-    break;
   default:
     _index[0] = 0;
     display();
@@ -58,7 +50,7 @@ void CMenu::update(volatile bool &next, volatile bool &prev, volatile bool &pres
   }
   else if (_back)
   {
-    if (_depth == 0) // Exit menu
+    if (_depth <= 0) // Exit menu
     {
       std::fill(std::begin(_index), std::end(_index), 0);
       _active = false;
@@ -120,12 +112,11 @@ void CMenu::subMenuConfigMidiChannel()
     case -2: // Get index from current setting
     {
       _index[2] = mSettings.get().midiChannel;
-      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigMidiChannel();
       break;
     }
     case -1: // Wrap around to last menu
-      _index[2] = 1;
+      _index[2] = 16;
       subMenuConfigMidiChannel();
       break;
 
@@ -153,6 +144,7 @@ void CMenu::optionConfigMidiChannel(uint8_t channel, std::string onHighlight)
   if (_depth >= 3) // Menu is selected
   {
     mSettings.get().midiChannel = channel;
+    confirmOption();
   }
   else // Menu is highlighted
   {
@@ -169,7 +161,6 @@ void CMenu::subMenuConfigMode()
     case -2: // Get index from current setting
     {
       _index[2] = static_cast<int>(mSettings.get().synthMode);
-      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigMode();
       break;
     }
@@ -202,6 +193,7 @@ void CMenu::optionConfigMode(ESynthMode mode, std::string onHighlight)
   if (_depth >= 3) // Menu is selected
   {
     mSettings.get().synthMode = mode;
+    confirmOption();
   }
   else // Menu is highlighted
   {
@@ -218,12 +210,11 @@ void CMenu::subMenuConfigPitchBend()
     case -2: // Get index from current setting
     {
       _index[2] = mSettings.get().pitchBendSemitones;
-      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigPitchBend();
       break;
     }
     case -1: // Wrap around to last menu
-      _index[2] = 1;
+      _index[2] = 12;
       subMenuConfigPitchBend();
       break;
 
@@ -248,6 +239,7 @@ void CMenu::optionConfigPitchBend(uint8_t pitchBendSemitones, std::string onHigh
   if (_depth >= 3) // Menu is selected
   {
     mSettings.get().pitchBendSemitones = pitchBendSemitones;
+    confirmOption();
   }
   else // Menu is highlighted
   {
@@ -264,7 +256,6 @@ void CMenu::subMenuConfigClock()
     case -2: // Get index from current setting
     {
       _index[2] = log2(mSettings.get().clockDiv);
-      Serial.println("Retrieved index from settings" + _index[2]);
       subMenuConfigClock();
       break;
     }
@@ -296,6 +287,7 @@ void CMenu::optionConfigClock(uint8_t clockDiv, std::string onHighlight)
   if (_depth >= 3) // Menu is selected
   {
     mSettings.get().clockDiv = clockDiv;
+    confirmOption();
   }
   else // Menu is highlighted
   {
@@ -344,7 +336,6 @@ void CMenu::subMenuOutputCv(uint16_t outputIndex)
         _index[1] = 0;
         break;
       }
-      Serial.println("Retrieved index from settings" + _index[1]);
       subMenuOutputCv(outputIndex);
       break;
     }
@@ -357,7 +348,7 @@ void CMenu::subMenuOutputCv(uint16_t outputIndex)
       optionOutput(outputIndex, EOutputFunction::Pitch, "Ptc");
       break;
     case 1: // Velocity
-      optionOutput(outputIndex, EOutputFunction::Velocity, "Vel");
+      optionOutput(outputIndex, EOutputFunction::Velocity, "uEl");
       break;
     case 2: // CC
       optionOutput(outputIndex, EOutputFunction::ContinuesController, "Cc");
@@ -369,7 +360,7 @@ void CMenu::subMenuOutputCv(uint16_t outputIndex)
       optionOutput(outputIndex, EOutputFunction::Gate, "Gt");
       break;
     case 5: // Trigger
-      optionOutput(outputIndex, EOutputFunction::Trigger, "Tr");
+      optionOutput(outputIndex, EOutputFunction::Trigger, "tr");
       break;
     case 6: // Reset
       optionOutput(outputIndex, EOutputFunction::Reset, "Rst");
@@ -417,7 +408,6 @@ void CMenu::subMenuOutputGate(uint16_t outputIndex)
         _index[1] = 0;
         break;
       }
-      Serial.println("Retrieved index from settings" + _index[1]);
       subMenuOutputGate(outputIndex);
       break;
     }
@@ -430,7 +420,7 @@ void CMenu::subMenuOutputGate(uint16_t outputIndex)
       optionOutput(outputIndex, EOutputFunction::Gate, "Gt");
       break;
     case 1: // Trigger
-      optionOutput(outputIndex, EOutputFunction::Trigger, "Tr");
+      optionOutput(outputIndex, EOutputFunction::Trigger, "tr");
       break;
     case 2: // Reset
       optionOutput(outputIndex, EOutputFunction::Reset, "Rst");
@@ -509,6 +499,8 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
       mSettings.get().outputSettings[index].isMapped = true;
       mSettings.get().outputSettings[index].mappedTo = cc;
     }
+    else
+      return;
   }
   else if (function == EOutputFunction::Trigger)
   {
@@ -529,4 +521,16 @@ void CMenu::setOutputFunction(uint16_t index, EOutputFunction function)
   {
     mSettings.get().outputSettings[index].function = function;
   }
+  confirmOption();
+}
+
+void CMenu::confirmOption()
+{
+  _depth -= 2;
+  if (_depth < 0)
+    _depth = 0;
+  mGui.setLed(3, 0b11111111);
+  delay(250);
+  mGui.setLed(3, 0);
+  display();
 }
