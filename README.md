@@ -55,8 +55,9 @@ Each output can be configured to a certain function via the configuration menu:
 |Trigger + MIDI learn* |CV + GATE         |0-5V, 1ms
 |Reset                 |CV + GATE         |0-5V, 1ms
 
-
 \* Optional (press rotary encoder to cancel)
+
+DAC (CV) outputs get updated before digital (gate) outputs, meaning pitch will be updated on the output before a gate or trigger signal. When mapping gate or trigger to a DAC output, make sure to be aware of this behaviour.
 
 ### Menu structure:
 
@@ -100,7 +101,9 @@ Menu
 
 Open the project in [Visual Studio Code](https://code.visualstudio.com/) with the [PlatformIO](https://platformio.org/) extension installed.
 
-This source code uses a custom variant.cpp/.h that is not included in this repository (yet). It is the mkrzero variant with Serial1 definition removed, so a custom Serial1 can be defined in the source code. This is needed since MIDI (RX) is routed to PA22 instead of PB23.
+This code uses a custom board file that can be found in the .boards folder. This file should be placed in the `.platformio\platforms\atmelsam\boards` folder.
+
+This code uses a custom variant.cpp/.h file that can be found in the .variants folder. This folder (mkrzero_nu_midictrl) should be placed in the `.platformio\packages\framework-arduino-samd\variants\mkrzero_nu_midictrl` folder. This variant is needed since a custom Serial1 is defined, since MIDI (RX) is routed to PA22 instead of PB23.
 
 ## Dependencies
 
