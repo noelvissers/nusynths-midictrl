@@ -55,6 +55,11 @@ public:
    */
   SSystemSettings& get();
 
+  /**
+   * @brief Print settings to serial for debugging
+   */
+  void print();
+
 private:
   SSystemSettings mSettings;
 };
