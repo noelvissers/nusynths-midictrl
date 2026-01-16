@@ -57,7 +57,7 @@ Each output can be configured to a certain function via the configuration menu:
 
 \* Optional (press rotary encoder to cancel)
 
-DAC (CV) outputs get updated before digital (gate) outputs, meaning pitch will be updated on the output before a gate or trigger signal. When mapping gate or trigger to a DAC output, make sure to be aware of this behaviour.
+Analog (CV) outputs will be updated before digital (GATE) outputs, meaning pitch/velocity will be updated on the output before a gate or trigger signal. When mapping gate or trigger to a DAC output, make sure to be aware of this behaviour.
 
 ### Menu structure:
 
