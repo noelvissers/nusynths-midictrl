@@ -56,7 +56,10 @@ void CSettings::print()
   Serial.print("├─ MIDI Channel: ");
   Serial.println(mSettings.midiChannel);
   Serial.print("├─ Mode: ");
-  Serial.println(static_cast<int>(mSettings.synthMode));
+  if (static_cast<int>(mSettings.synthMode) == 0)
+    Serial.println("Monophonic");
+  else
+    Serial.println("Polyphonic");
   Serial.print("├─ Pitch Bend: ");
   Serial.println(mSettings.pitchBendSemitones);
   Serial.print("├─ Clock Division: ");
@@ -102,6 +105,7 @@ void CSettings::print()
       Serial.print("Unassigned         ");
       break;
     default:
+      Serial.print("UNKNOWN            ");
       break;
     }
 
