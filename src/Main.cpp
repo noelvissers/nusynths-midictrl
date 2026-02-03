@@ -7,9 +7,6 @@
 #include "Settings.h"
 #include "Outputs.h"
 
-// TODO: Request VID/PID from https://pid.codes/
-// TODO: Change board config in mkrzero_nu_midictrl.json to use correct IDs.
-
 CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
 COutputs outputs(gui);
