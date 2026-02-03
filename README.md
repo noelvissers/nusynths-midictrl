@@ -2,6 +2,9 @@
 
 Firmware for the NU Synths 'MIDICTRL' eurorack module. Converts MIDI signals (5 pin MIDI or MIDI-USB) to eurorack compatible control voltage (CV) and gate signals.
 
+Firmware is licensed under MIT. 
+Hardware is licensed under CERN‑OHL‑S v2.0.
+
 ## Contents
 
 The following files and folders are in this repository:
