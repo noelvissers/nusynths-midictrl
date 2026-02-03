@@ -7,8 +7,8 @@
 #include "Settings.h"
 #include "Outputs.h"
 
-// TODO: Change board config in mkrzero_nu_midictrl.json. Use testing VID/PID for now (https://pid.codes/) and use default bootloader VID/PID
-// TODO: Do same debugging for outputs as for settings
+// TODO: Request VID/PID from https://pid.codes/
+// TODO: Change board config in mkrzero_nu_midictrl.json to use correct IDs.
 
 CSettings settings;
 CGui gui(_pinDisplaySs, _pinDisplaySck, _pinDisplayMosi);
