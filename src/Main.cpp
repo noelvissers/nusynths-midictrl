@@ -98,8 +98,10 @@ void setup()
 
   midiHandler.begin();
 
+  // TODO: tune this delay
   // Show idle state
   delay(1000);
+  // TODO: Make better idle state
   gui.idle();
 }
 
