@@ -15,9 +15,9 @@ public:
   void startup();
 
   /**
-   * @brief Display idle state.
+   * @brief Update active state of the display.
    */
-  void idle();
+  void active();
 
   /**
    * @brief Sets the string to be displayed on the 7-segment display.
@@ -60,6 +60,7 @@ public:
 
 private:
   uint8_t mOutputLeds = 0b00000000; // State of output LEDs
+  uint8_t mIdleState = 0; // State for idle animation
 
   void setScanLimit(int limit);
   void spiTransfer(byte opcode, byte data);
