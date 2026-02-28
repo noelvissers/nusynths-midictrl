@@ -86,7 +86,7 @@ void COutputs::update()
       default:
         break;
       }
-      mGui.setOutputLed(output.ledMask, output.value > 0 ? true : false);
+      mGui.setOutputLed(output.ledMask, output.isActive > 0 ? true : false);
       mGui.active(); // Update active animation based on output activity
       output.isDirty = false;
     }
