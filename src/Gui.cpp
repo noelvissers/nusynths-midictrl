@@ -101,21 +101,27 @@ void CGui::active()
   switch (mIdleState)
   {
   case 0:
-    setLed(0, 0, true);
-    setLed(1, 0, false);
-    setLed(2, 0, false);
+    setLed(0, 0b00000001);
+    setLed(1, 0b00000000);
+    setLed(2, 0b00000000);
     mIdleState = 1;
     break;
   case 1:
-    setLed(0, 0, false);
-    setLed(1, 0, true);
-    setLed(2, 0, false);
+    setLed(0, 0b00000000);
+    setLed(1, 0b00000001);
+    setLed(2, 0b00000000);
     mIdleState = 2;
     break;
+  case 2:
+    setLed(0, 0b00000000);
+    setLed(1, 0b00000000);
+    setLed(2, 0b00000001);
+    mIdleState = 3;
+    break;
   default:
-    setLed(0, 0, false);
-    setLed(1, 0, false);
-    setLed(2, 0, true);
+    setLed(0, 0b00000000);
+    setLed(1, 0b00000001);
+    setLed(2, 0b00000000);
     mIdleState = 0;
     break;
   }
