@@ -256,6 +256,7 @@ void CGui::clear()
 {
   for (int i = 0; i < 8; i++)
     spiTransfer(i + 1, 0);
+  mIdleState = 0;
 }
 
 void CGui::setScanLimit(int limit)
