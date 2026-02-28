@@ -96,10 +96,29 @@ void CGui::startup()
   setLed(1, 0b00111110);
 }
 
-void CGui::idle()
+void CGui::active()
 {
-  clear();
-  setLed(2, 0, true);
+  switch (mIdleState)
+  {
+  case 0:
+    setLed(0, 0, true);
+    setLed(1, 0, false);
+    setLed(2, 0, false);
+    mIdleState = 1;
+    break;
+  case 1:
+    setLed(0, 0, false);
+    setLed(1, 0, true);
+    setLed(2, 0, false);
+    mIdleState = 2;
+    break;
+  default:
+    setLed(0, 0, false);
+    setLed(1, 0, false);
+    setLed(2, 0, true);
+    mIdleState = 0;
+    break;
+  }
 }
 
 void CGui::setString(const std::string &str)

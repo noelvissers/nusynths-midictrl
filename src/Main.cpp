@@ -98,8 +98,7 @@ void setup()
   // TODO: tune this delay
   // Show idle state
   delay(1000);
-  // TODO: Make better idle state
-  gui.idle();
+  gui.active();
 }
 
 // Main
@@ -119,7 +118,7 @@ void loop()
     settings.print();
     outputs.setOutputs(settings.get());
     rotaryEncButtonLast = millis(); // Make sure that menu is not immediately reopened
-    gui.idle();
+    gui.active();
   }
   midiHandler.read();
   outputs.update();
