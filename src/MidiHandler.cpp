@@ -204,7 +204,8 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
   {
     SOutputConfig output = mOutputs.getOutput(i);
 
-    if (!output.isActive)
+    bool overwrite = (mSettings.get().synthMode == ESynthMode::Monophonic && (output.function == EOutputFunction::Pitch || output.function == EOutputFunction::Velocity));
+    if (!output.isActive || overwrite)
     {
       switch (output.function)
       {
@@ -214,8 +215,8 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
         output.value = mOutputs.midiTo1VOct(note);
         output.mappedTo = note; // Use mappedTo for checking what note triggered this output
         if (mSettings.get().synthMode == ESynthMode::Polyphonic)
-          output.isActive = updatedPitchPoly = true; // Set to active in polyphonic mode, so it isnt overwritten by the next note
-        output.isDirty = true;
+          updatedPitchPoly = true;
+        output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Velocity:
         if (updatedVelPoly)
@@ -223,8 +224,8 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
         output.value = mOutputs.midiToCv(velocity);
         output.mappedTo = note; // Use mappedTo for checking what note triggered this output
         if (mSettings.get().synthMode == ESynthMode::Polyphonic)
-          output.isActive = updatedVelPoly = true; // Set to active in polyphonic mode, so it isnt overwritten by the next note
-        output.isDirty = true;
+          updatedVelPoly = true;
+        output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Gate:
         output.value = OUTPUT_HIGH;
