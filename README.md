@@ -2,8 +2,7 @@
 
 Firmware for the NU Synths 'MIDICTRL' eurorack module. Converts MIDI signals (5 pin MIDI or MIDI-USB) to eurorack compatible control voltage (CV) and gate signals.
 
-Firmware is licensed under MIT. 
-Hardware is licensed under CERN‑OHL‑S v2.0.
+For hardware design see [nusynths-midictrl-hardware](https://github.com/noelvissers/nusynths-midictrl-hardware) repository.
 
 ## Contents
 
@@ -11,7 +10,9 @@ The following files and folders are in this repository:
 
 |File / Folder       |Remarks
 |--------------------|--------
-|boards/             |Custom board files
+|.boards/            |Custom board file
+|.variants/          |Custom variant files
+|.vscode/            |VS Code settings
 |include/            |Header (.h) files
 |lib/                |Custom libraries
 |src/                |Source (.cpp) files
@@ -26,12 +27,14 @@ The following files and folders are in this repository:
 
 To access the settings, hold the rotary encoder button for 1 second.
 
+Select by pressing the rotary button, go back by holding the button.
+
 |Setting       |Remarks
 |--------------|--------
 |MIDI channel  |MIDI channel to listen to (All, 1 to 16)
 |Synth mode    |Monophonic or polyphonic mode (see below)
-|Pitch bend    |Select the range of the pitch bend wheel (0 to 12 semitones)
-|Cock division |Select the clock diveder amount (1 for 1:1, /2 to /128)
+|Pitch bend    |Range of the pitch bend wheel (0 to 12 semitones)
+|Cock division |MIDI clock divider amount (1 for 1:1, /2 to /128)
 
 ### Synth mode
 

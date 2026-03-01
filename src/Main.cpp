@@ -85,21 +85,14 @@ void setup()
   gui.startup();
 
   // Load saved configuration from flash (or default when no settings found)
-  Serial.println("DEBUG: CURRENT SETTINGS:");
-  settings.print();
-  Serial.println("DEBUG: LOADING SETTINGS FROM MEMORY");
   settings.load();
-  Serial.println("DEBUG: CURRENT SETTINGS:");
-  settings.print();
   outputs.setOutputs(settings.get());
 
   midiHandler.begin();
 
-  // TODO: tune this delay
   // Show idle state
   delay(1000);
-  // TODO: Make better idle state
-  gui.idle();
+  gui.active();
 }
 
 // Main
@@ -113,13 +106,11 @@ void loop()
       menu.display();
       menu.update(_flagRotaryEncCw, _flagRotaryEncCcw, _flagRotaryEncButton);
     }
-    Serial.println("DEBUG: SAVING SETTINGS TO MEMORY");
     settings.save();
-    Serial.println("DEBUG: NEW SETTINGS:");
-    settings.print();
     outputs.setOutputs(settings.get());
     rotaryEncButtonLast = millis(); // Make sure that menu is not immediately reopened
-    gui.idle();
+    gui.clear();
+    gui.active();
   }
   midiHandler.read();
   outputs.update();

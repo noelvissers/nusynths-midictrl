@@ -32,6 +32,11 @@ public:
    */
   bool learn(uint8_t &value, volatile bool &cancel);
 
+  /**
+   * @brief Reads and flushes all MIDI packets from both interfaces without processing
+   */
+  void readAndFlush();
+
 private:
   COutputs &mOutputs;
   CSettings &mSettings;

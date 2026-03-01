@@ -68,18 +68,6 @@ void COutputs::update()
 {
   for (auto &output : mOutputs)
   {
-    // Handle reset for triggers
-    if (output.isActive && (output.function == EOutputFunction::Trigger || output.function == EOutputFunction::Sync || output.function == EOutputFunction::Reset))
-    {
-      // Handle roll-overs
-      if (micros() >= output.resetTime || micros() < (output.resetTime + (TRIGGER_LENGHT_MS * 1000)))
-      {
-        output.value = OUTPUT_LOW;
-        output.isActive = false;
-        output.isDirty = true;
-      }
-    }
-
     if (output.isDirty)
     {
       switch (output.type)
@@ -98,8 +86,20 @@ void COutputs::update()
       default:
         break;
       }
-      mGui.setOutputLed(output.ledMask, output.value > 0 ? true : false);
+      mGui.setOutputLed(output.ledMask, output.isActive > 0 ? true : false);
+      mGui.active(); // Update active animation based on output activity
       output.isDirty = false;
+    }
+
+    // Handle reset for triggers
+    if (output.isActive && (output.function == EOutputFunction::Trigger || output.function == EOutputFunction::Sync || output.function == EOutputFunction::Reset))
+    {
+      if (micros() >= output.resetTime)
+      {
+        output.value = OUTPUT_LOW;
+        output.isActive = false;
+        output.isDirty = true;
+      }
     }
   }
 }

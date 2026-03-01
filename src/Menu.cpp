@@ -474,7 +474,10 @@ void CMenu::waitForInput(volatile bool &next, volatile bool &prev, volatile bool
   _next = _prev = _select = _back = false; // Reset internal flags
 
   while (!next && !prev && !press)
-    ; // Wait for any input
+  {
+    // Wait for any input but don't block MIDI processing
+    mMidi.readAndFlush();
+  }
 
   if (next)
     _next = true;
