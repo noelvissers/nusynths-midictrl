@@ -8,7 +8,9 @@ The following files and folders are in this repository:
 
 |File / Folder       |Remarks
 |--------------------|--------
-|boards/             |Custom board files
+|.boards/            |Custom board file
+|.variants/          |Custom variant files
+|.vscode/            |VS Code settings
 |include/            |Header (.h) files
 |lib/                |Custom libraries
 |src/                |Source (.cpp) files
@@ -23,12 +25,14 @@ The following files and folders are in this repository:
 
 To access the settings, hold the rotary encoder button for 1 second.
 
+Select by pressing the rotary button, go back by holding the button.
+
 |Setting       |Remarks
 |--------------|--------
 |MIDI channel  |MIDI channel to listen to (All, 1 to 16)
 |Synth mode    |Monophonic or polyphonic mode (see below)
-|Pitch bend    |Select the range of the pitch bend wheel (0 to 12 semitones)
-|Cock division |Select the clock diveder amount (1 for 1:1, /2 to /128)
+|Pitch bend    |Range of the pitch bend wheel (0 to 12 semitones)
+|Cock division |MIDI clock divider amount (1 for 1:1, /2 to /128)
 
 ### Synth mode
 
