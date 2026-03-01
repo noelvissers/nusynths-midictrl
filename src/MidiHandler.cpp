@@ -185,12 +185,12 @@ void CMidiHandler::midiNoteOff(byte note, byte velocity)
         {
           output.value = OUTPUT_LOW;
           output.isActive = false;
-          output.isDirty = true;
         }
         break;
       default:
         break;
       }
+      output.isDirty = true;
       mOutputs.setOutput(i, output);
     }
   }
