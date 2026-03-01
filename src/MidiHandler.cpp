@@ -61,6 +61,19 @@ bool CMidiHandler::learn(uint8_t &value, volatile bool &cancel)
   return false;
 }
 
+void CMidiHandler::readAndFlush()
+{
+  // Read MIDI over serial
+  SMidiSerialPacket midiSerialPacket;
+  if (mMidiSerial.getPacket(midiSerialPacket))
+    midiFlush();
+
+  // Read MIDI over USB
+  SMidiUsbPacket midiUsbPacket;
+  if (mMidiUsb.getPacket(midiUsbPacket))
+    midiFlush();
+}
+
 void CMidiHandler::update(uint8_t channel, uint8_t type, byte data1, byte data2)
 {
   if (mSettings.get().midiChannel == 0 || mSettings.get().midiChannel == (channel + 1))
