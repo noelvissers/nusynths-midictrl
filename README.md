@@ -1,4 +1,4 @@
-# NU Synths | MIDICTRL 
+# NU Synths | MIDICTRL
 
 Firmware for the NU Synths 'MIDICTRL' eurorack module. Converts MIDI signals (5 pin MIDI or MIDI-USB) to eurorack compatible control voltage (CV) and gate signals.
 
@@ -10,18 +10,18 @@ For hardware design see [nusynths-midictrl-hardware](https://github.com/noelviss
 
 The following files and folders are in this repository:
 
-|File / Folder       |Remarks
-|--------------------|--------
-|.boards/            |Custom board file
-|.variants/          |Custom variant files
-|.vscode/            |VS Code settings
-|include/            |Header (.h) files
-|lib/                |Custom libraries
-|src/                |Source (.cpp) files
-|test/               |Test files
-|LICENSE             |
-|README.md           |
-|platformio.ini      |
+|File / Folder |Remarks
+|--------------|--------
+|.boards/      |Custom board files
+|.variants/    |Custom variant files
+|.vscode/      |VS Code settings
+|include/      |Header (.h) files
+|lib/          |Custom libraries
+|src/          |Source (.cpp) files
+|test/         |Test files
+|LICENSE       |-
+|README.md     |-
+|platformio.ini|-
 
 ## Documentation
 
@@ -46,7 +46,7 @@ In monophonic mode the pitch, velocity and gate are mapped to all outputs that a
 
 #### Polyphonic
 
-In polyphonic mode the pitch, velocity and gate are mapped sequentially to the first available output. When two or more notes are played at the same time, the latest pressed note will **not** overwrite the previous one(s) when no outputs are available. 
+In polyphonic mode the pitch, velocity and gate are mapped sequentially to the first available output. When two or more notes are played at the same time, the latest pressed note will **not** overwrite the previous one(s) when no outputs are available.
 
 ### Output functions
 
@@ -67,9 +67,9 @@ Each output can be configured to a certain function via the configuration menu:
 
 Analog (CV) outputs will be updated before digital (GATE) outputs, meaning pitch/velocity will be updated on the output before a gate or trigger signal. When mapping gate or trigger to a DAC output, make sure to be aware of this behaviour.
 
-### Menu structure:
+### Menu structure
 
-```
+```txt
 Menu
 ├─ Settings
 │  ├─ Midi channel
@@ -122,6 +122,11 @@ This code uses a custom variant.cpp/.h file that can be found in the .variants f
 [khoih-prog/FlashStorage_SAMD](https://github.com/khoih-prog/FlashStorage_SAMD) [v1.3.2]
 
 ## Release Notes
+
+### [1.0.1]
+
+* Bugfix: Map gate correctly in poly mode
+* Bugfix: Update outputs correctly when changed during active state
 
 ### [1.0.0]
 
