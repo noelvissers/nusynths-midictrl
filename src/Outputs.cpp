@@ -104,6 +104,26 @@ void COutputs::update()
   }
 }
 
+void COutputs::reset()
+{
+  for (auto &output : mOutputs)
+  {
+    switch (output.type)
+    {
+    case EOutputType::Analog:
+      mDac.write(DAC8564::Address::ADDR_0, DAC8564::Load::WRITE_N_LOAD_N, output.dacChannel, 0);
+      break;
+    case EOutputType::Digital:
+      digitalWrite(output.outputPin, LOW);
+      break;
+    default:
+      break;
+    }
+    output.isActive = output.isDirty = false;
+    mGui.setOutputLed(output.ledMask, false);
+  }
+}
+
 void COutputs::setOutputs(const SSystemSettings &settings)
 {
   for (auto i = 0; i < N_OUTPUTS; i++)
