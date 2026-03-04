@@ -112,6 +112,7 @@ void CMenu::subMenuConfig()
     mGui.setLed(3, 0b11111111);
   }
 }
+
 void CMenu::subMenuConfigMidiChannel()
 {
   if (_depth >= 2) // Menu is selected
@@ -148,6 +149,7 @@ void CMenu::subMenuConfigMidiChannel()
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::optionConfigMidiChannel(uint8_t channel, std::string onHighlight)
 {
   if (_depth >= 3) // Menu is selected
@@ -161,6 +163,7 @@ void CMenu::optionConfigMidiChannel(uint8_t channel, std::string onHighlight)
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::subMenuConfigMode()
 {
   if (_depth >= 2) // Menu is selected
@@ -197,6 +200,7 @@ void CMenu::subMenuConfigMode()
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::optionConfigMode(ESynthMode mode, std::string onHighlight)
 {
   if (_depth >= 3) // Menu is selected
@@ -210,6 +214,7 @@ void CMenu::optionConfigMode(ESynthMode mode, std::string onHighlight)
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::subMenuConfigPitchBend()
 {
   if (_depth >= 2) // Menu is selected
@@ -243,6 +248,7 @@ void CMenu::subMenuConfigPitchBend()
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::optionConfigPitchBend(uint8_t pitchBendSemitones, std::string onHighlight)
 {
   if (_depth >= 3) // Menu is selected
@@ -256,6 +262,7 @@ void CMenu::optionConfigPitchBend(uint8_t pitchBendSemitones, std::string onHigh
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::subMenuConfigClock()
 {
   if (_depth >= 2) // Menu is selected
@@ -291,6 +298,7 @@ void CMenu::subMenuConfigClock()
     mGui.setLed(3, 0);
   }
 }
+
 void CMenu::optionConfigClock(uint8_t clockDiv, std::string onHighlight)
 {
   if (_depth >= 3) // Menu is selected
@@ -390,6 +398,7 @@ void CMenu::subMenuOutputCv(uint16_t outputIndex)
     mGui.setLed(3, ledValue);
   }
 }
+
 void CMenu::subMenuOutputGate(uint16_t outputIndex)
 {
   if (_depth >= 1) // Menu is selected
@@ -450,6 +459,7 @@ void CMenu::subMenuOutputGate(uint16_t outputIndex)
     mGui.setLed(3, ledValue);
   }
 }
+
 void CMenu::optionOutput(uint16_t outputIndex, EOutputFunction function, std::string onHighlight)
 {
   if (_depth >= 2) // Menu is selected
