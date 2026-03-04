@@ -67,6 +67,11 @@ public:
   void update();
 
   /**
+   * @brief Resets all outputs to default state.
+   */
+  void reset();
+
+  /**
    * @brief Sets the configuration for a the outputs based on stored settings.
    * @param settings Reference to settings structure.
    */
