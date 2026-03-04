@@ -213,6 +213,7 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
 {
   bool updatedPitchPoly = false;
   bool updatedVelPoly = false;
+  bool updatedGatePoly = false;
   for (auto i = 0; i < N_OUTPUTS; i++)
   {
     SOutputConfig output = mOutputs.getOutput(i);
@@ -241,8 +242,12 @@ void CMidiHandler::midiNoteOn(byte note, byte velocity)
         output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Gate:
+        if (updatedGatePoly)
+          break;
         output.value = OUTPUT_HIGH;
         output.mappedTo = note; // Use mappedTo for checking what note triggered this output
+        if (mSettings.get().synthMode == ESynthMode::Polyphonic)
+          updatedGatePoly = true;
         output.isActive = output.isDirty = true;
         break;
       case EOutputFunction::Trigger:
