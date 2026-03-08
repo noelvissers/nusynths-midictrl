@@ -11,7 +11,7 @@ public:
 
   /**
    * @brief Displays startup animation.
-   */  
+   */
   void startup();
 
   /**
@@ -58,9 +58,22 @@ public:
    */
   void clear();
 
+  /**
+   * @brief Sets the active state of the display.
+   * @param active True to activate, false to deactivate.
+   */
+  void setActive(bool active) { mActive = active; }
+
+  /**
+   * @brief Gets the active state of the display.
+   * @return True if active, false if inactive.
+   */
+  bool getActive() const { return mActive; }
+
 private:
   uint8_t mOutputLeds = 0b00000000; // State of output LEDs
-  uint8_t mIdleState = 0; // State for idle animation
+  uint8_t mIdleState = 0;           // State for idle animation
+  bool mActive = true;
 
   void setScanLimit(int limit);
   void spiTransfer(byte opcode, byte data);
