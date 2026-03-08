@@ -123,6 +123,11 @@ This code uses a custom variant.cpp/.h file that can be found in the .variants f
 
 ## Release Notes
 
+### [1.0.2]
+
+* Feature: Button press will toggle display which can be usefull to reduce noise made by the LED driver
+* Feature: Show firmware version on startup
+
 ### [1.0.1]
 
 * Bugfix: Map gate correctly in poly mode
