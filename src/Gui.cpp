@@ -273,6 +273,8 @@ void CGui::setScanLimit(int limit)
 
 void CGui::spiTransfer(volatile byte opcode, volatile byte data)
 {
+  if (!mActive)
+    return;
   digitalWrite(SPI_SS, LOW);
   shiftOut(SPI_MOSI, SPI_SCK, MSBFIRST, opcode);
   shiftOut(SPI_MOSI, SPI_SCK, MSBFIRST, data);

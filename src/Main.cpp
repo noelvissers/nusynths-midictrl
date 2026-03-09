@@ -82,6 +82,8 @@ void setup()
   outputs.init();
 
   // Show startup animation
+  gui.setString("1.0.2");
+  delay(1000);
   gui.startup();
 
   // Load saved configuration from flash (or default when no settings found)
@@ -96,10 +98,15 @@ void setup()
 }
 
 // Main
+bool buttonPress = false;
 void loop()
 {
+  if (_flagRotaryEncButton && !buttonPress)
+    buttonPress = true;
+
   if (_flagRotaryEncButton && ((millis() - rotaryEncButtonLast >= 1000)))
   {
+    gui.setActive(true);
     menu.start();
     while (menu.active())
     {
@@ -108,10 +115,26 @@ void loop()
     }
     settings.save();
     outputs.setOutputs(settings.get());
+    midiHandler.readAndFlush();
     outputs.reset();
     rotaryEncButtonLast = millis(); // Make sure that menu is not immediately reopened
     gui.clear();
     gui.active();
+    while (_flagRotaryEncButton)
+      ;
+    buttonPress = false;
+  }
+  else if (buttonPress && !_flagRotaryEncButton)
+  {
+    gui.clear();
+    if (gui.getActive())
+      gui.setActive(false);
+    else
+    {
+      gui.setActive(true);
+      gui.active();
+    }
+    buttonPress = false;
   }
   midiHandler.read();
   outputs.update();
